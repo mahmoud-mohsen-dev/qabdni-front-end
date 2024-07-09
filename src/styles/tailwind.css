@@ -1,0 +1,15 @@
+/* Import Tailwind base styles */
+@import 'tailwindcss/base';
+
+/* Customize the default theme */
+@tailwind base;
+
+/* Additional customizations */
+@tailwind components;
+@tailwind utilities;
+
+/* Custom utility classes */
+.custom-border {
+  border-width: 2px;
+  border-color: #e2e8f0;
+}

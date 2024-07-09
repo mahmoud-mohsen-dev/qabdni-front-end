@@ -1,0 +1,13 @@
+/* Custom styles specific to your application */
+.error-message {
+  color: #ff0000;
+  font-weight: bold;
+}
+
+/* Specific overrides or tweaks */
+.btn-primary {
+  background-color: #4caf50;
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
