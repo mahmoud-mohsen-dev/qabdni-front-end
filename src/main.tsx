@@ -1,20 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App.tsx';
 import './styles/index.css';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import ErrorPage from './pages/PageNotFound.tsx';
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-    errorElement: <ErrorPage />
-  }
-]);
+import App from './App';
+import store from './store';
+import { Provider } from 'react-redux';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>
 );

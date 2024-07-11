@@ -8,8 +8,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom utility classes */
-.custom-border {
-  border-width: 2px;
-  border-color: #e2e8f0;
+/* Reset and base styles */
+select:disabled,
+input:disabled {
+  @apply bg-gray/light text-gray/dark;
+}
+
+input:focus,
+button:focus,
+textarea:focus,
+select:focus {
+  @apply outline-gray/dark outline outline-2;
+  outline-offset: -1px;
 }
