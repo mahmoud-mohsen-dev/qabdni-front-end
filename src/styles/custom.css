@@ -1,13 +1,28 @@
-/* Custom styles specific to your application */
-.error-message {
-  color: #ff0000;
-  font-weight: bold;
+/* Custom antd styles*/
+.ant-checkbox-wrapper {
+  height: fit-content;
 }
 
-/* Specific overrides or tweaks */
-.btn-primary {
-  background-color: #4caf50;
-  color: #ffffff;
-  padding: 10px 20px;
-  border-radius: 5px;
+:where(.css-dev-only-do-not-override-1ki3fj8).ant-checkbox-wrapper {
+  line-height: 100%;
 }
+/* .ant-checkbox .ant-checkbox-inner {
+  width: 25px;
+  height: 25px;
+  background-color: red;
+  border-color: red;
+}
+
+.ant-checkbox-disabled .ant-checkbox-inner {
+  width: 25px;
+  height: 25px;
+  background-color: gray;
+  border-color: gray;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  width: 25px;
+  height: 25px;
+  background-color: transparent;
+  border-color: red;
+} */

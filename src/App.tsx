@@ -5,6 +5,7 @@ import Signup from './pages/Signup.tsx';
 import Root from './layouts/Root.tsx';
 import Dashboard from './pages/Dashboard.tsx';
 import ErrorPage from './pages/PageNotFound.tsx';
+import { ConfigProvider } from 'antd';
 
 const router = createBrowserRouter([
   {
@@ -38,7 +39,31 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#465FF1'
+        },
+        components: {
+          Input: {
+            colorTextPlaceholder: '#969DA6',
+            colorText: '#23272C',
+            activeBorderColor: '#465FF1',
+            hoverBorderColor: '#1f74ec',
+            inputFontSize: 13,
+            paddingBlock: 8,
+            paddingInline: 10,
+            lineWidth: 2,
+            colorBorder: 'transparent'
+            // paddingInline: 13
+          }
+        }
+      }}
+    >
+      <RouterProvider router={router} />
+    </ConfigProvider>
+  );
 };
 
 export default App;

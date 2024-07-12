@@ -6,14 +6,15 @@ export default {
   theme: {
     extend: {
       boxShadow: {
-          "custom-sm": "0 1px 2px rgba(0, 0, 0, 0.04)",
-          "shadow-md": "0px 0.6rem 2.4rem rgba(0, 0, 0, 0.06)",
-          "shadow-lg": "0 2.4rem 3.2rem rgba(0, 0, 0, 0.12)"
+        'custom-sm': '0 1px 2px rgba(0, 0, 0, 0.04)',
+        'shadow-md': '0px 0.6rem 2.4rem rgba(0, 0, 0, 0.06)',
+        'shadow-lg': '0 2.4rem 3.2rem rgba(0, 0, 0, 0.12)'
       },
       colors: {
         // Shades of blue
         'blue/ultralight': '#EEF4FE',
         'blue/light': '#ADCFFF',
+        'blue/medium': '#5882C1',
         'blue/normal': '#1F74EC',
         'blue/accent': '#135CCA',
 
@@ -53,8 +54,18 @@ export default {
         // Other colors
         brown: '#BE6F00',
         'pink/light': '#FFE0E0',
-        'black/normal': '#23272C',
+        'black/medium': '17243E',
+        'black/dark': '#23272C',
         'backdrop-color': 'rgba(255, 255, 255, 0.1)'
+      },
+      backgroundImage: {
+        loginImage: "url('/images/bg-login-page.png')",
+        glassLogin: 'linear-gradient(145deg, rgba(88,130,193,49), rgba(88,130,193,11))'
+      },
+      fontFamily: {
+        mullish: ['Mulish', 'sans-serif'],
+        dm: ['DM Sans', 'sans-serif'],
+        Libre: ['Libre Franklin', 'sans-serif']
       }
     }
   },

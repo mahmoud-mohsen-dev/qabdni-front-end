@@ -22,20 +22,21 @@
   padding: 0;
   margin: 0;
   /* Creating animations for dark mode */
-  /* transition:
+  transition:
     background-color 0.3s,
-    border 0.3s; */
+    border 0.3s;
 }
 
-html {
+/* html {
   font-size: 62.5%;
-}
+} */
 
 body {
+  @apply text-black/dark;
   font-family: 'DM Sans', sans-serif;
   min-height: 100vh;
-  line-height: 1.5;
-  font-size: 1.6rem;
+  /* line-height: 1; */
+  /* font-size: 1.6rem; */
 }
 
 input,
@@ -44,6 +45,11 @@ textarea,
 select {
   font: inherit;
   color: inherit;
+  /* line-height: 120%; */
+}
+
+label {
+  line-height: 100%;
 }
 
 button {
@@ -77,6 +83,7 @@ h5,
 h6 {
   overflow-wrap: break-word;
   hyphens: auto;
+  line-height: 100%;
 }
 
 img {
