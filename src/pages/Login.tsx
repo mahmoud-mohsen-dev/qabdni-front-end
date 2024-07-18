@@ -1,65 +1,104 @@
 // import { setToLocalStorage } from '../utils/localStorage';
-import Button from '../components/Button';
-import { Link, useNavigate } from 'react-router-dom';
+// import Button from '../components/Button';
+import { Link } from 'react-router-dom';
 import PasswordInput from '../features/auth/components/PasswordInput';
 import AntInput from '../components/AntInput';
-import { Checkbox } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store/index';
-import { login } from '../features/auth/store/authSlice';
+import { Checkbox, Form, Button } from 'antd';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { AppDispatch, RootState } from '../store/index';
+// import { login } from '../features/auth/store/authSlice';
+import { MdEmail } from 'react-icons/md';
+import { RiKeyFill } from 'react-icons/ri';
 
 const Login: React.FC = () => {
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const dispatch = useDispatch<AppDispatch>();
+  // const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  // const dispatch = useDispatch<AppDispatch>();
 
-  const naviagte = useNavigate();
+  // const naviagte = useNavigate();
+  //  onSubmit={(e) => e.preventDefault()
+
+  const handlerFinish = (value: object) => {
+    console.log(value);
+  };
 
   return (
-    <form className="flex w-[250px] flex-col gap-5 text-[13px]" onSubmit={(e) => e.preventDefault()}>
-      <h2 className="mt-5 text-[28px] font-bold">Log in</h2>
+    <Form
+      className="flex flex-col gap-5 text-base text-white"
+      layout="vertical"
+      onFinish={handlerFinish}
+      requiredMark={false}
+      colon={false}
+    >
+      <h2 className="mt-5 text-3xl font-bold">Log in</h2>
 
-      <div className="flex flex-col gap-2">
-        <label htmlFor="login-email">Email</label>
-        <AntInput placeHolder="Enter your email" id="login-email" />
-      </div>
+      <div>
+        {/* Email Input */}
+        <Form.Item
+          label="Email"
+          name="login-email"
+          rules={[
+            { required: true, message: 'Please input your email address!' },
+            { type: 'email', message: 'The input is not valid E-mail!' }
+          ]}
+        >
+          <AntInput placeHolder="Enter your email" type="email" prefix={<MdEmail className="text-gray/normal" />} />
+        </Form.Item>
 
-      <div className="flex flex-col gap-2">
-        <label htmlFor="login-password">Password</label>
-        <PasswordInput id="login-password" placeHolder="Enter your password" />
-      </div>
+        {/* Password Input */}
+        <Form.Item
+          label="Password"
+          name="login-password"
+          rules={[{ required: true, message: 'Please input your password!' }]}
+        >
+          <PasswordInput
+            id="login-password"
+            placeHolder="Enter your password"
+            prefix={<RiKeyFill className="text-gray/normal" />}
+          />
+        </Form.Item>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center justify-center gap-2">
-          <Checkbox defaultChecked={false} id="login-agree-to-terms"></Checkbox>
-          <label htmlFor="login-agree-to-terms" className="leading-3">
-            Remember me
-          </label>
+        {/* Checkbox Section */}
+        <div className="flex items-center justify-between gap-5">
+          <div className="flex items-center justify-center gap-2">
+            <Checkbox defaultChecked={false} id="login-agree-to-terms"></Checkbox>
+            <label htmlFor="login-agree-to-terms" className="leading-4">
+              Remember me
+            </label>
+          </div>
+          <Link to="/forget-password" className="font-semibold leading-4">
+            Forget Password?
+          </Link>
         </div>
-        <Link to="/forget-password" style={{ lineHeight: '12px' }}>
-          Forget Password?
-        </Link>
       </div>
-      <Button
-        color="purple"
+
+      {/* Sign in Button */}
+      {/* <Button
+        type="submit"
+        color="indigo"
         paddingSize="2xl"
-        styles="hover:bg-blue/accent focus:outline-none ring-1 focus:ring-blue/light"
+        className="font-semibold ring-1 hover:bg-blue/accent focus:outline-none focus:ring-blue/light"
         onClick={() => {
-          if (isAuthenticated) {
-            naviagte('/dashboard');
-            dispatch(login({ userName: 'mahmoud@gmail.com', password: '12345678', token: 'lajflafajladjsf' }));
-          }
+          // if (isAuthenticated) {
+          //   naviagte('/dashboard');
+          //   dispatch(login({ userName: 'mahmoud@gmail.com', password: '12345678', token: 'lajflafajladjsf' }));
+          // }
+          // console.log(e);
         }}
       >
         <p>Sign in</p>
+      </Button> */}
+      <Button type="primary" htmlType="submit">
+        Sign in
       </Button>
 
-      <p className="self-center text-[12px]">
+      {/* Sign up Section */}
+      <p className="self-center text-sm">
         Don&apos;t have an account yet?{' '}
-        <Link to="/singup" className="font-bold">
+        <Link to="/singup" className="font-semibold">
           Sign up
         </Link>
       </p>
-    </form>
+    </Form>
   );
 };
 

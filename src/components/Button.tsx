@@ -39,13 +39,23 @@ interface ButtonType {
   paddingSize?: keyof typeof paddingSizes;
   fontSize?: keyof typeof fontSizes; // '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  styles?: string;
+  className?: string;
+  type?: 'button' | 'submit' | 'reset';
 }
 
-function Button({ children, color = 'blue', paddingSize = 'xs', fontSize = 'md', onClick, styles }: ButtonType) {
+function Button({
+  children,
+  color = 'blue',
+  paddingSize = 'xs',
+  fontSize = 'md',
+  onClick,
+  className,
+  type = 'button'
+}: ButtonType) {
   return (
     <button
-      className={`flex justify-center gap-2 rounded-lg ring-1 focus:outline-none focus:ring-blue/light [&>i]:w-6 ${fontSizes[fontSize]} ${paddingSizes[paddingSize]} ${colors[color]} ${styles}`}
+      type={type}
+      className={`flex justify-center gap-2 rounded-lg ring-1 focus:outline-none focus:ring-blue/light [&>i]:w-6 ${fontSizes[fontSize]} ${paddingSizes[paddingSize]} ${colors[color]} ${className}`}
       onClick={onClick}
     >
       {children}

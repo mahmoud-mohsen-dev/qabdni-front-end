@@ -1,4 +1,4 @@
-/* Custom antd styles*/
+/* Custom Antd Styles*/
 .ant-checkbox-wrapper {
   height: fit-content;
 }
@@ -6,23 +6,17 @@
 :where(.css-dev-only-do-not-override-1ki3fj8).ant-checkbox-wrapper {
   line-height: 100%;
 }
-/* .ant-checkbox .ant-checkbox-inner {
-  width: 25px;
-  height: 25px;
-  background-color: red;
-  border-color: red;
+
+.ant-input-affix-wrapper .ant-input-prefix {
+  margin-inline-end: 10px;
 }
 
-.ant-checkbox-disabled .ant-checkbox-inner {
-  width: 25px;
-  height: 25px;
-  background-color: gray;
-  border-color: gray;
+/* Input Icons */
+.ant-input-affix-wrapper .ant-input-prefix,
+.ant-input-affix-wrapper .ant-input-suffix {
+  font-size: 16px;
 }
 
-.ant-checkbox-checked .ant-checkbox-inner {
-  width: 25px;
-  height: 25px;
-  background-color: transparent;
-  border-color: red;
-} */
+.auth-layout .ant-form-item .ant-form-item-explain-error {
+  color: #ffb5b5;
+}
