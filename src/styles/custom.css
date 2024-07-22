@@ -21,6 +21,10 @@
   color: #ffb5b5;
 }
 
-.sidebar .active {
+.sidebar .active:not(.employee-nested-tabs .active) {
+  @apply bg-other/gray&blue-accent;
+}
+
+.sidebar .employees:has(+ .employee-nested-tabs .active) {
   @apply bg-other/gray&blue-accent;
 }

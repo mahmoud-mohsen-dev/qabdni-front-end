@@ -1,5 +1,5 @@
 function Overview() {
-  return <div>OVER VIEW</div>;
+  return <div>OVERVIEW</div>;
 }
 
 export default Overview;

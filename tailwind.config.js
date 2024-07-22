@@ -47,6 +47,7 @@ export default {
         'gray/normal': '#969DA6',
         'gray/accent': '#727272',
         'gray/dark': '#5D6675',
+        'gray/darkest': '#343942',
 
         // Shades of purple
         'purple/ultralight': '#F0F2FF',

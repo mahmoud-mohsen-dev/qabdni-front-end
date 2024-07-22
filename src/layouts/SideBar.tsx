@@ -3,7 +3,7 @@ import { FaCaretRight } from 'react-icons/fa6';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { MdAccessTime, MdOutlineKeyboardArrowRight } from 'react-icons/md';
 // import { MdAccessTime, MdOutlineKeyboardArrowRight } from 'react-icons/md';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 function SideBar() {
   const [hover, setHover] = useState(false);
@@ -48,9 +48,9 @@ function SideBar() {
             {/* Employees */}
             <NavLink
               to="employees"
-              className={`hover:bg-other/gray&blue-accent flex items-center justify-between rounded-3xl bg-transparent px-6 py-[7px]`}
               onMouseOver={() => setHover(true)}
               onMouseOut={() => setHover(false)}
+              className={`hover:bg-other/gray&blue-accent employees flex items-center justify-between rounded-3xl bg-transparent px-6 py-[7px]`}
             >
               <div className="flex justify-center gap-4">
                 <img src="/public\images\side-bar-icons\People.svg" alt="people icon" />
@@ -64,15 +64,15 @@ function SideBar() {
             </NavLink>
 
             {isExpanded && (
-              <div>
-                <Link to="create-employee" className="mx-11 mb-4 mt-1 flex items-center gap-4">
+              <div className="employee-nested-tabs">
+                <NavLink to="create-employee" className="mx-11 mb-4 mt-1 flex items-center gap-4">
                   <FaCaretRight className="inline" size={16} />
                   <p className="text-sm font-normal">Create Employee</p>
-                </Link>
-                <Link to="leaves" className="mx-11 mb-2 flex items-center gap-4">
+                </NavLink>
+                <NavLink to="leaves" className="mx-11 mb-2 flex items-center gap-4">
                   <FaCaretRight className="inline" size={16} />
                   <p className="text-sm font-normal">Leaves</p>
-                </Link>
+                </NavLink>
               </div>
             )}
 
