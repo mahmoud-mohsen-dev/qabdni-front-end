@@ -20,3 +20,7 @@
 .auth-layout .ant-form-item .ant-form-item-explain-error {
   color: #ffb5b5;
 }
+
+.sidebar .active {
+  @apply bg-other/gray&blue-accent;
+}

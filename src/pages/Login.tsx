@@ -1,20 +1,22 @@
 // import { setToLocalStorage } from '../utils/localStorage';
 // import Button from '../components/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from '../features/auth/components/PasswordInput';
 import AntInput from '../components/AntInput';
 import { Checkbox, Form, Button } from 'antd';
 // import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 // import { AppDispatch, RootState } from '../store/index';
+import { RootState } from '../store/index';
 // import { login } from '../features/auth/store/authSlice';
 import { MdEmail } from 'react-icons/md';
 import { RiKeyFill } from 'react-icons/ri';
 
 const Login: React.FC = () => {
-  // const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   // const dispatch = useDispatch<AppDispatch>();
 
-  // const naviagte = useNavigate();
+  const naviagte = useNavigate();
   //  onSubmit={(e) => e.preventDefault()
 
   const handlerFinish = (value: object) => {
@@ -87,7 +89,18 @@ const Login: React.FC = () => {
       >
         <p>Sign in</p>
       </Button> */}
-      <Button type="primary" htmlType="submit">
+      <Button
+        type="primary"
+        htmlType="submit"
+        onClick={() => {
+          if (isAuthenticated) {
+            naviagte('/dashboard/overview');
+            //   dispatch(login({ userName: 'mahmoud@gmail.com', password: '12345678', token: 'lajflafajladjsf' }));
+            // }
+            // console.log(e);
+          }
+        }}
+      >
         Sign in
       </Button>
 

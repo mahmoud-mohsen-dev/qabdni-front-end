@@ -39,6 +39,7 @@ export default {
         'red/ultralight': '#FFF4F4',
         'red/light': '#FFB5B5',
         'red/normal': '#F85757',
+        'red/accent': '#FF2828',
 
         // Shades of gray
         'gray/ultralight': '#F4F5F7',
@@ -52,11 +53,13 @@ export default {
         'purple/normal': '#465FF1',
 
         // Other colors
-        brown: '#BE6F00',
-        'pink/light': '#FFE0E0',
-        'black/medium': '17243E',
-        'black/dark': '#23272C',
-        'backdrop-color': 'rgba(255, 255, 255, 0.1)'
+        'other/brown': '#BE6F00',
+        'other/pink-light': '#FFE0E0',
+        'other/black&blue-normal': '#17243E',
+        'other/black': '#23272C',
+        'other/backdrop-color': 'rgba(255, 255, 255, 0.1)',
+        'other/gray&indigo-light': '#AFAFAF',
+        'other/gray&blue-accent': '#3A414A'
       },
       backgroundImage: {
         loginImage: "url('/images/bg-login-page.png')",
