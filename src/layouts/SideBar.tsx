@@ -10,7 +10,7 @@ function SideBar() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className="bg-other/black sidebar flex flex-col items-center justify-between px-7 py-6 text-indigo/ultralight">
+    <div className="sidebar fixed flex min-h-screen flex-col items-center justify-between bg-other/black px-7 py-6 text-indigo/ultralight">
       <div>
         <img src="/public\images\app-logo.svg" alt="app logo" />
 
@@ -23,14 +23,14 @@ function SideBar() {
 
         {/* Manage */}
         <div className="min-w-60">
-          <h6 className="text-other/gray&indigo-light mx-6 mb-3 mt-7 text-sm">MANAGE</h6>
+          <h6 className="mx-6 mb-3 mt-5 text-sm text-other/gray&indigo-light">MANAGE</h6>
 
           {/* Links */}
           <div className="flex flex-col gap-1">
             {/* Overview */}
             <NavLink
               to="overview"
-              className={`hover:bg-other/gray&blue-accent flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px]`}
+              className={`flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent`}
             >
               <img src="/public\images\side-bar-icons\Data Treemap.svg" alt="overview icon" />
               <span className="text-base font-semibold">Overview</span>
@@ -39,7 +39,7 @@ function SideBar() {
             {/* Attendance */}
             <NavLink
               to="attendance"
-              className="hover:bg-other/gray&blue-accent flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px]"
+              className="flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent"
             >
               <MdAccessTime className="inline" size={24} />
               <span className="text-base font-semibold">Attendance</span>
@@ -50,7 +50,7 @@ function SideBar() {
               to="employees"
               onMouseOver={() => setHover(true)}
               onMouseOut={() => setHover(false)}
-              className={`hover:bg-other/gray&blue-accent employees flex items-center justify-between rounded-3xl bg-transparent px-6 py-[7px]`}
+              className={`employees flex items-center justify-between rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent`}
             >
               <div className="flex justify-center gap-4">
                 <img src="/public\images\side-bar-icons\People.svg" alt="people icon" />
@@ -79,7 +79,7 @@ function SideBar() {
             {/* Analytics */}
             <NavLink
               to="analytics"
-              className="hover:bg-other/gray&blue-accent flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px]"
+              className="flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent"
             >
               <img src="/public\images\side-bar-icons\Chart Multiple.svg" alt="chart icon" />
               <span className="text-base font-semibold">Analytics</span>
@@ -88,7 +88,7 @@ function SideBar() {
             {/* Payroll */}
             <NavLink
               to="payroll"
-              className="hover:bg-other/gray&blue-accent flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px]"
+              className="flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent"
             >
               <img src="/public\images\side-bar-icons\dollar sign.svg" alt="dollar sign icon" />
               <span className="text-base font-semibold">Payroll</span>
@@ -98,7 +98,7 @@ function SideBar() {
 
         {/* Preference */}
         <div className="mb-5">
-          <h6 className="text-other/gray&indigo-light mx-6 mb-3 mt-7 text-sm">PERFERENCE</h6>
+          <h6 className="mx-6 mb-3 mt-5 text-sm text-other/gray&indigo-light">PERFERENCE</h6>
 
           {/* Links */}
           <div className="flex flex-col gap-1">
@@ -106,7 +106,7 @@ function SideBar() {
             {/* Settings */}
             <NavLink
               to="settings"
-              className="hover:bg-other/gray&blue-accent flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px]"
+              className="flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent"
             >
               <IoSettingsOutline size={24} />
               <span className="text-base font-semibold">Settings</span>
@@ -114,7 +114,7 @@ function SideBar() {
             {/* Log out */}
             <NavLink
               to="/login"
-              className="hover:bg-other/gray&blue-accent flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px]"
+              className="flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent"
             >
               <img src="/public\images\side-bar-icons\Arrow Exit.svg" alt="sign out icon" />
               <span className="text-base font-semibold">Log out</span>

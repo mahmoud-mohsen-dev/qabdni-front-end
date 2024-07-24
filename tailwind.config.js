@@ -25,6 +25,7 @@ export default {
         'orange/accent': '#FAAB3C',
 
         // Shades of green
+        'green-yellow/light': '#23EB31',
         'green/ultralight': '#DDFCE0',
         'green/light': '#AFFFB6',
         'green/accent': '#0EB01D',
@@ -53,14 +54,19 @@ export default {
         'purple/ultralight': '#F0F2FF',
         'purple/normal': '#465FF1',
 
+        // Shades of pink
+        'pink/ultralight': '#ffeaea',
+        'pink/light': '#FFE0E0',
+
         // Other colors
         'other/brown': '#BE6F00',
-        'other/pink-light': '#FFE0E0',
         'other/black&blue-normal': '#17243E',
+        'other/black&blue-dark': '#2c343c',
         'other/black': '#23272C',
         'other/backdrop-color': 'rgba(255, 255, 255, 0.1)',
         'other/gray&indigo-light': '#AFAFAF',
-        'other/gray&blue-accent': '#3A414A'
+        'other/gray&blue-accent': '#3A414A',
+        'other/gray&red-light': '#D8D8D8'
       },
       backgroundImage: {
         loginImage: "url('/images/bg-login-page.png')",
@@ -70,6 +76,9 @@ export default {
         mullish: ['Mulish', 'sans-serif'],
         dm: ['DM Sans', 'sans-serif'],
         Libre: ['Libre Franklin', 'sans-serif']
+      },
+      gridTemplateColumns: {
+        180: 'repeat(auto-fit, 180px);'
       }
     }
   },
