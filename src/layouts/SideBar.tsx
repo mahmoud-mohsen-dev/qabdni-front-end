@@ -50,6 +50,7 @@ function SideBar() {
               to="employees"
               onMouseOver={() => setHover(true)}
               onMouseOut={() => setHover(false)}
+              onClick={() => setIsExpanded((prev: boolean) => !prev)}
               className={`employees flex items-center justify-between rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent`}
             >
               <div className="flex justify-center gap-4">
@@ -59,7 +60,7 @@ function SideBar() {
               <MdOutlineKeyboardArrowRight
                 size={24}
                 className={`${hover ? 'opacity-100' : 'opacity-0'} transition-all duration-300 ${isExpanded ? 'rotate-90' : 'rotate-0'}`}
-                onClick={() => setIsExpanded((prev: boolean) => !prev)}
+                // onClick={() => setIsExpanded((prev: boolean) => !prev)}
               />
             </NavLink>
 

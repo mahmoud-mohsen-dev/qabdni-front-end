@@ -39,7 +39,7 @@ function AgeDistributionChart() {
       grid={{
         left: '0%',
         right: '0%',
-        bottom: '12%',
+        bottom: '20%',
         top: '25',
         containLabel: true
       }}

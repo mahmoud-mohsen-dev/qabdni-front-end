@@ -41,7 +41,7 @@ function GenderDistributionChart() {
           {
             name: 'Gender Distribution',
             type: 'pie',
-            radius: ['65%', '90%'],
+            radius: ['55%', '80%'],
             center: ['50%', '72%'],
             // adjust the start and end angle
             startAngle: 180,

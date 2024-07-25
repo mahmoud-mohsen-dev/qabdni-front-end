@@ -84,7 +84,8 @@ const App = () => {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#4E1BD9'
+          // colorPrimary: '#4E1BD9'
+          colorPrimary: '#1677ff'
         },
         components: {
           Input: {
@@ -107,6 +108,13 @@ const App = () => {
             labelFontSize: 16,
             labelRequiredMarkColor: '#ff4d4f'
             // colorError: '#FFB5B5'
+          },
+          Select: {
+            // fontFamily: 'Mullish, sans-serif'
+            fontFamily: 'Libre Franklin, sans-serif',
+            showArrowPaddingInlineEnd: 35,
+            padding: 2000
+            // optionPadding: '20px 30px'
           }
         }
       }}

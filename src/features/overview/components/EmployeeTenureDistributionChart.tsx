@@ -13,8 +13,8 @@ function EmployeeTenureDistributionChart() {
         trigger: 'item'
       }}
       legend={{
-        bottom: '5%',
-        left: '0',
+        bottom: '2%',
+        left: 'center',
         icon: 'circle'
       }}
       series={[
@@ -22,7 +22,7 @@ function EmployeeTenureDistributionChart() {
           name: 'Employee Tenure Distribution',
           type: 'pie',
           radius: ['40%', '70%'],
-          center: ['50%', '45%'],
+          center: ['50%', '42%'],
           avoidLabelOverlap: false,
           padAngle: 5,
           itemStyle: {

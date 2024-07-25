@@ -1,6 +1,5 @@
-import { useSelector } from 'react-redux';
 import ProfileImage from './ProfileImage';
-import { RootState } from '../../../store';
+import { v4 as uuidv4 } from 'uuid';
 
 interface DepartmentItemType {
   color: 'indigo' | 'orange' | 'blue' | 'green' | 'pink';
@@ -17,7 +16,6 @@ const bgColor = {
 };
 
 function DepartmentItem({ color, text, employeesImages }: DepartmentItemType) {
-  const lang = useSelector((state: RootState) => state.adminSettings.language);
   const filteredEmployeesImages = employeesImages.filter((item) => (item ? item : null));
   const resArr = filteredEmployeesImages.length === 0 ? ['', '', '', '', ''] : filteredEmployeesImages;
 
@@ -25,9 +23,9 @@ function DepartmentItem({ color, text, employeesImages }: DepartmentItemType) {
     <div className={`${bgColor[color]} flex items-center justify-between rounded-xl px-5 py-3`}>
       <h3 className="text-base font-bold">{text}</h3>
       <div className="flex items-center justify-center gap-5">
-        <div className="flex" dir={lang === 'en' ? 'rtl' : 'lfr'}>
+        <div className="flex">
           {resArr.map((url, i) => {
-            return i < 5 ? <ProfileImage url={url} key={i + url} index={i} /> : '';
+            return i < 5 ? <ProfileImage url={url} key={uuidv4()} /> : '';
           })}
         </div>
         <span className="font-mullish text-2xl font-semibold">{filteredEmployeesImages.length ?? 0}</span>

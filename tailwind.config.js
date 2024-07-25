@@ -49,6 +49,7 @@ export default {
         'gray/accent': '#727272',
         'gray/dark': '#5D6675',
         'gray/darkest': '#343942',
+        'gray/medium': '#979797',
 
         // Shades of purple
         'purple/ultralight': '#F0F2FF',
@@ -78,7 +79,12 @@ export default {
         Libre: ['Libre Franklin', 'sans-serif']
       },
       gridTemplateColumns: {
-        180: 'repeat(auto-fit, 180px);'
+        180: 'repeat(auto-fit, 180px);',
+        350: 'repeat(auto-fit, minmax(350px, 1fr));'
+      },
+      boxShadow: {
+        btnHover: '0px 0px 15px -7px rgba(0,0,0,0.7);',
+        btnClicked: '0px 0px 0px 0px rgba(0,0,0,0.7);'
       }
     }
   },

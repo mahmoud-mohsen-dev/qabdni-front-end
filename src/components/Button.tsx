@@ -6,15 +6,16 @@ const colors = {
   orange: 'bg-orange/normal text-black/dark',
   green: 'bg-green/accent text-green/ultralight',
   blue: 'bg-blue/normal text-white hover:bg-blue/accent',
-  blueAccent: 'bg-blue/ultralight text-blue/normal',
+  blueAccent: 'bg-blue/ultralight text-blue/normal active:opacity-[0.70] hover:shadow-none active:text-blue/medium',
   blueDark: 'bg-blue/accent text-white',
   indigo: 'bg-indigo/accent text-white',
   purpleAccent: 'bg-purple/ultralight text-purple/normal',
-  purple: 'bg-purple/normal text-white'
+  purple: 'bg-purple/normal text-white',
+  black: 'text-other/black hover:shadow-none'
 };
 
 const paddingSizes = {
-  '2xs': 'p-2.5 ',
+  '2xs': 'px-2.5 ',
   xs: 'p-2.5',
   sm: 'px-6 py-2.5',
   md: 'px-9 py-2.5',
@@ -38,7 +39,7 @@ interface ButtonType {
   color?: keyof typeof colors;
   paddingSize?: keyof typeof paddingSizes;
   fontSize?: keyof typeof fontSizes; // '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
-  onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onClick?: () => void;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
 }
@@ -49,13 +50,13 @@ function Button({
   paddingSize = 'xs',
   fontSize = 'md',
   onClick,
-  className,
+  className = '',
   type = 'button'
 }: ButtonType) {
   return (
     <button
       type={type}
-      className={`flex justify-center gap-2 rounded-lg ring-1 focus:outline-none focus:ring-blue/light [&>i]:w-6 ${fontSizes[fontSize]} ${paddingSizes[paddingSize]} ${colors[color]} ${className}`}
+      className={`hover:shadow-btnHover flex cursor-pointer items-center justify-center gap-2 rounded-lg outline-none transition-all duration-150 focus:outline-none active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none [&>i]:w-6 ${fontSizes[fontSize]} ${paddingSizes[paddingSize]} ${colors[color]} ${className}`}
       onClick={onClick}
     >
       {children}
