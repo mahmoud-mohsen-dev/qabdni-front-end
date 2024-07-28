@@ -1,19 +1,19 @@
 import { useState } from 'react';
 
 const useDrawer = () => {
-  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
+  const [openedDrawer, setOpenedDrawer] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
 
-  const showDrawer = () => {
-    setOpenDrawer(true);
-  };
-
   const closeDrawer = () => {
-    setOpenDrawer(false);
+    setOpenedDrawer('');
   };
 
-  const showLoading = () => {
-    showDrawer();
+  const showDrawer = (value: string) => {
+    setOpenedDrawer(value);
+  };
+
+  const showLoading = (value: string) => {
+    showDrawer(value);
     setLoading(true);
 
     // Simple loading mock. You should add cleanup logic in real world.
@@ -22,7 +22,7 @@ const useDrawer = () => {
     }, 1000);
   };
 
-  return { openDrawer, loading, showDrawer, closeDrawer, showLoading };
+  return { openedDrawer, loading, closeDrawer, showLoading };
 };
 
 export default useDrawer;

@@ -50,6 +50,11 @@ const positionsReducer = createSlice({
       state.temp.all = state.temp.all.filter((position) => position.name !== action.payload.name);
       state.temp.totalEmployees = state.temp.all.filter((position) => position.name).length;
     },
+    updateColorTemp: (state, action) => {
+      state.temp.all = state.temp.all.map((position) =>
+        position.name === action.payload.name ? { name: position.name, color: action.payload.color } : position
+      );
+    },
     save: (state) => {
       state.final.all = state.temp.all;
       state.final.totalEmployees = state.temp.totalEmployees;
@@ -64,6 +69,7 @@ export const {
   assignTempFromFinal,
   addPositionTemp,
   removePositionTemp,
+  updateColorTemp,
   save
 } = positionsReducer.actions;
 export default positionsReducer.reducer;

@@ -4,7 +4,7 @@ import { FiveColorsType } from '../../../../types';
 import Btn from '../../../../components/Btn';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../../store';
-import { removePositionTemp } from '../../../../store/positionsReducer';
+import { removePositionTemp, updateColorTemp } from '../../../../store/positionsReducer';
 
 const bgColor = {
   indigo: 'bg-indigo/light',
@@ -30,12 +30,14 @@ function PositionItem({
   const [value, setValue] = useState<FiveColorsType>(color);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name } = e.target;
-    setValue(name as FiveColorsType);
+    const { name: radioName } = e.target;
+    setValue(radioName as FiveColorsType);
+
+    dispatch(updateColorTemp({ name, color: radioName }));
   };
   return (
     <div
-      className={`flex items-center justify-between ${index < length - 1 ? (index === 0 ? 'border-b border-dashed border-gray/light pb-4' : 'border-b border-dashed border-gray/light py-4') : 'pt-4'}`}
+      className={`flex items-center justify-between border-dashed border-gray/light py-4 ${index < length - 1 ? 'border-b' : ''}`}
     >
       <div
         className={`flex items-center justify-center rounded-full px-4 py-2 text-sm font-normal uppercase text-other/black ${bgColor[value]}`}
