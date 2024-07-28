@@ -5,11 +5,6 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      boxShadow: {
-        'custom-sm': '0 1px 2px rgba(0, 0, 0, 0.04)',
-        'shadow-md': '0px 0.6rem 2.4rem rgba(0, 0, 0, 0.06)',
-        'shadow-lg': '0 2.4rem 3.2rem rgba(0, 0, 0, 0.12)'
-      },
       colors: {
         // Shades of blue
         'blue/ultralight': '#EEF4FE',
@@ -80,11 +75,15 @@ export default {
       },
       gridTemplateColumns: {
         180: 'repeat(auto-fit, 180px);',
-        350: 'repeat(auto-fit, minmax(350px, 1fr));'
+        350: 'repeat(auto-fit, minmax(350px, 1fr));',
+        two: 'repeat(auto-fit, minmax(500px, 1fr));'
       },
       boxShadow: {
+        'custom-sm': '0 1px 2px rgba(0, 0, 0, 0.04)',
+        'shadow-md': '0px 0.6rem 2.4rem rgba(0, 0, 0, 0.06)',
+        'shadow-lg': '0 2.4rem 3.2rem rgba(0, 0, 0, 0.12)',
         btnHover: '0px 0px 15px -7px rgba(0,0,0,0.7);',
-        btnClicked: '0px 0px 0px 0px rgba(0,0,0,0.7);'
+        dropShadow: '0px 2px 10px 0px rgba(0,0,0,.05);'
       }
     }
   },

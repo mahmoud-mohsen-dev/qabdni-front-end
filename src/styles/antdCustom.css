@@ -1,0 +1,111 @@
+/* Custom Antd Styles*/
+.ant-checkbox-wrapper {
+  height: fit-content;
+}
+
+:where(.css-dev-only-do-not-override-1ki3fj8).ant-checkbox-wrapper {
+  line-height: 100%;
+}
+
+.ant-input-affix-wrapper .ant-input-prefix {
+  margin-inline-end: 10px;
+}
+
+/* Form */
+.ant-form-item {
+  margin-bottom: 16px;
+}
+
+.ant-form-item .ant-form-item-control-input {
+  min-height: fit-content;
+}
+
+.ant-row.ant-form-item-row {
+  height: fit-content;
+  display: flex;
+  align-items: start;
+}
+
+/* Input */
+/* .ant-input {
+  padding: 10px 16px; /* Adjust padding for Input */
+/* }  */
+
+/* Select Input */
+.ant-select-item-option-content span,
+.ant-select-item-option-content button {
+  display: flex;
+  padding-inline: 11px;
+  height: 100%;
+  width: 100%;
+}
+
+.ant-space-item {
+  width: 100%;
+}
+
+.ant-select-item-option-content span {
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ant-select-item div.ant-select-item-option-content {
+  padding-block: 10px;
+}
+
+/* ======== Positions Select Input ======== */
+.positions .ant-form-item {
+  margin-bottom: 0px;
+}
+.positions .ant-form-item:first-child {
+  flex-grow: 1;
+}
+.positions .ant-form-item .ant-col:last-child {
+  margin-left: 16px;
+}
+
+/* Input Icons */
+.ant-input-affix-wrapper .ant-input-prefix,
+.ant-input-affix-wrapper .ant-input-suffix {
+  font-size: 16px;
+}
+
+.auth-layout .ant-form-item .ant-form-item-explain-error {
+  color: #ffb5b5;
+}
+
+.sidebar .active:not(.employee-nested-tabs .active) {
+  @apply bg-other/gray&blue-accent;
+}
+
+.sidebar .employees:has(+ .employee-nested-tabs .active) {
+  @apply bg-other/gray&blue-accent;
+}
+
+/* Antd Upload Avatar */
+.ant-upload-wrapper.ant-upload-picture-circle-wrapper
+  .ant-upload-list.ant-upload-list-picture-circle
+  .ant-upload-list-item-container {
+  width: 80px;
+  height: 80px;
+}
+.ant-upload-wrapper .ant-upload-list.ant-upload-list-picture-circle .ant-upload-list-item {
+  padding: 2px;
+}
+
+.ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload-list.ant-upload-list-picture-circle {
+  gap: 16px;
+}
+.ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload.ant-upload-select {
+  /* border: none; */
+  border-radius: 12px;
+  width: fit-content;
+  height: fit-content;
+  padding: 10px 15px;
+}
+
+.create-employee .ant-upload-wrapper .ant-upload-list {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}

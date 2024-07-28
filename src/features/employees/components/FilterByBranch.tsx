@@ -16,7 +16,7 @@ function FilterByBranch() {
       onChange={handleChange}
       options={[
         { value: 'El bostan 1', label: 'El bostan 1' },
-        { value: 'El bostan 1', label: 'El bostan 2' },
+        { value: 'El bostan 2', label: 'El bostan 2' },
         { value: 'Misr El Gadida', label: 'Misr El Gadida' },
         { value: 'Tagamoo3', label: 'Tagamoo3' }
       ]}

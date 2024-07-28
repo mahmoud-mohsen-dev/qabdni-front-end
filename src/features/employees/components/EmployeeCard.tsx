@@ -5,7 +5,7 @@ import DotsMenu from '../../../components/DotsMenu';
 import { isoToDate } from '../../../utils/date';
 import { IoMdMail } from 'react-icons/io';
 import { FaPhone } from 'react-icons/fa6';
-import Button from '../../../components/Button';
+import Btn from '../../../components/Btn';
 
 interface EmployeeCardType {
   employee: {
@@ -91,12 +91,12 @@ function EmployeeCard({ employee }: EmployeeCardType) {
 
       {/* Action Buttons */}
       <div className="mt-5 flex justify-between gap-3">
-        <Button color="blueAccent" paddingSize="lg" className="w-full">
+        <Btn color="blueAccent" paddingSize="lg" className="w-full rounded-lg">
           Records
-        </Button>
-        <Button paddingSize="lg" className="w-full">
+        </Btn>
+        <Btn paddingSize="lg" className="w-full">
           Details
-        </Button>
+        </Btn>
       </div>
     </div>
   );

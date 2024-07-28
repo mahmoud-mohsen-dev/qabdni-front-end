@@ -32,13 +32,13 @@ function Navbar() {
       {/* Admin Profile & notification */}
       <div className="flex items-center gap-5">
         <div className="relative">
-          <img src="/public\images\notification.svg" alt="notfication icon" />
+          <img src="/images/notification.svg" alt="notfication icon" />
           <div className="absolute right-[-50%] top-[-50%] flex h-4 w-4 items-center justify-center rounded-full bg-red/accent text-[10px] font-semibold leading-none text-red/ultralight">
             <span>1</span>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="bg-other/gray&red-light h-10 w-10 rounded-full border-2 border-gray/ultralight"></div>
+          <div className="h-10 w-10 rounded-full border-2 border-gray/ultralight bg-other/gray&red-light"></div>
           <div>
             <h4 className="text-sm font-bold capitalize">Bright feranmi</h4>
             <p className="text-xs font-medium capitalize">admin</p>

@@ -1,30 +1,47 @@
-/* Custom Antd Styles*/
-.ant-checkbox-wrapper {
-  height: fit-content;
+button {
+  pointer-events: auto !important;
 }
 
-:where(.css-dev-only-do-not-override-1ki3fj8).ant-checkbox-wrapper {
-  line-height: 100%;
+/* Radio Color Custom Styles */
+.radio-color-label {
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
 }
 
-.ant-input-affix-wrapper .ant-input-prefix {
-  margin-inline-end: 10px;
+.radio-color-label .radio-input {
+  margin: 0;
+  /* visibility: hidden; */
+  display: none;
 }
 
-/* Input Icons */
-.ant-input-affix-wrapper .ant-input-prefix,
-.ant-input-affix-wrapper .ant-input-suffix {
-  font-size: 16px;
+.radio-color-label .radio-input:checked + span {
+  border: 2px solid #1f74ec;
 }
 
-.auth-layout .ant-form-item .ant-form-item-explain-error {
-  color: #ffb5b5;
+.radio-color-label .custom-radio {
+  left: 0;
+  top: 0;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #9a9a9a;
+  border-radius: 4px;
+  display: inline-block;
+  position: relative;
 }
-
-.sidebar .active:not(.employee-nested-tabs .active) {
-  @apply bg-other/gray&blue-accent;
-}
-
-.sidebar .employees:has(+ .employee-nested-tabs .active) {
-  @apply bg-other/gray&blue-accent;
+/* for inner filled circle */
+.radio-color-label .custom-radio::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  /* background: #ddcbfc; */
+  position: absolute;
+  border-radius: 3px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s;
 }

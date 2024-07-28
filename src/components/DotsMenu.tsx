@@ -57,7 +57,7 @@ const items = [
       >
         <span>Delete</span>
         <span>
-          <img src="/public\images\trash-icon.svg" alt="trash icon" className="h-5 w-5" />
+          <img src="/images/trash-icon.svg" alt="trash icon" className="h-5 w-5" />
         </span>
       </button>
     )

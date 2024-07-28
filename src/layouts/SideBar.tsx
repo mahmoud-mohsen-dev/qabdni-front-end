@@ -12,11 +12,11 @@ function SideBar() {
   return (
     <div className="sidebar fixed flex min-h-screen flex-col items-center justify-between bg-other/black px-7 py-6 text-indigo/ultralight">
       <div>
-        <img src="/public\images\app-logo.svg" alt="app logo" />
+        <img src="/images/app-logo.svg" alt="app logo" />
 
         {/* Comapany Logo */}
         <div className="mt-5 grid text-center">
-          <img src="/public\images\Mask.svg" alt="company logo" className="justify-self-center" />
+          <img src="/images/Mask.svg" alt="company logo" className="justify-self-center" />
           <h3 className="mt-2 text-lg font-semibold">Ulad Luch</h3>
           <p className="text-sm font-medium leading-4 text-gray/light">hello@uladluch.com</p>
         </div>
@@ -32,7 +32,7 @@ function SideBar() {
               to="overview"
               className={`flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent`}
             >
-              <img src="/public\images\side-bar-icons\Data Treemap.svg" alt="overview icon" />
+              <img src="/images/side-bar-icons/Data Treemap.svg" alt="overview icon" />
               <span className="text-base font-semibold">Overview</span>
             </NavLink>
 
@@ -54,7 +54,7 @@ function SideBar() {
               className={`employees flex items-center justify-between rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent`}
             >
               <div className="flex justify-center gap-4">
-                <img src="/public\images\side-bar-icons\People.svg" alt="people icon" />
+                <img src="/images/side-bar-icons/People.svg" alt="people icon" />
                 <span className="text-base font-semibold">Employees</span>
               </div>
               <MdOutlineKeyboardArrowRight
@@ -82,7 +82,7 @@ function SideBar() {
               to="analytics"
               className="flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent"
             >
-              <img src="/public\images\side-bar-icons\Chart Multiple.svg" alt="chart icon" />
+              <img src="/images/side-bar-icons/Chart Multiple.svg" alt="chart icon" />
               <span className="text-base font-semibold">Analytics</span>
             </NavLink>
 
@@ -91,7 +91,7 @@ function SideBar() {
               to="payroll"
               className="flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent"
             >
-              <img src="/public\images\side-bar-icons\dollar sign.svg" alt="dollar sign icon" />
+              <img src="/images/side-bar-icons/dollar sign.svg" alt="dollar sign icon" />
               <span className="text-base font-semibold">Payroll</span>
             </NavLink>
           </div>
@@ -117,7 +117,7 @@ function SideBar() {
               to="/login"
               className="flex items-center gap-4 rounded-3xl bg-transparent px-6 py-[7px] hover:bg-other/gray&blue-accent"
             >
-              <img src="/public\images\side-bar-icons\Arrow Exit.svg" alt="sign out icon" />
+              <img src="/images/side-bar-icons/Arrow Exit.svg" alt="sign out icon" />
               <span className="text-base font-semibold">Log out</span>
             </NavLink>
           </div>

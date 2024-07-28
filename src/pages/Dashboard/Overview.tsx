@@ -1,9 +1,10 @@
+import HeadingTitle from '../../components/HeadingTitle';
 import MainContent from '../../features/overview/components/MainContent';
 
 function Overview() {
   return (
     <div className="font-Libre">
-      <h1 className="text-3xl font-semibold">Overview</h1>
+      <HeadingTitle>Overview</HeadingTitle>
       {/* Main content */}
       <MainContent />
     </div>

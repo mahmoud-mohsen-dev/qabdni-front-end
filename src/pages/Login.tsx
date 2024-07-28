@@ -3,7 +3,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from '../features/auth/components/PasswordInput';
 import AntInput from '../components/AntInput';
-import { Checkbox, Form, Button } from 'antd';
+import { Checkbox, Form } from 'antd';
 // import { useDispatch, useSelector } from 'react-redux';
 import { useSelector } from 'react-redux';
 // import { AppDispatch, RootState } from '../store/index';
@@ -11,6 +11,7 @@ import { RootState } from '../store/index';
 // import { login } from '../features/auth/store/authSlice';
 import { MdEmail } from 'react-icons/md';
 import { RiKeyFill } from 'react-icons/ri';
+import Btn from '../components/Btn';
 
 const Login: React.FC = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -74,24 +75,11 @@ const Login: React.FC = () => {
       </div>
 
       {/* Sign in Button */}
-      {/* <Button
-        type="submit"
+      <Btn
         color="indigo"
         paddingSize="2xl"
-        className="font-semibold ring-1 hover:bg-blue/accent focus:outline-none focus:ring-blue/light"
-        onClick={() => {
-          // if (isAuthenticated) {
-          //   naviagte('/dashboard');
-          //   dispatch(login({ userName: 'mahmoud@gmail.com', password: '12345678', token: 'lajflafajladjsf' }));
-          // }
-          // console.log(e);
-        }}
-      >
-        <p>Sign in</p>
-      </Button> */}
-      <Button
-        type="primary"
-        htmlType="submit"
+        className="font-dm font-semibold"
+        type="submit"
         onClick={() => {
           if (isAuthenticated) {
             naviagte('/dashboard/overview');
@@ -101,8 +89,8 @@ const Login: React.FC = () => {
           }
         }}
       >
-        Sign in
-      </Button>
+        <p>Sign in</p>
+      </Btn>
 
       {/* Sign up Section */}
       <p className="self-center text-sm">

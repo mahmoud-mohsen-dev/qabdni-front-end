@@ -2,8 +2,8 @@ import { Button, Checkbox, DatePicker, Form, Input, Select } from 'antd';
 
 function FormElement() {
   return (
-    <Form labelCol={{ span: 10 }} wrapperCol={{ span: 14 }} labelAlign="left" className="mt-5">
-      <Form.Item name="email" label="email">
+    <Form labelCol={{ span: 10 }} wrapperCol={{ span: 14 }} labelAlign="left" className="mt-4" colon={false}>
+      <Form.Item name="email" label="email" required={true}>
         <Input placeholder="Enter your email" />
       </Form.Item>
       <Form.Item name="name" label="name">
