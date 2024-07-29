@@ -20,7 +20,7 @@ const showDeleteConfirm = () => {
       message.success('Item deleted successfully');
     },
     onCancel() {
-      message.info('Operation Cancelled');
+      message.info('Operation Canceled');
     }
   });
 };
@@ -41,7 +41,7 @@ const items = [
       //       setTimeout(() => resolve(null), 1000);
       //     }).then(() => message.success('Item deleted successfully'))
       //   }
-      //   onCancel={() => message.info('Operation Cancelled')}
+      //   onCancel={() => message.info('Operation Canceled')}
       // >
       //   <p className="flex items-center justify-center gap-2 text-red/accent">
       //     <span>Delete</span>

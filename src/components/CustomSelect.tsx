@@ -1,8 +1,12 @@
 import { Divider, Select, Space } from 'antd';
+import { useState } from 'react';
 import { FaPlus } from 'react-icons/fa6';
 import { IoIosArrowDown } from 'react-icons/io';
+import { capitalizeName } from '../utils/user';
 
 interface CustomSelectType {
+  placeHolder: string;
+  createText: string;
   options: () => {
     value: string;
     label: JSX.Element;
@@ -10,14 +14,27 @@ interface CustomSelectType {
   handleDrawerOpen: () => void;
 }
 
-function CustomSelect({ options, handleDrawerOpen }: CustomSelectType) {
+function CustomSelect({ placeHolder, createText, options, handleDrawerOpen }: CustomSelectType) {
+  const [selectValue, setSelectValue] = useState<string | null>(null);
   const finalOptions = options();
+
+  const handleChange = (value: string) => {
+    setSelectValue(value);
+    console.log(value, 'value');
+  };
+  const handleClick = () => {
+    handleDrawerOpen();
+    setSelectValue(null);
+  };
+
   return (
     <Select
-      placeholder="Choose Position"
+      placeholder={capitalizeName(placeHolder)}
       suffixIcon={<IoIosArrowDown size={16} />}
       options={finalOptions}
       allowClear
+      value={selectValue}
+      onChange={handleChange}
       dropdownRender={(menu) => (
         <>
           {menu}
@@ -25,10 +42,10 @@ function CustomSelect({ options, handleDrawerOpen }: CustomSelectType) {
           <Space style={{ width: '100%', height: '100%' }}>
             <button
               className="flex h-full w-full items-center gap-[6px] px-[11px] py-[10px] capitalize text-blue/medium focus:outline-none"
-              onClick={handleDrawerOpen}
+              onClick={handleClick}
             >
               <FaPlus size={12} />
-              create new position
+              {createText}
             </button>
           </Space>
         </>

@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/store/authSlice';
 import adminSettingsSlice from './adminSettingsSlice';
 import positionsReducer from './positionsReducer';
+import departmentsReducer from './departmentsReducer';
 // import employeeReducer from '../features/employees/store/employeeSlice';
 // import payrollReducer from '../features/payroll/store/payrollSlice';
 
@@ -9,7 +10,8 @@ const store = configureStore({
   reducer: {
     adminSettings: adminSettingsSlice,
     auth: authReducer,
-    positions: positionsReducer
+    positions: positionsReducer,
+    departments: departmentsReducer
     // employees: employeeReducer,
     // payroll: payrollReducer
   }

@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import ColorRadioButton from '../../../../components/ColorRadioButton';
 import { FiveColorsType } from '../../../../types';
-import Btn from '../../../../components/Btn';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../../store';
-import { removePositionTemp, updateColorTemp } from '../../../../store/positionsReducer';
+import { Button, message, Popconfirm } from 'antd';
+import type { PopconfirmProps } from 'antd';
 
 const bgColor = {
   indigo: 'bg-indigo/light',
@@ -14,26 +12,39 @@ const bgColor = {
   pink: 'bg-pink/light'
 };
 
-function PositionItem({
+function AddedItem({
   name,
   color = 'indigo',
   index,
-  length
+  length,
+  deleteConfirm,
+  handleChange
 }: {
   name: string;
   color: FiveColorsType;
   index: number;
   length: number;
+  deleteConfirm: (name: string) => void;
+  handleChange: ({ name, color }: { name: string; color: FiveColorsType }) => void;
 }) {
-  const dispatch = useDispatch<AppDispatch>();
-
   const [value, setValue] = useState<FiveColorsType>(color);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name: radioName } = e.target;
     setValue(radioName as FiveColorsType);
+    const updatedValue: { name: string; color: FiveColorsType } = { name, color: radioName as FiveColorsType };
+    handleChange(updatedValue);
+  };
 
-    dispatch(updateColorTemp({ name, color: radioName }));
+  const confirm: PopconfirmProps['onConfirm'] = (e) => {
+    console.log(e);
+    deleteConfirm(name);
+    message.success('Removed successfully');
+  };
+
+  const cancel: PopconfirmProps['onCancel'] = (e) => {
+    console.log(e);
+    message.info('You canceled');
   };
   return (
     <div
@@ -53,17 +64,20 @@ function PositionItem({
           <ColorRadioButton name="green" value={value} onChange={onChange} />
           <ColorRadioButton name="pink" value={value} onChange={onChange} />
         </div>
-        <Btn
-          color="redOutline"
-          size="sm"
-          className="rounded-xl font-mullish text-xs font-semibold uppercase"
-          onClick={() => dispatch(removePositionTemp({ name }))}
+
+        <Popconfirm
+          title={`Delete ${name}`}
+          description="Are you sure to delete this?"
+          onConfirm={confirm}
+          onCancel={cancel}
+          okText="Yes"
+          cancelText="No"
         >
-          Delete
-        </Btn>
+          <Button danger>Delete</Button>
+        </Popconfirm>
       </div>
     </div>
   );
 }
 
-export default PositionItem;
+export default AddedItem;

@@ -3,13 +3,14 @@ import SubHeading from './SubHeading';
 import LabelInput from './LabelInput';
 import CustomSelect from '../../../../components/CustomSelect';
 import PositionsDrawer from '../Drawer/PositionsDrawer';
-import { positionType } from '../../../../store/positionsReducer';
 import { RootState } from '../../../../store';
 import { useSelector } from 'react-redux';
 import useDrawer from '../../../../hooks/useDrawer';
+import { ValueItemType } from '../../../../types';
+import DepartmentsDrawer from '../Drawer/DepartmentsDrawer';
 
 function BasicInformationForm() {
-  const { final } = useSelector((state: RootState) => state.positions);
+  const { positions, departments } = useSelector((state: RootState) => state);
   const { openedDrawer, loading, closeDrawer, showLoading } = useDrawer();
 
   return (
@@ -29,22 +30,46 @@ function BasicInformationForm() {
         <Input placeholder="Employee Name" />
       </Form.Item>
 
-      <PositionsDrawer isOpened={openedDrawer === 'positions'} loading={loading} closeDrawer={closeDrawer} />
       {/* Positions */}
+      <PositionsDrawer isOpened={openedDrawer === 'positions'} loading={loading} closeDrawer={closeDrawer} />
       <Form.Item
         name="Position"
         label={<LabelInput title="Position" description="Choose a role" isRequired={true} />}
         rules={[{ required: true, message: 'Position is required' }]}
       >
         <CustomSelect
+          placeHolder="Choose position"
+          createText="Create new position"
           options={() => {
-            return final.all.map((position: positionType) => ({
+            return positions.final.all.map((position: ValueItemType) => ({
               value: position.name,
               label: <span className="capitalize">{position.name}</span>
             }));
           }}
           handleDrawerOpen={() => {
             showLoading('positions');
+          }}
+        />
+      </Form.Item>
+
+      {/* Departments */}
+      <DepartmentsDrawer isOpened={openedDrawer === 'departments'} loading={loading} closeDrawer={closeDrawer} />
+      <Form.Item
+        name="Department"
+        label={<LabelInput title="Department" description="Choose department" isRequired={true} />}
+        rules={[{ required: true, message: 'Department is required' }]}
+      >
+        <CustomSelect
+          placeHolder="Choose Category"
+          createText="Create new department"
+          options={() => {
+            return departments.final.all.map((department: ValueItemType) => ({
+              value: department.name,
+              label: <span className="capitalize">{department.name}</span>
+            }));
+          }}
+          handleDrawerOpen={() => {
+            showLoading('departments');
           }}
         />
       </Form.Item>

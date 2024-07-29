@@ -4,13 +4,13 @@ import { v4 } from 'uuid';
 import { useForm } from 'antd/es/form/Form';
 import { useEffect } from 'react';
 import {
-  addPositionTemp,
-  assignTempPositionFromFinal,
-  assignTempPositionFromValue,
-  removePositionTemp,
-  savePosition,
-  updatePositionColorTemp
-} from '../../../../store/positionsReducer';
+  addDepartmentTemp,
+  assignDepartmendTempFromFinal,
+  assignDepartmendTempFromValue,
+  removeDepartmentTemp,
+  saveDepartment,
+  updateDepartmendColorTemp
+} from '../../../../store/departmentsReducer';
 import { AppDispatch, RootState } from '../../../../store';
 import { FiveColorsType, ValueItemType } from '../../../../types';
 import Btn from '../../../../components/Btn';
@@ -24,48 +24,46 @@ interface CustomDrawerType {
   closeDrawer: () => void;
 }
 
-function isInPosition(arr: [] | ValueItemType[], value: string) {
-  const index = arr.findIndex((position) => position.name.toLowerCase() === value.toLowerCase());
+function isInDepartment(arr: [] | ValueItemType[], value: string) {
+  const index = arr.findIndex((department) => department.name.toLowerCase() === value.toLowerCase());
   return index !== -1;
 }
 
-function PositionsDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
-  const { final, temp } = useSelector((state: RootState) => state.positions);
+function DepartmentsDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
+  const { final, temp } = useSelector((state: RootState) => state.departments);
   const dispatch = useDispatch<AppDispatch>();
 
   const [form] = useForm();
 
   const handleCloseDrawer = () => {
-    dispatch(assignTempPositionFromValue([]));
+    dispatch(assignDepartmendTempFromValue([]));
   };
 
   const handleSave = () => {
-    dispatch(savePosition());
+    dispatch(saveDepartment());
   };
-
-  const handleColorChange = (updatedValue: { name: string; color: FiveColorsType }) => {
-    dispatch(updatePositionColorTemp(updatedValue));
-  };
-
   const deleteConfirm = (name: string) => {
-    dispatch(removePositionTemp({ name }));
+    dispatch(removeDepartmentTemp({ name }));
+  };
+  const handleColorChange = (updatedValue: { name: string; color: FiveColorsType }) => {
+    dispatch(updateDepartmendColorTemp(updatedValue));
   };
 
-  const onFinish = (values: { position: string }) => {
+  const onFinish = (values: { department: string }) => {
     // console.log(values);
-    const payload: { name: string; color: FiveColorsType } = { name: values.position.toLowerCase(), color: 'indigo' };
-    dispatch(addPositionTemp(payload));
+    const payload: { name: string; color: FiveColorsType } = { name: values.department.toLowerCase(), color: 'indigo' };
+    dispatch(addDepartmentTemp(payload));
     form.resetFields();
   };
 
   useEffect(() => {
     console.log(isOpened);
-    dispatch(assignTempPositionFromFinal());
+    dispatch(assignDepartmendTempFromFinal());
   }, [isOpened]);
 
   return (
     <CustomDrawer
-      title="Positions"
+      title="Departments"
       handleSave={handleSave}
       handleCloseDrawer={handleCloseDrawer}
       isOpened={isOpened}
@@ -76,21 +74,21 @@ function PositionsDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
         <Form layout="horizontal" colon={false} requiredMark={false} onFinish={onFinish} form={form}>
           <div className="flex w-full p-8">
             <Form.Item
-              name="position"
-              label={<LabelInput title="ADD  NEW  POSITION" description="Position Name" />}
+              name="department"
+              label={<LabelInput title="ADD  NEW  DEPARTMENT" description="department Name" />}
               rules={[
                 { required: true },
                 {
                   validator: (_, value) => {
-                    if (isInPosition(temp.all, value) || isInPosition(final.all, value)) {
-                      return Promise.reject(new Error('Position name exist, try another one'));
+                    if (isInDepartment(temp.all, value) || isInDepartment(final.all, value)) {
+                      return Promise.reject(new Error('Department name exist, try another one'));
                     }
                     return Promise.resolve();
                   }
                 }
               ]}
             >
-              <Input type="text" placeholder="Enter Position Title" />
+              <Input type="text" placeholder="Enter Department Title" />
             </Form.Item>
             <Form.Item>
               <Btn color="black" size="lg" type="submit">
@@ -104,13 +102,13 @@ function PositionsDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
         <div className="px-8 py-0">
           {/* Row */}
           {temp.all.length > 0 ? (
-            temp.all.map((position, i, arr) => {
+            temp.all.map((department, i, arr) => {
               return (
                 <AddedItem
-                  deleteConfirm={deleteConfirm}
+                  name={department.name}
+                  color={department.color}
                   handleChange={handleColorChange}
-                  name={position.name}
-                  color={position.color}
+                  deleteConfirm={deleteConfirm}
                   key={v4()}
                   index={i}
                   length={arr.length}
@@ -126,4 +124,4 @@ function PositionsDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
   );
 }
 
-export default PositionsDrawer;
+export default DepartmentsDrawer;

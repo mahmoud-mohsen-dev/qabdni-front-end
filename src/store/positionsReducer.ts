@@ -1,13 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-
-export interface positionType {
-  name: string;
-  color: 'indigo' | 'orange' | 'blue' | 'green' | 'pink';
-}
+import { ValueItemType } from '../types';
 
 export interface PositionsType {
-  final: { all: [] | positionType[]; totalEmployees: number };
-  temp: { all: [] | positionType[]; totalEmployees: number };
+  final: { all: [] | ValueItemType[]; totalEmployees: number };
+  temp: { all: [] | ValueItemType[]; totalEmployees: number };
 }
 
 const initialState: PositionsType = {
@@ -33,11 +29,11 @@ const positionsReducer = createSlice({
       state.final.all = state.final.all.filter((position) => position.name !== action.payload.name);
       state.final.totalEmployees = state.final.all.filter((position) => position.name).length;
     },
-    assignTempFromFinal: (state) => {
+    assignTempPositionFromFinal: (state) => {
       state.temp.all = [...state.final.all];
       state.temp.totalEmployees = state.final.totalEmployees;
     },
-    assignTempFromValue: (state, action) => {
+    assignTempPositionFromValue: (state, action) => {
       state.temp.all = [...action.payload];
       state.temp.totalEmployees = state.temp.all.length;
       console.log(state.temp.totalEmployees);
@@ -50,12 +46,12 @@ const positionsReducer = createSlice({
       state.temp.all = state.temp.all.filter((position) => position.name !== action.payload.name);
       state.temp.totalEmployees = state.temp.all.filter((position) => position.name).length;
     },
-    updateColorTemp: (state, action) => {
+    updatePositionColorTemp: (state, action) => {
       state.temp.all = state.temp.all.map((position) =>
         position.name === action.payload.name ? { name: position.name, color: action.payload.color } : position
       );
     },
-    save: (state) => {
+    savePosition: (state) => {
       state.final.all = state.temp.all;
       state.final.totalEmployees = state.temp.totalEmployees;
     }
@@ -65,11 +61,11 @@ const positionsReducer = createSlice({
 export const {
   addPosition,
   removePosition,
-  assignTempFromValue,
-  assignTempFromFinal,
+  assignTempPositionFromValue,
+  assignTempPositionFromFinal,
   addPositionTemp,
   removePositionTemp,
-  updateColorTemp,
-  save
+  updatePositionColorTemp,
+  savePosition
 } = positionsReducer.actions;
 export default positionsReducer.reducer;

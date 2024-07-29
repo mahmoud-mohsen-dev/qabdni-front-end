@@ -157,14 +157,14 @@ function Signup() {
         >
           <Checkbox className="text-sm leading-4 text-white">
             Agree to our{' '}
-            <Link to="/terms-of-services" className="text-orange/light underline">
+            <Link to="/terms-of-services" className="text-orange/light underline hover:text-orange/normal">
               Terms and Conditions
             </Link>
           </Checkbox>
         </Form.Item>
 
         <Form.Item className="mt-1">
-          <Btn color="indigo" paddingSize="2xl" className="font-dm font-semibold" type="submit">
+          <Btn color="indigo" size="full" className="font-dm font-semibold" type="submit">
             <p>Get Started</p>
           </Btn>
         </Form.Item>

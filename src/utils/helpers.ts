@@ -1,6 +1,6 @@
-import { positionType } from '../store/positionsReducer';
+import { ValueItemType } from '../types';
 
-function isMatched(array1: [] | positionType[], array2: [] | positionType[]) {
+function isMatched(array1: [] | ValueItemType[], array2: [] | ValueItemType[]) {
   if (array1.length !== array2.length) {
     return false;
   }

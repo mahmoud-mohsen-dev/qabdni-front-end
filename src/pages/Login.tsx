@@ -15,11 +15,7 @@ import Btn from '../components/Btn';
 
 const Login: React.FC = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  // const dispatch = useDispatch<AppDispatch>();
-
   const naviagte = useNavigate();
-  //  onSubmit={(e) => e.preventDefault()
-
   const handlerFinish = (value: object) => {
     console.log(value);
   };
@@ -77,7 +73,7 @@ const Login: React.FC = () => {
       {/* Sign in Button */}
       <Btn
         color="indigo"
-        paddingSize="2xl"
+        size="full"
         className="font-dm font-semibold"
         type="submit"
         onClick={() => {

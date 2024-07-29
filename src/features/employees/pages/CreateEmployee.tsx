@@ -18,12 +18,12 @@ function CreateEmployee() {
         </div>
         <div className="flex items-center gap-4">
           {/* Cancel Button */}
-          <Btn color="blueAccent" className="rounded-3xl font-medium" paddingSize="md">
+          <Btn color="blueAccent" className="rounded-3xl font-medium" size="md">
             <HiMiniXMark size={20} />
             Cancel
           </Btn>
           {/* Save Button */}
-          <Btn className="font-medium" paddingSize="lg">
+          <Btn className="font-medium" size="md">
             <IoIosSave size={20} />
             Save
           </Btn>
