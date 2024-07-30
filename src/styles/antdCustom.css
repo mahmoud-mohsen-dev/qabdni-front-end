@@ -27,9 +27,14 @@
 }
 
 /* Input */
-/* .ant-input {
-  padding: 10px 16px; /* Adjust padding for Input */
-/* }  */
+
+.ant-form-item .ant-form-item-label > label {
+  height: fit-content;
+}
+
+.ant-col.ant-form-item-control:has(.radio-group) {
+  align-self: center;
+}
 
 /* Select Input */
 .ant-select-item-option-content span,
@@ -74,13 +79,13 @@
   color: #ffb5b5;
 }
 
-.sidebar .active:not(.employee-nested-tabs .active) {
+.sidebar .active {
   @apply bg-other/gray&blue-accent;
 }
 
-.sidebar .employees:has(+ .employee-nested-tabs .active) {
+/* .sidebar .employees:has(+ .employee-nested-tabs .active) {
   @apply bg-other/gray&blue-accent;
-}
+} */
 
 /* Antd Upload Avatar */
 .ant-upload-wrapper.ant-upload-picture-circle-wrapper
@@ -113,4 +118,16 @@
 /* Spin Component*/
 .ant-spin-nested-loading > div > .ant-spin-lg .ant-spin-text {
   padding-top: 20px;
+}
+
+/* Switch Component */
+.custom-switch.ant-switch-checked {
+  background-color: #76ee59;
+}
+.custom-switch.ant-switch.ant-switch-checked:hover:not(.ant-switch-disabled) {
+  background-color: rgb(16, 219, 37);
+}
+.custom-switch.ant-switch {
+  outline: none;
+  box-shadow: 0px 6px 8px 3px rgb(0, 0, 0, 10%) inset;
 }

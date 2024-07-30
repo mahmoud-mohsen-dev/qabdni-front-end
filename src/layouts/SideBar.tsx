@@ -10,13 +10,13 @@ function SideBar() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className="sidebar fixed flex min-h-screen flex-col items-center justify-between bg-other/black px-7 py-6 text-indigo/ultralight">
+    <div className="sidebar fixed flex h-screen flex-col items-center justify-between overflow-y-auto bg-other/black px-7 py-5 text-indigo/ultralight">
       <div>
-        <img src="/images/app-logo.svg" alt="app logo" />
+        <img src="/images/app-logo.svg" alt="app logo" className="m-auto h-[40px]" />
 
         {/* Comapany Logo */}
         <div className="mt-5 grid text-center">
-          <img src="/images/Mask.svg" alt="company logo" className="justify-self-center" />
+          <img src="/images/Mask.svg" alt="company logo" className="h-[60px] justify-self-center" />
           <h3 className="mt-2 text-lg font-semibold">Ulad Luch</h3>
           <p className="text-sm font-medium leading-4 text-gray/light">hello@uladluch.com</p>
         </div>
@@ -65,12 +65,13 @@ function SideBar() {
             </NavLink>
 
             {isExpanded && (
-              <div className="employee-nested-tabs">
-                <NavLink to="create-employee" className="mx-11 mb-4 mt-1 flex items-center gap-4">
+              <div className="employee-nested-tabs relative">
+                <NavLink to="create-employee" className="my-0 flex items-center gap-3 rounded-3xl px-11 py-2">
                   <FaCaretRight className="inline" size={16} />
                   <p className="text-sm font-normal">Create Employee</p>
                 </NavLink>
-                <NavLink to="leaves" className="mx-11 mb-2 flex items-center gap-4">
+                <NavLink to="leaves" className="my-0 flex items-center gap-3 rounded-3xl px-11 py-2">
+                  {/* <div className="-ml-2 mr-2 h-[16px] w-[1px] border-l border-dashed border-white"></div> */}
                   <FaCaretRight className="inline" size={16} />
                   <p className="text-sm font-normal">Leaves</p>
                 </NavLink>

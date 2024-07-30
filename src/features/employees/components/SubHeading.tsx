@@ -2,7 +2,8 @@ import { FaRegPenToSquare } from 'react-icons/fa6';
 import { HiMiniXMark } from 'react-icons/hi2';
 import { IoIosSave } from 'react-icons/io';
 import { MdSync } from 'react-icons/md';
-import Btn from '../../../../components/Btn';
+import Btn from '../../../components/Btn';
+import type { FormInstance } from 'antd';
 
 interface SubHeadingType {
   children: string;
@@ -11,6 +12,7 @@ interface SubHeadingType {
   handleGlobal?: () => void;
   handleEdit: () => void;
   handleCancel: () => void;
+  form: FormInstance<unknown>;
 }
 
 function SubHeading({
@@ -19,13 +21,19 @@ function SubHeading({
   handleGlobal = () => {},
   handleCancel,
   handleEdit,
-  global
+  global,
+  form
 }: SubHeadingType) {
   const styles = `text-sm font-medium text-gray/darkest`;
   const iconSize = 18;
 
+  const onCancel = () => {
+    handleCancel();
+    form.resetFields();
+  };
+
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2">
+    <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
       <h2 className="font-Libre text-[18px] font-semibold text-other/black">{children}</h2>
       <div className="flex items-center gap-4">
         {isSaved ? (
@@ -41,7 +49,7 @@ function SubHeading({
                 Apply Global Settings
               </Btn>
             )}
-            <Btn color="none" className={`${styles}`} type="button" size="none" onClick={handleCancel}>
+            <Btn color="none" className={`${styles}`} type="button" size="none" onClick={onCancel}>
               <HiMiniXMark size={iconSize} />
               Cancel
             </Btn>

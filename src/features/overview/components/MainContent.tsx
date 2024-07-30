@@ -9,7 +9,7 @@ import GenderDistributionChart from './GenderDistributionChart';
 
 function MainContent() {
   return (
-    <div className="mt-4 grid min-h-80 auto-rows-[60px] grid-cols-12 grid-rows-[60px] gap-4">
+    <div className="mt-4 grid auto-rows-[60px] grid-cols-12 grid-rows-[60px] gap-4">
       {/* First Row */}
       <div className="col-span-9 row-span-2 grid grid-cols-4 gap-4">
         <EmployeesNumbers text="terminated" color="orange" value={2} />

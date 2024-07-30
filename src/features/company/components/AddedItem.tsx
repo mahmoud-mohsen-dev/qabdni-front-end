@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import ColorRadioButton from '../../../../components/ColorRadioButton';
-import { FiveColorsType } from '../../../../types';
+import ColorRadioButton from '../../../components/ColorRadioButton';
+import { FiveColorsType } from '../../../types';
 import { Button, message, Popconfirm } from 'antd';
 import type { PopconfirmProps } from 'antd';
 

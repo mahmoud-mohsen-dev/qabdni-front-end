@@ -4,9 +4,9 @@ import SideBar from './SideBar';
 
 function AppLayout() {
   return (
-    <div className="flex min-h-screen font-Libre">
+    <div className="flex min-h-screen w-full font-Libre">
       <SideBar />
-      <main className="m-8 ml-[332px] w-full">
+      <main className="mx-8 my-5 ml-[332px] h-fit min-h-[750px] w-full">
         <Navbar />
         <Outlet />
       </main>

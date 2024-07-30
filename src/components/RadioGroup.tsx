@@ -21,11 +21,12 @@ const useRadioGroup = () => {
 interface RadioGroupProps {
   children: ReactNode;
   defaultValue?: string;
+  className?: string;
   disabled?: boolean;
   onChange?: (value: string) => void;
 }
 
-const RadioGroup = ({ children, defaultValue, disabled = false, onChange }: RadioGroupProps) => {
+const RadioGroup = ({ children, className = '', defaultValue, disabled = false, onChange }: RadioGroupProps) => {
   const [selectedValue, setSelectedValue] = useState(defaultValue || '');
 
   const handleChange = (value: string) => {
@@ -37,7 +38,7 @@ const RadioGroup = ({ children, defaultValue, disabled = false, onChange }: Radi
 
   return (
     <RadioGroupContext.Provider value={{ selectedValue, handleChange, disabled }}>
-      <div className="flex flex-wrap items-center gap-3">{children}</div>
+      <div className={`flex flex-wrap items-center gap-3 ${className}`}>{children}</div>
     </RadioGroupContext.Provider>
   );
 };

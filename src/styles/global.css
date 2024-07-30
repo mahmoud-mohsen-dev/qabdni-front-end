@@ -39,6 +39,10 @@
     color-stop(0.86, rgb(28, 58, 148))
   );
 }
+.sidebar::-webkit-scrollbar {
+  width: 0px;
+  background-color: transparent;
+}
 
 /* Reset and base styles */
 *,
@@ -60,7 +64,8 @@
 body {
   @apply text-other/black;
   font-family: 'DM Sans', sans-serif;
-  min-height: 100vh;
+  height: 100%;
+  /* overflow: hidden; */
   /* line-height: 1; */
   /* font-size: 1.6rem; */
 }

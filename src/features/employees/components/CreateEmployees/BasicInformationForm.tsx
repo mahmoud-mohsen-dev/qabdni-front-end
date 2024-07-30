@@ -1,13 +1,13 @@
 import { DatePicker, Form, Input, Select, Spin } from 'antd';
-import SubHeading from './SubHeading';
-import LabelInput from './LabelInput';
+import SubHeading from '../SubHeading';
+import LabelInput from '../LabelInput';
 import CustomSelect from '../../../../components/CustomSelect';
-import PositionsDrawer from '../Drawer/PositionsDrawer';
+import PositionsDrawer from '../../../company/components/Drawer/PositionsDrawer';
 import { RootState } from '../../../../store';
 import { useSelector } from 'react-redux';
 import useDrawer from '../../../../hooks/useDrawer';
 import { ValueItemType } from '../../../../types';
-import DepartmentsDrawer from '../Drawer/DepartmentsDrawer';
+import DepartmentsDrawer from '../../../company/components/Drawer/DepartmentsDrawer';
 import { IoIosArrowDown } from 'react-icons/io';
 import { capitalizeName } from '../../../../utils/user';
 import { RadioButton, RadioGroup } from '../../../../components/RadioGroup';
@@ -21,8 +21,8 @@ function BasicInformationForm() {
   const [form] = useForm();
   return (
     <Form
-      labelCol={{ span: 11 }}
-      wrapperCol={{ span: 13 }}
+      labelCol={{ span: 10 }}
+      wrapperCol={{ span: 14 }}
       labelAlign="left"
       colon={false}
       requiredMark={false}
@@ -32,7 +32,7 @@ function BasicInformationForm() {
       }}
       form={form}
     >
-      <SubHeading isSaved={isSaved} handleCancel={handleCancel} handleEdit={handleEdit}>
+      <SubHeading form={form} isSaved={isSaved} handleCancel={handleCancel} handleEdit={handleEdit}>
         Basic Information
       </SubHeading>
 
@@ -44,7 +44,7 @@ function BasicInformationForm() {
         </div>
       ) : (
         <>
-          <div className="my-4 flex items-center">
+          <div className="mb-4 flex items-center">
             <h4 className="min-w-[200px] max-w-[45.83333333333333%] flex-[0_0_45.83333333333333%] text-[13px] font-medium uppercase leading-4">
               ID NO.
             </h4>
@@ -128,13 +128,11 @@ function BasicInformationForm() {
           {/* Date Of Joining */}
           <Form.Item
             name="dateOfJoining"
-            label={
-              <LabelInput title="Date Of Joining" description="Choose the employee's join date" isRequired={true} />
-            }
+            label={<LabelInput title="Date Of Joining" description="Choose employee's join date" isRequired={true} />}
             rules={[{ required: true, message: 'Date of joining is required' }]}
           >
             <DatePicker
-              placeholder={capitalizeName("Choose the employee's join date")}
+              placeholder={capitalizeName("Choose employee's join date")}
               className="w-full py-[7px]"
               allowClear
               disabled={isSaved}
@@ -143,11 +141,11 @@ function BasicInformationForm() {
           {/* Date Of Departure */}
           <Form.Item
             name="dateOfDeparture"
-            label={<LabelInput title="Date of Departure" description="Choose the employee's departure date" />}
+            label={<LabelInput title="Date of Departure" description="Choose employee's departure date" />}
             // rules={[{ required: true, message: 'Date of Departure is required' }]}
           >
             <DatePicker
-              placeholder={capitalizeName("Select the employee's date of Departure")}
+              placeholder={capitalizeName("Select employee's departure date")}
               className="w-full py-[7px]"
               allowClear
               disabled={isSaved}

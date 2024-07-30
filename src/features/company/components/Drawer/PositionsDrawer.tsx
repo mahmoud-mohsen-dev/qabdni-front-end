@@ -14,9 +14,9 @@ import {
 import { AppDispatch, RootState } from '../../../../store';
 import { FiveColorsType, ValueItemType } from '../../../../types';
 import Btn from '../../../../components/Btn';
-import LabelInput from '../CreateEmployees/LabelInput';
+import LabelInput from '../../../employees/components/LabelInput';
 import CustomDrawer from '../../../../components/CustomDrawer';
-import AddedItem from './AddedItem';
+import AddedItem from '../AddedItem';
 
 interface CustomDrawerType {
   isOpened: boolean;

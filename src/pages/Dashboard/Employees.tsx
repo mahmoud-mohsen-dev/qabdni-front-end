@@ -4,9 +4,10 @@ import SortBy from '../../features/employees/components/SortBy';
 import FilterByStatus from '../../features/employees/components/FilterByStatus';
 import FilterByBranch from '../../features/employees/components/FilterByBranch';
 import FilterByDepartment from '../../features/employees/components/FilterByDepartment';
-import Btn from '../../components/Btn';
+// import Btn from '../../components/Btn';
 import { FaPlus } from 'react-icons/fa6';
 import HeadingTitle from '../../components/HeadingTitle';
+import { Button } from 'antd';
 
 const employee = {
   imageUrl: '/images/account-image-1.png',
@@ -47,7 +48,7 @@ function Employees() {
     <div>
       <div className="flex w-full flex-wrap items-center justify-between gap-3">
         <HeadingTitle>Employees</HeadingTitle>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {/* Sort by Select Input */}
           <SortBy />
           {/* Status Select Input */}
@@ -57,10 +58,14 @@ function Employees() {
           {/* Department Select Input */}
           <FilterByDepartment />
 
-          <Btn paddingSize="2xs">
+          {/* <Btn size="lg">
             <FaPlus />
             <span>Add Employee</span>
-          </Btn>
+          </Btn> */}
+          <Button type="primary" size="large">
+            <FaPlus />
+            <span>Add Employee</span>
+          </Button>
         </div>
       </div>
 
