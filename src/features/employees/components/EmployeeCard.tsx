@@ -91,10 +91,10 @@ function EmployeeCard({ employee }: EmployeeCardType) {
 
       {/* Action Buttons */}
       <div className="mt-5 flex justify-between gap-3">
-        <Btn color="blueAccent" paddingSize="lg" className="w-full rounded-lg">
+        <Btn color="blueAccent" size="lg" className="w-full rounded-lg">
           Records
         </Btn>
-        <Btn paddingSize="lg" className="w-full">
+        <Btn size="lg" className="w-full">
           Details
         </Btn>
       </div>
