@@ -6,9 +6,13 @@ button {
 .radio-color-label {
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
-  width: 16px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: fit-content;
+  /* width: 16px;
   height: 16px;
-  display: inline-block;
+  display: inline-block; */
 }
 
 .radio-color-label .radio-input {
@@ -20,6 +24,22 @@ button {
 .radio-color-label .radio-input:checked + span {
   border: 2px solid #1f74ec;
 }
+.radio-group .radio-input:checked + span {
+  border: 2px solid #4e1bd9;
+}
+.radio-group.disabled .radio-input:checked + span {
+  border: 2px solid rgb(229 231 235);
+}
+.radio-group.disabled span {
+  border: 2px solid rgba(0, 0, 0, 0.04);
+}
+
+.radio-group.disabled {
+  cursor: not-allowed;
+}
+.radio-group.disabled span {
+  cursor: not-allowed;
+}
 
 .radio-color-label .custom-radio {
   left: 0;
@@ -29,7 +49,6 @@ button {
   height: 16px;
   border: 2px solid #9a9a9a;
   border-radius: 4px;
-  display: inline-block;
   position: relative;
 }
 /* for inner filled circle */

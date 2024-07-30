@@ -152,7 +152,7 @@ const App = () => {
             fontFamily: 'Mulish, sans-serif',
             showArrowPaddingInlineEnd: 35,
             controlHeight: 34,
-            optionPadding: 0
+            optionPadding: '2px 11px'
           }
         }
       }}

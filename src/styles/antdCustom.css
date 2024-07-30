@@ -35,7 +35,7 @@
 .ant-select-item-option-content span,
 .ant-select-item-option-content button {
   display: flex;
-  padding-inline: 11px;
+  /* padding-inline: 11px; */
   height: 100%;
   width: 100%;
 }
@@ -108,4 +108,9 @@
   display: flex;
   align-items: center;
   justify-items: center;
+}
+
+/* Spin Component*/
+.ant-spin-nested-loading > div > .ant-spin-lg .ant-spin-text {
+  padding-top: 20px;
 }

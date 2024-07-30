@@ -59,7 +59,7 @@ function PositionsDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
   };
 
   useEffect(() => {
-    console.log(isOpened);
+    // console.log(isOpened);
     dispatch(assignTempPositionFromFinal());
   }, [isOpened]);
 

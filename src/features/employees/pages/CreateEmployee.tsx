@@ -2,12 +2,13 @@ import { IoIosSave } from 'react-icons/io';
 import HeadingTitle from '../../../components/HeadingTitle';
 import UploadImage from '../../../components/UploadImage';
 import { HiMiniXMark } from 'react-icons/hi2';
-import SubHeading from '../components/CreateEmployees/SubHeading';
 import Btn from '../../../components/Btn';
 import BasicInformationForm from '../components/CreateEmployees/BasicInformationForm';
+import CalculationSystems from '../components/CreateEmployees/CalculationSystems';
 
 function CreateEmployee() {
   // const profileImageUrl = '';
+
   return (
     <div className="create-employee">
       {/* Just the heading */}
@@ -37,9 +38,9 @@ function CreateEmployee() {
           <BasicInformationForm />
         </div>
 
-        {/* Calculation Systemsn */}
+        {/* Calculation Systems */}
         <div className="rounded-[20px] border border-gray/light p-6">
-          <SubHeading global={true}>Calculation Systems</SubHeading>
+          <CalculationSystems />
         </div>
       </div>
     </div>

@@ -36,7 +36,6 @@ const positionsReducer = createSlice({
     assignTempPositionFromValue: (state, action) => {
       state.temp.all = [...action.payload];
       state.temp.totalEmployees = state.temp.all.length;
-      console.log(state.temp.totalEmployees);
     },
     addPositionTemp: (state, action) => {
       state.temp.all = [...state.temp.all, action.payload];

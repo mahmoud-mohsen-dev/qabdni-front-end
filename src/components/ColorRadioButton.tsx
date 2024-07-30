@@ -2,6 +2,7 @@ import { v4 } from 'uuid';
 import { FiveColorsType } from '../types';
 
 interface ColorRadioButtonType {
+  label?: string;
   name: FiveColorsType;
   value: FiveColorsType;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -15,7 +16,7 @@ const colorObj = {
   pink: 'after:bg-pink/light'
 };
 
-function ColorRadioButton({ name, value, onChange }: ColorRadioButtonType) {
+function ColorRadioButton({ name, value, label = '', onChange }: ColorRadioButtonType) {
   const id = `color-radio-button-${name}-${v4()}`;
   return (
     <label htmlFor={id} className="radio-color-label">
@@ -29,7 +30,7 @@ function ColorRadioButton({ name, value, onChange }: ColorRadioButtonType) {
         checked={value === name}
       />
       <span className={`custom-radio ${colorObj[name]}`} />
-      {''}
+      {label}
     </label>
   );
 }

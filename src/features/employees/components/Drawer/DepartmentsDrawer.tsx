@@ -57,7 +57,7 @@ function DepartmentsDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType)
   };
 
   useEffect(() => {
-    console.log(isOpened);
+    // console.log(isOpened);
     dispatch(assignDepartmendTempFromFinal());
   }, [isOpened]);
 
