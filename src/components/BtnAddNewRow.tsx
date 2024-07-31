@@ -1,8 +1,8 @@
 import { FaPlus } from 'react-icons/fa6';
 
-function BtnAddNewRow({ onClick }: { onClick: () => void }) {
+function BtnAddNewRow({ onClick, className }: { onClick: () => void; className?: string }) {
   return (
-    <button className="flex items-center gap-2 focus:outline-none" onClick={onClick}>
+    <button className={`flex items-center gap-2 focus:outline-none ${className}`} onClick={onClick}>
       <span className="rounded-full bg-indigo/accent p-2 text-indigo/ultralight">
         <FaPlus />
       </span>

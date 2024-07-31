@@ -1,7 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { GetRef, InputRef } from 'antd';
-import { Form, Input, Popconfirm, Switch, Table, Tooltip } from 'antd';
+import { Form, Input, Popconfirm, Select, Switch, Table, TimePicker, Tooltip } from 'antd';
 import BtnAddNewRow from '../../../../components/BtnAddNewRow';
+import type { Moment } from 'moment';
+import moment from 'moment';
+import { IoIosArrowDown } from 'react-icons/io';
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
@@ -9,9 +12,11 @@ const EditableContext = React.createContext<FormInstance<unknown> | null>(null);
 
 interface Item {
   key: string;
-  name: string;
-  age: string;
-  address: string;
+  isEnabled: boolean;
+  durationStart: string;
+  durationEnd: string;
+  multiplier: string;
+  minimumOccurrences: string;
 }
 
 interface EditableRowProps {
@@ -49,13 +54,18 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 }) => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef<InputRef>(null);
+  const timePickerRef = useRef<InputRef>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
     if (editing) {
-      inputRef.current?.focus();
+      if (dataIndex === 'durationStart' || dataIndex === 'durationEnd') {
+        timePickerRef.current?.focus();
+      } else {
+        inputRef.current?.focus();
+      }
     }
-  }, [editing]);
+  }, [editing, dataIndex]);
 
   const toggleEdit = () => {
     setEditing(!editing);
@@ -78,7 +88,25 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   if (editable) {
     childNode = editing ? (
       <Form.Item style={{ margin: 0 }} name={dataIndex} rules={[{ required: true, message: `${title} is required.` }]}>
-        <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+        {dataIndex === 'multiplier' && (
+          <Select
+            // placeholder={capitalizeName('Choose your gender')}
+            suffixIcon={<IoIosArrowDown size={16} />}
+            allowClear
+            // disabled={isSaved}
+            options={[
+              { label: 'male', value: 'Male' },
+              { label: 'female', value: 'Female' }
+            ]}
+            onChange={save}
+            onBlur={save}
+          />
+        )}
+        {dataIndex === 'durationStart' || dataIndex === 'durationEnd' ? (
+          <TimePicker ref={timePickerRef} onOk={save} onBlur={save} defaultOpen format="HH:mm" />
+        ) : (
+          <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+        )}
       </Form.Item>
     ) : (
       <button
@@ -98,9 +126,11 @@ type EditableTableProps = Parameters<typeof Table>[0];
 
 interface DataType {
   key: React.Key;
-  name: string;
-  age: string;
-  address: string;
+  isEnabled: boolean;
+  durationStart: Moment;
+  durationEnd: Moment;
+  multiplier: number;
+  minimumOccurrences?: number;
 }
 
 type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
@@ -109,15 +139,19 @@ const CalculationSystemTable: React.FC = () => {
   const [dataSource, setDataSource] = useState<DataType[]>([
     {
       key: '0',
-      name: 'Edward King 0',
-      age: '32',
-      address: 'London, Park Lane no. 0'
+      isEnabled: true,
+      durationStart: moment('00:00', 'HH:mm'),
+      durationEnd: moment('00:00', 'HH:mm'),
+      multiplier: 1.5,
+      minimumOccurrences: 1
     },
     {
       key: '1',
-      name: 'Edward King 1',
-      age: '32',
-      address: 'London, Park Lane no. 1'
+      isEnabled: true,
+      durationStart: moment('05:00', 'HH:mm'),
+      durationEnd: moment('10:00', 'HH:mm'),
+      multiplier: 2,
+      minimumOccurrences: 0
     }
   ]);
 
@@ -132,7 +166,7 @@ const CalculationSystemTable: React.FC = () => {
     {
       title: 'Action',
       dataIndex: 'action',
-      // width: '10%',
+      width: '15%',
       // editable: true,
       render: (_, record) => (
         <div className="flex items-center gap-2">
@@ -149,32 +183,37 @@ const CalculationSystemTable: React.FC = () => {
     {
       title: 'Duration Start (applied before the start of the shift)',
       dataIndex: 'durationStart',
-      width: '30%',
+      // width: '25%',
       ellipsis: {
         showTitle: false
       },
       editable: true,
       render: (durationStart) => (
-        <Tooltip placement="topLeft" title={durationStart}>
-          {durationStart}
+        <Tooltip placement="topLeft" title={durationStart?.format('HH:mm')}>
+          {/* {durationStart} */}
+          {durationStart?.format('HH:mm')}
         </Tooltip>
       )
     },
     {
       title: 'Duration End (applied before the start of the shift)',
       dataIndex: 'durationEnd',
-      // width: '200px',
-      editable: true
+      editable: true,
+      // width: '25%',
+      ellipsis: {
+        showTitle: false
+      },
+      render: (durationEnd) => (
+        <Tooltip placement="topLeft" title={durationEnd?.format('HH:mm')}>
+          {durationEnd?.format('HH:mm')}
+        </Tooltip>
+      )
     },
     {
       title: 'Multiplier',
       dataIndex: 'operation',
-      render: (_, record) =>
-        dataSource.length >= 1 ? (
-          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-            <button className="focus:outline-none">Delete</button>
-          </Popconfirm>
-        ) : null
+      // width: '25%',
+      editable: true
     },
     {
       title: ' Minimum Allowed Occurrences.',
@@ -187,10 +226,13 @@ const CalculationSystemTable: React.FC = () => {
   const handleAdd = () => {
     const newData: DataType = {
       key: count,
-      name: `Edward King ${count}`,
-      age: '32',
-      address: `London, Park Lane no. ${count}`
+      isEnabled: true,
+      durationStart: moment('05:00', 'HH:mm'),
+      durationEnd: moment('10:00', 'HH:mm'),
+      multiplier: 2,
+      minimumOccurrences: 0
     };
+
     setDataSource([...dataSource, newData]);
     setCount(count + 1);
   };
@@ -230,16 +272,19 @@ const CalculationSystemTable: React.FC = () => {
   });
 
   return (
-    <div>
+    <div className="relative">
       <Table
         components={components}
         rowClassName={() => 'editable-row'}
         bordered
         dataSource={dataSource}
         columns={columns as ColumnTypes}
+        pagination={{ position: ['bottomRight'], pageSize: 5 }}
+        scroll={{ x: 750 }}
         className="overflow-x-auto"
       />
-      <BtnAddNewRow onClick={handleAdd} />
+      <BtnAddNewRow onClick={handleAdd} className="absolute bottom-[18px] left-0" />
+      {/* <BtnAddNewRow onClick={handleAdd} className="my-4" /> */}
     </div>
   );
 };
