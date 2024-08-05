@@ -38,6 +38,7 @@
           "some": ["nesting", "id"]
         }
       }
-    ]
+    ],
+    "@typescript-eslint/no-explicit-any": "off"
   }
 }

@@ -153,6 +153,16 @@ const App = () => {
             showArrowPaddingInlineEnd: 35,
             controlHeight: 34,
             optionPadding: '2px 11px'
+          },
+          Table: {
+            stickyScrollBarBg: `background-image: -webkit-gradient(
+                                  linear,
+                                  left bottom,
+                                  left top,
+                                  color-stop(0.44, rgb(122, 153, 217)),
+                                  color-stop(0.72, rgb(73, 125, 189)),
+                                  color-stop(0.86, rgb(28, 58, 148))
+                                )`
           }
         }
       }}

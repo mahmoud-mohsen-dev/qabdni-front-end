@@ -3,7 +3,7 @@ import authReducer from '../features/auth/store/authSlice';
 import adminSettingsSlice from './adminSettingsSlice';
 import positionsReducer from './positionsReducer';
 import departmentsReducer from './departmentsReducer';
-// import employeeReducer from '../features/employees/store/employeeSlice';
+import employeesReducer from '../features/employees/store/employeesSlice';
 // import payrollReducer from '../features/payroll/store/payrollSlice';
 
 const store = configureStore({
@@ -11,8 +11,8 @@ const store = configureStore({
     adminSettings: adminSettingsSlice,
     auth: authReducer,
     positions: positionsReducer,
-    departments: departmentsReducer
-    // employees: employeeReducer,
+    departments: departmentsReducer,
+    employees: employeesReducer
     // payroll: payrollReducer
   }
 });

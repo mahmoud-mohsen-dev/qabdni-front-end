@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { GetRef, InputRef } from 'antd';
-import { Form, Input, Popconfirm, Select, Switch, Table, TimePicker, Tooltip } from 'antd';
+import { Form, Input, InputNumber, Popconfirm, Select, Switch, Table, TimePicker, Tooltip } from 'antd';
 import BtnAddNewRow from '../../../../components/BtnAddNewRow';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import { IoIosArrowDown } from 'react-icons/io';
+import { QuestionCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
@@ -15,7 +16,8 @@ interface Item {
   isEnabled: boolean;
   durationStart: string;
   durationEnd: string;
-  multiplier: string;
+  multiplier: number;
+  'multiplier-duration': 'day(s)' | 'times';
   minimumOccurrences: string;
 }
 
@@ -27,7 +29,7 @@ const EditableRow: React.FC<EditableRowProps> = ({ index, ...props }) => {
   const [form] = Form.useForm();
   console.log(index);
   return (
-    <Form form={form} component={false}>
+    <Form form={form} component={false} onFinish={(values) => console.log(values)}>
       <EditableContext.Provider value={form}>
         <tr {...props} />
       </EditableContext.Provider>
@@ -53,15 +55,14 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   ...restProps
 }) => {
   const [editing, setEditing] = useState(false);
+
   const inputRef = useRef<InputRef>(null);
-  const timePickerRef = useRef<InputRef>(null);
+  const timePickerRef = useRef<any>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
     if (editing) {
-      if (dataIndex === 'durationStart' || dataIndex === 'durationEnd') {
-        timePickerRef.current?.focus();
-      } else {
+      if (dataIndex !== 'multiplier') {
         inputRef.current?.focus();
       }
     }
@@ -75,10 +76,11 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   const save = async () => {
     try {
       const values = (await form.validateFields()) as Item;
-
+      console.log(values);
       toggleEdit();
       handleSave({ ...record, ...values });
     } catch (errInfo) {
+      console.log(title);
       console.log('Save failed:', errInfo);
     }
   };
@@ -87,31 +89,45 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
   if (editable) {
     childNode = editing ? (
-      <Form.Item style={{ margin: 0 }} name={dataIndex} rules={[{ required: true, message: `${title} is required.` }]}>
-        {dataIndex === 'multiplier' && (
-          <Select
-            // placeholder={capitalizeName('Choose your gender')}
-            suffixIcon={<IoIosArrowDown size={16} />}
-            allowClear
-            // disabled={isSaved}
-            options={[
-              { label: 'male', value: 'Male' },
-              { label: 'female', value: 'Female' }
-            ]}
-            onChange={save}
+      <Form.Item style={{ margin: 0 }} name={dataIndex}>
+        {dataIndex === 'multiplier' ? (
+          <InputNumber
+            // ref={inputRef}
+            className="flex w-[180px] items-center justify-center"
+            addonAfter={
+              <Form.Item
+                name="multiplier-duration"
+                className="!mb-0 flex h-[32px] items-center justify-center"
+                initialValue={record['multiplier-duration'] ?? 'times'}
+              >
+                <Select
+                  defaultValue={record['multiplier-duration'] ?? 'times'}
+                  style={{ width: 110 }}
+                  suffixIcon={<IoIosArrowDown size={16} color="rgba(0, 0, 0, 0.20)" />}
+                  options={[
+                    { label: 'Times', value: 'times' },
+                    { label: 'Day(s)', value: 'day(s)' }
+                  ]}
+                  value={record['multiplier-duration'] ?? 'times'}
+                  onChange={(value: 'day(s)' | 'times') => handleSave({ ...record, 'multiplier-duration': value })}
+                  onBlur={save}
+                />
+              </Form.Item>
+            }
+            min={0}
+            // style={{ width: 170 }}
             onBlur={save}
+            // defaultValue={0}
           />
-        )}
-        {dataIndex === 'durationStart' || dataIndex === 'durationEnd' ? (
-          <TimePicker ref={timePickerRef} onOk={save} onBlur={save} defaultOpen format="HH:mm" />
+        ) : dataIndex === 'durationStart' || dataIndex === 'durationEnd' ? (
+          <TimePicker ref={timePickerRef} onOk={save} defaultOpen format="HH:mm" />
         ) : (
           <Input ref={inputRef} onPressEnter={save} onBlur={save} />
         )}
       </Form.Item>
     ) : (
       <button
-        className="editable-cell-value-wrap w-full border-2 border-solid border-transparent px-[11px] py-1 hover:border-gray/light focus:outline-none"
-        // style={{ paddingInlineEnd: 24 }}
+        className="editable-cell-value-wrap w-full rounded-lg border-2 border-solid border-transparent px-[11px] py-2 hover:border-gray/lighter focus:outline-none"
         onClick={toggleEdit}
       >
         {children}
@@ -119,7 +135,11 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
     );
   }
 
-  return <td {...restProps}>{childNode}</td>;
+  return (
+    <td {...restProps} align="center">
+      {childNode}
+    </td>
+  );
 };
 
 type EditableTableProps = Parameters<typeof Table>[0];
@@ -130,6 +150,7 @@ interface DataType {
   durationStart: Moment;
   durationEnd: Moment;
   multiplier: number;
+  'multiplier-duration': 'day(s)' | 'times';
   minimumOccurrences?: number;
 }
 
@@ -138,24 +159,31 @@ type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 const CalculationSystemTable: React.FC = () => {
   const [dataSource, setDataSource] = useState<DataType[]>([
     {
-      key: '0',
+      key: '0' as React.Key,
       isEnabled: true,
-      durationStart: moment('00:00', 'HH:mm'),
-      durationEnd: moment('00:00', 'HH:mm'),
-      multiplier: 1.5,
-      minimumOccurrences: 1
+      durationStart: moment('07:00', 'HH:mm'),
+      durationEnd: moment('08:00', 'HH:mm'),
+      multiplier: 1.25,
+      'multiplier-duration': 'day(s)',
+      minimumOccurrences: 5
     },
     {
-      key: '1',
-      isEnabled: true,
+      key: '1' as React.Key,
+      isEnabled: false,
       durationStart: moment('05:00', 'HH:mm'),
       durationEnd: moment('10:00', 'HH:mm'),
-      multiplier: 2,
+      multiplier: 50,
+      'multiplier-duration': 'times',
       minimumOccurrences: 0
     }
   ]);
+  const [count, setCount] = useState(dataSource.length);
 
-  const [count, setCount] = useState(2);
+  useEffect(() => {
+    console.log('='.repeat(30));
+    console.log(dataSource);
+    console.log('='.repeat(30));
+  }, [dataSource]);
 
   const handleDelete = (key: React.Key) => {
     const newData = dataSource.filter((item) => item.key !== key);
@@ -164,61 +192,97 @@ const CalculationSystemTable: React.FC = () => {
 
   const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[] = [
     {
-      title: 'Action',
+      title: <p className="cursor-default">Action</p>,
       dataIndex: 'action',
       width: '15%',
-      // editable: true,
+      align: 'center',
       render: (_, record) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
             <button className="flex h-5 w-5 items-center justify-center focus:outline-none">
               <img src="/images/trash-icon.svg" alt="trash icon" />
             </button>
           </Popconfirm>
 
-          <Switch className="custom-switch" />
+          <Switch
+            className="custom-switch"
+            checked={record?.isEnabled}
+            onChange={(value) => handleSave({ ...record, isEnabled: value } as DataType)}
+          />
         </div>
       )
     },
     {
-      title: 'Duration Start (applied before the start of the shift)',
-      dataIndex: 'durationStart',
-      // width: '25%',
-      ellipsis: {
-        showTitle: false
-      },
-      editable: true,
-      render: (durationStart) => (
-        <Tooltip placement="topLeft" title={durationStart?.format('HH:mm')}>
-          {/* {durationStart} */}
-          {durationStart?.format('HH:mm')}
+      title: (
+        <Tooltip
+          title="Applied before the start of the shift"
+          className="flex cursor-default items-center justify-center gap-1"
+        >
+          <p>Duration Start</p>
+          <QuestionCircleOutlined className="text-other/black" />
         </Tooltip>
-      )
+      ),
+
+      dataIndex: 'durationStart',
+      align: 'center',
+      editable: true,
+      render: (durationStart) => {
+        return (
+          <div className="flex w-[111.5px] items-center justify-between gap-5">
+            <p>{durationStart?.format('HH:mm')}</p>
+            <span>
+              <ClockCircleOutlined size={14} style={{ color: 'rgba(0, 0, 0, 0.25)' }} />
+            </span>
+          </div>
+        );
+      }
     },
     {
-      title: 'Duration End (applied before the start of the shift)',
+      title: (
+        <Tooltip
+          title="Applied before the start of the shift"
+          className="flex cursor-default items-center justify-center gap-1"
+        >
+          <p>Duration End</p>
+          <QuestionCircleOutlined className="text-other/black" />
+        </Tooltip>
+      ),
       dataIndex: 'durationEnd',
       editable: true,
-      // width: '25%',
-      ellipsis: {
-        showTitle: false
-      },
-      render: (durationEnd) => (
-        <Tooltip placement="topLeft" title={durationEnd?.format('HH:mm')}>
-          {durationEnd?.format('HH:mm')}
-        </Tooltip>
-      )
+      align: 'center',
+      render: (durationEnd) => {
+        return (
+          <div className="flex w-[111.5px] items-center justify-between gap-5">
+            <p>{durationEnd?.format('HH:mm')}</p>
+            <span>
+              <ClockCircleOutlined size={14} style={{ color: 'rgba(0, 0, 0, 0.25)' }} />
+            </span>
+          </div>
+        );
+      }
     },
     {
-      title: 'Multiplier',
-      dataIndex: 'operation',
-      // width: '25%',
-      editable: true
+      title: <p className="cursor-default">Multiplier</p>,
+      dataIndex: 'multiplier',
+      align: 'center',
+      editable: true,
+      render: (_, record) => {
+        return (
+          <div className="flex items-center justify-center gap-2 py-1">
+            {record?.multiplier > 0 && (
+              <>
+                <p>{record.multiplier}</p>
+                <span>{record['multiplier-duration']}</span>
+              </>
+            )}
+          </div>
+        );
+      }
     },
     {
-      title: ' Minimum Allowed Occurrences.',
+      title: <p className="cursor-default">Minimum Allowed Occurrences.</p>,
       dataIndex: 'minimumOccurrences',
-      // width: 'fit-content',
+      align: 'center',
       editable: true
     }
   ];
@@ -226,10 +290,11 @@ const CalculationSystemTable: React.FC = () => {
   const handleAdd = () => {
     const newData: DataType = {
       key: count,
-      isEnabled: true,
-      durationStart: moment('05:00', 'HH:mm'),
-      durationEnd: moment('10:00', 'HH:mm'),
-      multiplier: 2,
+      isEnabled: false,
+      durationStart: moment('00:00', 'HH:mm'),
+      durationEnd: moment('00:00', 'HH:mm'),
+      multiplier: 0,
+      'multiplier-duration': 'times',
       minimumOccurrences: 0
     };
 
@@ -283,8 +348,7 @@ const CalculationSystemTable: React.FC = () => {
         scroll={{ x: 750 }}
         className="overflow-x-auto"
       />
-      <BtnAddNewRow onClick={handleAdd} className="absolute bottom-[18px] left-0" />
-      {/* <BtnAddNewRow onClick={handleAdd} className="my-4" /> */}
+      <BtnAddNewRow onClick={handleAdd} className="absolute bottom-[18px] left-1" />
     </div>
   );
 };

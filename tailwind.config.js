@@ -39,6 +39,7 @@ export default {
 
         // Shades of gray
         'gray/ultralight': '#F4F5F7',
+        'gray/lighter': '#d9d9d9',
         'gray/light': '#E0E4EA',
         'gray/normal': '#969DA6',
         'gray/accent': '#727272',

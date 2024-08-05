@@ -17,7 +17,7 @@ export default function ErrorPage() {
         <h3 className="text-3xl font-semibold">The page you&apos;re looking for could not be found</h3>
         <p className="text-base font-normal">Please check the URL or navigate back to the homepage</p>
         <Link to="/" style={{ width: 'fit-content', borderRadius: '8px' }}>
-          <Btn color="blue" size="sm" className="font-medium hover:bg-blue/accent">
+          <Btn color="blue" size="md" className="font-medium hover:bg-blue/accent">
             <p>Back to Home Page</p>
           </Btn>
         </Link>
