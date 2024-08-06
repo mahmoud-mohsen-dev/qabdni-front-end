@@ -82,46 +82,6 @@ const router = createBrowserRouter([
 const App = () => {
   return (
     <ConfigProvider
-      // theme={{
-      //   token: {
-      //     // colorPrimary: '#4E1BD9'
-      //     colorPrimary: '#1677ff'
-      //   },
-      //   components: {
-      //     Input: {
-      //       fontFamily: 'Mulish, sans-serif',
-      //       colorTextPlaceholder: '#969DA6',
-      //       colorText: '#23272C',
-      //       activeBorderColor: '#465FF1',
-      //       hoverBorderColor: '#1f74ec',
-      //       borderRadius: 8,
-      //       inputFontSize: 14,
-      //       paddingBlock: 10,
-      //       paddingInline: 16,
-      //       lineHeight: 1,
-      //       lineWidth: 1,
-      //       colorBorder: '#d9d9d9'
-
-      //       // paddingInline: 13
-      //     },
-      //     Form: {
-      //       labelColor: '#23272C',
-      //       labelFontSize: 16,
-      //       labelRequiredMarkColor: '#ff4d4f'
-      //       // colorError: '#FFB5B5'
-      //     },
-
-      //     Select: {
-      //       // fontFamily: 'Mullish, sans-serif'
-      //       fontFamily: 'Libre Franklin, sans-serif',
-      //       showArrowPaddingInlineEnd: 35,
-      //       borderRadius: 8,
-      //       paddingInline: 55
-      //       // optionPadding: '20px 30px'
-      //     }
-      //   }
-      // }}
-
       theme={{
         token: {
           // Global styles

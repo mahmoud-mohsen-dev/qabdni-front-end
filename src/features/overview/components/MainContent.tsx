@@ -14,7 +14,7 @@ function MainContent() {
       <div className="col-span-9 row-span-2 grid grid-cols-4 gap-4">
         <EmployeesNumbers text="terminated" color="orange" value={2} />
         <EmployeesNumbers text="Active Employees" color="green" value={20} />
-        <EmployeesNumbers text="OnSite" color="blue" value={16} />
+        <EmployeesNumbers text="On Site" color="blue" value={16} />
         <EmployeesNumbers text="Remote" color="indigo" value={4} />
       </div>
 

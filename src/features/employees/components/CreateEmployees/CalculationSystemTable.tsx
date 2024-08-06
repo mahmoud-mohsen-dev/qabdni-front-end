@@ -156,7 +156,13 @@ interface DataType {
 
 type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
-const CalculationSystemTable: React.FC = () => {
+const CalculationSystemTable = ({
+  tooltipDurationStart,
+  tooltipDurationEnd
+}: {
+  tooltipDurationStart: string;
+  tooltipDurationEnd: string;
+}) => {
   const [dataSource, setDataSource] = useState<DataType[]>([
     {
       key: '0' as React.Key,
@@ -214,10 +220,7 @@ const CalculationSystemTable: React.FC = () => {
     },
     {
       title: (
-        <Tooltip
-          title="Applied before the start of the shift"
-          className="flex cursor-default items-center justify-center gap-1"
-        >
+        <Tooltip title={tooltipDurationStart} className="flex cursor-default items-center justify-center gap-1">
           <p>Duration Start</p>
           <QuestionCircleOutlined className="text-other/black" />
         </Tooltip>
@@ -239,10 +242,7 @@ const CalculationSystemTable: React.FC = () => {
     },
     {
       title: (
-        <Tooltip
-          title="Applied before the start of the shift"
-          className="flex cursor-default items-center justify-center gap-1"
-        >
+        <Tooltip title={tooltipDurationEnd} className="flex cursor-default items-center justify-center gap-1">
           <p>Duration End</p>
           <QuestionCircleOutlined className="text-other/black" />
         </Tooltip>
@@ -344,8 +344,8 @@ const CalculationSystemTable: React.FC = () => {
         bordered
         dataSource={dataSource}
         columns={columns as ColumnTypes}
-        pagination={{ position: ['bottomRight'], pageSize: 5 }}
-        scroll={{ x: 750 }}
+        pagination={{ position: ['bottomRight'], pageSize: 3 }}
+        scroll={{ x: 800 }}
         className="overflow-x-auto"
       />
       <BtnAddNewRow onClick={handleAdd} className="absolute bottom-[18px] left-1" />
