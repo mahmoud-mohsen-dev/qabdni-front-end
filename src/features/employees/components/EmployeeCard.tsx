@@ -2,26 +2,27 @@ import { Avatar } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import StatusTag from './StatusTag';
 import DotsMenu from '../../../components/DotsMenu';
-import { isoToDate } from '../../../utils/date';
 import { IoMdMail } from 'react-icons/io';
 import { FaPhone } from 'react-icons/fa6';
 import Btn from '../../../components/Btn';
+import { basicInfoDataWithImageType } from '../../../types';
 
 interface EmployeeCardType {
-  employee: {
-    imageUrl: string;
-    name: string;
-    position: string;
-    status: 'active' | 'remote' | 'onHoliday' | 'terminated' | '';
-    department: string;
-    dateOfJoining: string;
-    email: string;
-    phone: string;
-  };
+  // employee: {
+  //   imageUrl: string;
+  //   name: string;
+  //   position: string;
+  //   status: 'active' | 'remote' | 'onHoliday' | 'terminated' | '';
+  //   department: string;
+  //   dateOfJoining: string;
+  //   email: string;
+  //   phone: string;
+  // };
+  employee: basicInfoDataWithImageType;
 }
 
 function EmployeeCard({ employee }: EmployeeCardType) {
-  const { imageUrl, name, position, status, department, dateOfJoining, email, phone } = employee;
+  const { avatarUrl, fullName, position, status, department, dateOfJoining, email, phone } = employee;
   console.log(employee);
   const normalizedStatus = status.normalize();
   let resStatus;
@@ -37,14 +38,14 @@ function EmployeeCard({ employee }: EmployeeCardType) {
     <div className="rounded-[20px] border border-gray/light p-6">
       <div className="flex items-center justify-end gap-2">
         <StatusTag status={status}>{resStatus}</StatusTag>
-        <DotsMenu />
+        <DotsMenu employee={employee} />
       </div>
 
       {/* Profile Name and Image */}
       <div className="mt-2 flex gap-3">
-        {imageUrl ? (
+        {avatarUrl ? (
           <img
-            src={imageUrl}
+            src={avatarUrl}
             alt="profile_photo"
             className="h-[70px] w-[70px]"
             style={{
@@ -59,7 +60,7 @@ function EmployeeCard({ employee }: EmployeeCardType) {
         )}
 
         <div className="flex flex-col items-start justify-center">
-          <h3 className="text-xl font-medium">{name ? name : 'Not Valid'}</h3>
+          <h3 className="text-xl font-medium">{fullName ? fullName : 'Not Valid'}</h3>
           <h4 className="text-base font-medium">{position ? position : 'Not Valid'}</h4>
         </div>
       </div>
@@ -72,7 +73,7 @@ function EmployeeCard({ employee }: EmployeeCardType) {
         <div className="flex flex-col gap-2">
           <span className="font-mullish text-xs font-normal uppercase text-gray/darkest">Date of joining</span>
           <span className="font-mullish text-sm font-medium">
-            {dateOfJoining ? isoToDate(dateOfJoining) : '-- / -- / ----'}
+            {dateOfJoining ? dateOfJoining.format('DD/MM/YYYY') : '-- / -- / ----'}
           </span>
         </div>
       </div>
@@ -81,11 +82,11 @@ function EmployeeCard({ employee }: EmployeeCardType) {
       <div className="mt-5 rounded-2xl bg-gray/ultralight p-4">
         <div className="flex items-center gap-3 border-b border-gray/light pb-3">
           <IoMdMail className="text-gray/normal" />
-          <p className="text-sm font-medium">{email ? email : 'Email address was not provided.'}</p>
+          <p className="font-base text-sm">{email ? email : 'Email address was not provided.'}</p>
         </div>
         <div className="flex items-center gap-3 pt-3">
           <FaPhone className="text-gray/normal" />
-          <p className="text-sm font-medium">{phone ? phone : 'Phone number was not provided.'}</p>
+          <p className="font-base text-sm">{phone ? phone : 'Phone number was not provided.'}</p>
         </div>
       </div>
 

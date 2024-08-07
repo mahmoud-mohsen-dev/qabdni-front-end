@@ -1,16 +1,22 @@
 import { DatePicker, Form, Input, Select, Spin } from 'antd';
-import SubHeading from '../SubHeading';
 import LabelInput from '../LabelInput';
 import { IoIosArrowDown } from 'react-icons/io';
 import { capitalizeName } from '../../../../utils/user';
 import { RadioButton, RadioGroup } from '../../../../components/RadioGroup';
-import useSubHeading from '../../hooks/useSubHeading';
-import { useForm } from 'antd/es/form/Form';
+import useActionBtns from '../../hooks/useActionBtns';
 import TextArea from 'antd/es/input/TextArea';
+import SubHeading from '../SubHeading';
+import ActionBtns from '../ActionBtns';
+import type { FormInstance } from 'antd';
+import { personalInfoDataType } from '../../../../types';
 
-function PersonalInfo() {
-  const { isSaved, handleSave, handleCancel, handleEdit, isLoading } = useSubHeading();
-  const [form] = useForm();
+interface PersonalInfoProps {
+  form: FormInstance<personalInfoDataType>;
+  isEditable?: boolean;
+}
+
+function PersonalInfo({ isEditable = false, form }: PersonalInfoProps) {
+  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns();
   return (
     <Form
       labelCol={{ span: 10 }}
@@ -20,13 +26,19 @@ function PersonalInfo() {
       requiredMark={false}
       onFinish={(values) => {
         console.log(values);
-        handleSave();
+        if (isEditable) {
+          handleSave();
+        }
       }}
       form={form}
     >
-      <SubHeading form={form} isSaved={isSaved} handleCancel={handleCancel} handleEdit={handleEdit}>
-        Personal Info
-      </SubHeading>
+      {isEditable ? (
+        <ActionBtns form={form} isSaved={isSaved} handleEdit={handleEdit} handleCancel={handleCancel}>
+          <SubHeading>Personal Info</SubHeading>
+        </ActionBtns>
+      ) : (
+        <SubHeading>Personal Info</SubHeading>
+      )}
 
       {isLoading ? (
         <div className="m-auto grid place-items-center py-20">
@@ -42,7 +54,7 @@ function PersonalInfo() {
             label={<LabelInput title="National ID No." description="Add Passport No." />}
             rules={[{ whitespace: true }, { max: 35 }]}
           >
-            <Input placeholder="Employee Name" disabled={isSaved} />
+            <Input placeholder="National ID No." disabled={isSaved} />
           </Form.Item>
 
           {/* National ID Exp Date. */}
@@ -59,7 +71,11 @@ function PersonalInfo() {
           </Form.Item>
 
           {/* Date of Birthday. */}
-          <Form.Item name="dateOfBirth" label={<LabelInput title="Date of Birthday" description="YYYY-MM-DD" />}>
+          <Form.Item
+            name="dateOfBirth"
+            label={<LabelInput title="Date of Birthday" description="YYYY-MM-DD" isRequired={true} />}
+            rules={[{ required: true, message: 'Date of birthday is required' }]}
+          >
             <DatePicker
               placeholder={capitalizeName("Select the employee's date of birth")}
               className="w-full py-[7px]"
@@ -72,8 +88,13 @@ function PersonalInfo() {
           <Form.Item
             name="maritalStatus"
             label={<LabelInput title="Marital status" description="Choose option if available" />}
+            initialValue={form.getFieldValue('maritalStatus') ?? 'single'}
           >
-            <RadioGroup disabled={isSaved} defaultValue="single" className="self-center">
+            <RadioGroup
+              disabled={isSaved}
+              defaultValue={form.getFieldValue('maritalStatus') ?? 'single'}
+              className="self-center"
+            >
               <RadioButton value="single">Single</RadioButton>
               <RadioButton value="married">Married</RadioButton>
               <RadioButton value="divorced">Divorced</RadioButton>
@@ -102,18 +123,16 @@ function PersonalInfo() {
           <Form.Item
             name="educationStatus"
             label={<LabelInput title="Education status" description="Choose if the employee is a student or not" />}
+            initialValue={form.getFieldValue('educationStatus') ?? 'notAStudent'}
           >
-            <RadioGroup disabled={isSaved} defaultValue="notStudent">
+            <RadioGroup disabled={isSaved} defaultValue={form.getFieldValue('educationStatus') ?? 'notAStudent'}>
               <RadioButton value="student">A student</RadioButton>
-              <RadioButton value="notStudent">Not a student</RadioButton>
+              <RadioButton value="notAStudent">Not a student</RadioButton>
             </RadioGroup>
           </Form.Item>
 
           {/* Education */}
-          <Form.Item
-            name="educationStatus"
-            label={<LabelInput title="Education" description="Enter Education Level " />}
-          >
+          <Form.Item name="education" label={<LabelInput title="Education" description="Enter Education Level " />}>
             <TextArea
               placeholder="Bachelor's degree in Computer Science University of Technology"
               disabled={isSaved}

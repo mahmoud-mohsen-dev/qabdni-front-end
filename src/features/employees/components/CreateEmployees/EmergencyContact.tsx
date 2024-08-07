@@ -1,13 +1,19 @@
 import { Form, Input, Spin } from 'antd';
-import SubHeading from '../SubHeading';
 import LabelInput from '../LabelInput';
 import { capitalizeName } from '../../../../utils/user';
-import useSubHeading from '../../hooks/useSubHeading';
-import { useForm } from 'antd/es/form/Form';
+import useActionBtns from '../../hooks/useActionBtns';
+import SubHeading from '../SubHeading';
+import type { FormInstance } from 'antd';
+import ActionBtns from '../ActionBtns';
+import { emergencyContactDataType } from '../../../../types';
 
-function EmergencyContact() {
-  const { isSaved, handleSave, handleCancel, handleEdit, isLoading } = useSubHeading();
-  const [form] = useForm();
+interface EmergencyContactProps {
+  form: FormInstance<emergencyContactDataType>;
+  isEditable?: boolean;
+}
+
+function EmergencyContact({ isEditable = false, form }: EmergencyContactProps) {
+  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns();
   return (
     <Form
       labelCol={{ span: 10 }}
@@ -17,13 +23,19 @@ function EmergencyContact() {
       requiredMark={false}
       onFinish={(values) => {
         console.log(values);
-        handleSave();
+        if (isEditable) {
+          handleSave();
+        }
       }}
       form={form}
     >
-      <SubHeading form={form} isSaved={isSaved} handleCancel={handleCancel} handleEdit={handleEdit}>
-        Emergency Contact
-      </SubHeading>
+      {isEditable ? (
+        <ActionBtns form={form} isSaved={isSaved} handleEdit={handleEdit} handleCancel={handleCancel}>
+          <SubHeading>Bank information</SubHeading>
+        </ActionBtns>
+      ) : (
+        <SubHeading>Emergency Contact</SubHeading>
+      )}
 
       {isLoading ? (
         <div className="m-auto grid place-items-center py-20">

@@ -1,82 +1,80 @@
 import { createSlice } from '@reduxjs/toolkit';
-import moment from 'moment';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { basicInfoDataWithImageType, FullEmployeeDataType } from '../../../types';
 
-const initialState = {
-  employees: [],
+interface initialStateType {
+  fullEmployeesData: FullEmployeeDataType[];
+  basicEmployeesData: basicInfoDataWithImageType[];
+  currentEmployee: FullEmployeeDataType;
+}
+
+const initialState: initialStateType = {
+  fullEmployeesData: [],
+  basicEmployeesData: [],
   currentEmployee: {
-    basicInfo: {
-      id: null,
-      fullName: null,
-      avatarUrl: null,
-      position: null,
-      department: null,
-      statusType: null,
-      dateOfJoining: null,
-      dateOfdeparture: null,
-      phone: null,
-      email: null,
-      employmentType: 'fullTime'
+    basicInfoData: {
+      id: '',
+      avatarUrl: '',
+      fullName: '',
+      position: '',
+      department: '',
+      dateOfDeparture: undefined,
+      dateOfJoining: undefined as any,
+      employmentType: 'fullTime',
+      email: '',
+      phone: '',
+      status: 'active'
     },
-    personalInfo: {
-      nationalId: null,
-      nationalIdExpDate: null,
-      dateOfBirth: null,
+    personalInfoData: {
+      nationlIdNum: '',
+      nationalIdExpDate: undefined,
+      dateOfBirth: undefined as any,
       maritalStatus: 'single',
-      gender: null,
+      gender: 'male',
       educationStatus: 'notAStudent',
-      education: null
+      education: ''
     },
-    bankInfo: {
-      accountNum: null,
-      bankName: null,
-      panNum: null,
-      ifscCode: null
+    bankInformationData: {
+      bankAccountNum: '',
+      bankName: '',
+      panNum: '',
+      ifscCode: ''
     },
-    attendanceAndDeparture: {
-      fingerprintDevice: null,
-      branch: null,
-      workPlan: null,
-      annualLeavesBalance: null
+    emergencyContactData: {
+      emergencyContactName: '',
+      emergencyContactPhone: ''
     },
-    salaryCalculationSystem: {
-      salary: {
-        currency: 'USD',
-        amount: null,
-        period: 'monthly'
-      },
-      insurances: {
-        employeePaysAmount: null,
-        rate: null,
-        employerPaysAmount: null
-      },
-      taxes: {
-        rate: null,
-        amount: null
-      }
+    attendanceAndDepartureInfoData: {
+      annualLeavesBalance: 0,
+      branch: '',
+      fingerprintDevice: '',
+      workPlan: ''
     },
-    calculationSystems: {
-      earlyArrival: [
-        // { isEnabled: false, durationStart: null, durationEnd: null, multiplier: null, minimumAllowedOccurrences: null },
-        {
-          key: '0' as React.Key,
-          isEnabled: true,
-          durationStart: moment('07:00', 'HH:mm'),
-          durationEnd: moment('08:00', 'HH:mm'),
-          multiplier: 0,
-          'multiplier-duration': 'days',
-          minimumOccurrences: 5
-        },
-        {
-          key: '1' as React.Key,
-          isEnabled: false,
-          durationStart: moment('05:00', 'HH:mm'),
-          durationEnd: moment('10:00', 'HH:mm'),
-          multiplier: 0,
-          'multiplier-duration': 'times',
-          minimumOccurrences: 0
-        }
-      ]
-    }
+    salaryCalculationSystemData: {
+      currency: 'USD',
+      period: 'monthly',
+      salary: 0,
+      insurances: 0,
+      taxes: 0
+    },
+    otherCalculationSystemData: {
+      'breakAfter-deductValue': 0,
+      'breakAfter-deductValue-multiplierDuration': 'day(s)',
+      'breakAfter-isEnabled': false,
+      'breakAfter-occurrences': 0,
+      'breakBefore-deductValue': 0,
+      'breakBefore-deductValue-multiplierDuration': 'day(s)',
+      'breakBefore-isEnabled': false,
+      'breakBefore-occurrences': 0,
+      'missingCheckInOrCheckOut-deductValue': 0,
+      'missingCheckInOrCheckOut-isEnabled': false,
+      'missingCheckInOrCheckOut-occurrences': 0
+    },
+    earlyArrivalDataSource: [],
+    lateArrivalDataSource: [],
+    earlyDepartureDataSource: [],
+    lateDepartureDataSource: [],
+    leavesTableDataSource: []
   }
 };
 
@@ -84,22 +82,30 @@ const employeesReducer = createSlice({
   name: 'employees',
   initialState,
   reducers: {
-    createEmployee: (state) => {
-      // state.employees.push(state.currentEmployee);
+    createEmployee: (state, action: PayloadAction<FullEmployeeDataType>) => {
+      state.fullEmployeesData.push(action.payload);
+      state.basicEmployeesData.push(action.payload.basicInfoData);
       state.currentEmployee = { ...initialState.currentEmployee };
     },
-    updateCurrentEmployee: (state, action) => {
-      state.currentEmployee = { ...state.currentEmployee, ...action.payload };
-    },
-    updateCurrentEmployeEearlyArrival: (state, action) => {
-      state.currentEmployee = {
-        ...state.currentEmployee,
-        calculationSystems: {
-          earlyArrival: state.currentEmployee.calculationSystems.earlyArrival.map((item) =>
-            item.key === action.payload.key ? { ...item, ...action.payload } : item
-          )
-        }
-      };
+    // updateCurrentEmployee: (state, action) => {
+    //   state.currentEmployee = { ...state.currentEmployee, ...action.payload };
+    // },
+    // updateCurrentEmployeEearlyArrival: (state, action) => {
+    //   state.currentEmployee = {
+    //     ...state.currentEmployee,
+    //     calculationSystems: {
+    //       earlyArrival: state.currentEmployee.calculationSystems.earlyArrival.map((item) =>
+    //         item.key === action.payload.key ? { ...item, ...action.payload } : item
+    //       )
+    //     }
+    //   };
+    // },
+    deleteEmployee: (state, action: PayloadAction<basicInfoDataWithImageType>) => {
+      state.fullEmployeesData = state.fullEmployeesData.filter(
+        (employee) => employee.basicInfoData.id !== action.payload.id
+      );
+      state.basicEmployeesData = state.basicEmployeesData.filter((employee) => employee.id !== action.payload.id);
+      state.currentEmployee = { ...initialState.currentEmployee };
     },
     clearCurrentEmployee: (state) => {
       state.currentEmployee = { ...initialState.currentEmployee };
@@ -107,6 +113,5 @@ const employeesReducer = createSlice({
   }
 });
 
-export const { createEmployee, updateCurrentEmployee, updateCurrentEmployeEearlyArrival, clearCurrentEmployee } =
-  employeesReducer.actions;
+export const { createEmployee, deleteEmployee, clearCurrentEmployee } = employeesReducer.actions;
 export default employeesReducer.reducer;

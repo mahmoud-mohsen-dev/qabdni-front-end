@@ -4,6 +4,7 @@ import { ReactNode } from 'react';
 const colors = {
   orange: 'bg-orange/normal text-black/dark rounded-lg',
   green: 'bg-green/accent text-green/ultralight rounded-lg',
+  greenOutline: 'bg-white text-green/accent rounded-lg hover:shadow-none',
   blue: 'bg-blue/normal text-white hover:bg-blue/accent rounded-lg',
   redOutline: 'border-red/normal border text-red/normal hover:bg-red/accent hover:text-white rounded-lg',
   blueAccent: 'bg-blue/ultralight text-blue/normal active:opacity-[0.70] hover:shadow-none active:text-blue/medium',

@@ -1,15 +1,16 @@
 import { useState } from 'react';
 
-const useSubHeading = (initialValue = false) => {
+const useActionBtns = (initialValue = false) => {
   const [isSaved, setIsSaved] = useState<boolean>(initialValue);
+  const [appliedGlobalSettings, setAppliedGlobalSettings] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSave = () => {
     setIsLoading(true);
 
     setTimeout(() => {
-      setIsSaved(true);
       setIsLoading(false);
+      setIsSaved(true);
     }, 1000);
   };
 
@@ -20,15 +21,28 @@ const useSubHeading = (initialValue = false) => {
 
   const handleGlobal = () => {
     setIsLoading(false);
-    setIsSaved(true);
+    setIsSaved(false);
+  };
+
+  const handleOnlyGlobal = () => {
+    setAppliedGlobalSettings((prev) => !prev);
   };
 
   const handleEdit = () => {
-    setIsSaved(false);
     setIsLoading(false);
+    setIsSaved(false);
   };
 
-  return { isSaved, handleCancel, handleSave, handleEdit, handleGlobal, isLoading };
+  return {
+    isSaved,
+    handleCancel,
+    handleSave,
+    handleEdit,
+    handleGlobal,
+    isLoading,
+    appliedGlobalSettings,
+    handleOnlyGlobal
+  };
 };
 
-export default useSubHeading;
+export default useActionBtns;

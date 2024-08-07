@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { GetRef } from 'antd';
 import { Form, InputNumber, Table } from 'antd';
+import { LeavesTableData } from '../../../../types';
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
@@ -19,13 +20,8 @@ interface Item {
   workFromHome: number;
 }
 
-interface EditableRowProps {
-  index: number;
-}
-
-const EditableRow: React.FC<EditableRowProps> = ({ index, ...props }) => {
+const EditableRow: React.FC = ({ ...props }) => {
   const [form] = Form.useForm();
-  console.log(index);
   return (
     <Form form={form} component={false} onFinish={(values) => console.log(values)}>
       <EditableContext.Provider value={form}>
@@ -112,42 +108,20 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
 type EditableTableProps = Parameters<typeof Table>[0];
 
-interface DataType {
-  emergencyLeave: number;
-  otherLeave: number;
-  personalLeave: number;
-  publicHolidays: number;
-  sickLeave: number;
-  studyLeave: number;
-  unauthorizedLeave: number;
-  unpaidLeave: number;
-  vacationLeave: number;
-  workFromHome: number;
-}
-
 type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
-const LeaveCalculationTable = () => {
-  const [dataSource, setDataSource] = useState<DataType[]>([
-    {
-      emergencyLeave: 0,
-      otherLeave: 0,
-      personalLeave: 0,
-      publicHolidays: 0,
-      sickLeave: 0,
-      studyLeave: 0,
-      unauthorizedLeave: 0,
-      unpaidLeave: 0,
-      vacationLeave: 0,
-      workFromHome: 0
-    }
-  ]);
-
-  useEffect(() => {
-    console.log('='.repeat(30));
-    console.log(dataSource);
-    console.log('='.repeat(30));
-  }, [dataSource]);
+const LeavesCalculationTable = ({
+  dataSource,
+  setDataSource
+}: {
+  dataSource: LeavesTableData[];
+  setDataSource: React.Dispatch<React.SetStateAction<LeavesTableData[]>>;
+}) => {
+  // useEffect(() => {
+  //   console.log('='.repeat(30));
+  //   console.log(dataSource);
+  //   console.log('='.repeat(30));
+  // }, [dataSource]);
 
   const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[] = [
     {
@@ -301,7 +275,7 @@ const LeaveCalculationTable = () => {
     }
   ];
 
-  const handleSave = (row: DataType) => {
+  const handleSave = (row: LeavesTableData) => {
     const newData = [...dataSource];
     const item = newData[0];
     newData.splice(0, 1, {
@@ -324,7 +298,7 @@ const LeaveCalculationTable = () => {
     }
     return {
       ...col,
-      onCell: (record: DataType) => ({
+      onCell: (record: LeavesTableData) => ({
         record,
         editable: col.editable,
         dataIndex: col.dataIndex,
@@ -350,4 +324,4 @@ const LeaveCalculationTable = () => {
   );
 };
 
-export default LeaveCalculationTable;
+export default LeavesCalculationTable;

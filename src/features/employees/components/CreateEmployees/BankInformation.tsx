@@ -1,13 +1,20 @@
 import { Form, Input, Spin } from 'antd';
-import SubHeading from '../SubHeading';
 import LabelInput from '../LabelInput';
 import { capitalizeName } from '../../../../utils/user';
-import useSubHeading from '../../hooks/useSubHeading';
-import { useForm } from 'antd/es/form/Form';
+import useActionBtns from '../../hooks/useActionBtns';
+import SubHeading from '../SubHeading';
+import type { FormInstance } from 'antd';
+import ActionBtns from '../ActionBtns';
+import { bankInformationDataType } from '../../../../types';
 
-function BankInformation() {
-  const { isSaved, handleSave, handleCancel, handleEdit, isLoading } = useSubHeading();
-  const [form] = useForm();
+interface BankInformationProps {
+  form: FormInstance<bankInformationDataType>;
+  isEditable?: boolean;
+}
+
+function BankInformation({ isEditable = false, form }: BankInformationProps) {
+  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns();
+
   return (
     <Form
       labelCol={{ span: 10 }}
@@ -17,13 +24,19 @@ function BankInformation() {
       requiredMark={false}
       onFinish={(values) => {
         console.log(values);
-        handleSave();
+        if (isEditable) {
+          handleSave();
+        }
       }}
       form={form}
     >
-      <SubHeading form={form} isSaved={isSaved} handleCancel={handleCancel} handleEdit={handleEdit}>
-        Bank information
-      </SubHeading>
+      {isEditable ? (
+        <ActionBtns form={form} isSaved={isSaved} handleEdit={handleEdit} handleCancel={handleCancel}>
+          <SubHeading>Bank information</SubHeading>
+        </ActionBtns>
+      ) : (
+        <SubHeading>Bank information</SubHeading>
+      )}
 
       {isLoading ? (
         <div className="m-auto grid place-items-center py-20">
@@ -62,7 +75,7 @@ function BankInformation() {
 
           {/* IFSC Code */}
           <Form.Item
-            name="panNum"
+            name="ifscCode"
             label={<LabelInput title="IFSC Code" description="IFSC Code" />}
             rules={[{ whitespace: true }, { max: 35 }]}
           >

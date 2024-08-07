@@ -1,33 +1,20 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import type { GetRef, InputRef } from 'antd';
-import { Form, Input, InputNumber, Popconfirm, Select, Switch, Table, TimePicker, Tooltip } from 'antd';
+import type { GetRef } from 'antd';
+import { Form, InputNumber, Popconfirm, Select, Switch, Table, TimePicker, Tooltip } from 'antd';
 import BtnAddNewRow from '../../../../components/BtnAddNewRow';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import { IoIosArrowDown } from 'react-icons/io';
 import { QuestionCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { TableRowType } from '../../../../types';
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
 const EditableContext = React.createContext<FormInstance<unknown> | null>(null);
 
-interface Item {
-  key: string;
-  isEnabled: boolean;
-  durationStart: string;
-  durationEnd: string;
-  multiplier: number;
-  'multiplier-duration': 'day(s)' | 'times';
-  minimumOccurrences: string;
-}
-
-interface EditableRowProps {
-  index: number;
-}
-
-const EditableRow: React.FC<EditableRowProps> = ({ index, ...props }) => {
+const EditableRow: React.FC = ({ ...props }) => {
   const [form] = Form.useForm();
-  console.log(index);
+  // console.log(index);
   return (
     <Form form={form} component={false} onFinish={(values) => console.log(values)}>
       <EditableContext.Provider value={form}>
@@ -40,9 +27,9 @@ const EditableRow: React.FC<EditableRowProps> = ({ index, ...props }) => {
 interface EditableCellProps {
   title: React.ReactNode;
   editable: boolean;
-  dataIndex: keyof Item;
-  record: Item;
-  handleSave: (record: Item) => void;
+  dataIndex: keyof TableRowType;
+  record: TableRowType;
+  handleSave: (record: TableRowType) => void;
 }
 
 const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
@@ -56,8 +43,8 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 }) => {
   const [editing, setEditing] = useState(false);
 
-  const inputRef = useRef<InputRef>(null);
-  const timePickerRef = useRef<any>(null);
+  const inputRef = useRef<any>(null);
+  // const timePickerRef = useRef<any>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -75,7 +62,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
   const save = async () => {
     try {
-      const values = (await form.validateFields()) as Item;
+      const values = (await form.validateFields()) as TableRowType;
       console.log(values);
       toggleEdit();
       handleSave({ ...record, ...values });
@@ -115,19 +102,26 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
               </Form.Item>
             }
             min={0}
-            // style={{ width: 170 }}
+            onPressEnter={save}
             onBlur={save}
-            // defaultValue={0}
           />
         ) : dataIndex === 'durationStart' || dataIndex === 'durationEnd' ? (
-          <TimePicker ref={timePickerRef} onOk={save} defaultOpen format="HH:mm" />
+          <TimePicker ref={inputRef} onOk={save} defaultOpen format="HH:mm" />
         ) : (
-          <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+          <InputNumber
+            ref={inputRef}
+            className="mx-auto flex w-[140px] items-center justify-center"
+            addonAfter="Times"
+            min={0}
+            onPressEnter={save}
+            onBlur={save}
+            defaultValue={record['minimumOccurrences'] ?? 0}
+          />
         )}
       </Form.Item>
     ) : (
       <button
-        className="editable-cell-value-wrap w-full rounded-lg border-2 border-solid border-transparent px-[11px] py-2 hover:border-gray/lighter focus:outline-none"
+        className="editable-cell-value-wrap rounded-lg border-2 border-solid border-transparent px-[11px] py-2 hover:border-gray/lighter focus:outline-none"
         onClick={toggleEdit}
       >
         {children}
@@ -144,52 +138,36 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
 type EditableTableProps = Parameters<typeof Table>[0];
 
-interface DataType {
-  key: React.Key;
+export interface DataType {
+  key: string | number;
   isEnabled: boolean;
   durationStart: Moment;
   durationEnd: Moment;
   multiplier: number;
   'multiplier-duration': 'day(s)' | 'times';
-  minimumOccurrences?: number;
+  minimumOccurrences: number;
 }
 
 type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
 const CalculationSystemTable = ({
   tooltipDurationStart,
-  tooltipDurationEnd
+  tooltipDurationEnd,
+  dataSource,
+  setDataSource
 }: {
   tooltipDurationStart: string;
   tooltipDurationEnd: string;
+  dataSource: DataType[];
+  setDataSource: React.Dispatch<React.SetStateAction<DataType[]>>;
 }) => {
-  const [dataSource, setDataSource] = useState<DataType[]>([
-    {
-      key: '0' as React.Key,
-      isEnabled: true,
-      durationStart: moment('07:00', 'HH:mm'),
-      durationEnd: moment('08:00', 'HH:mm'),
-      multiplier: 1.25,
-      'multiplier-duration': 'day(s)',
-      minimumOccurrences: 5
-    },
-    {
-      key: '1' as React.Key,
-      isEnabled: false,
-      durationStart: moment('05:00', 'HH:mm'),
-      durationEnd: moment('10:00', 'HH:mm'),
-      multiplier: 50,
-      'multiplier-duration': 'times',
-      minimumOccurrences: 0
-    }
-  ]);
   const [count, setCount] = useState(dataSource.length);
 
-  useEffect(() => {
-    console.log('='.repeat(30));
-    console.log(dataSource);
-    console.log('='.repeat(30));
-  }, [dataSource]);
+  // useEffect(() => {
+  //   console.log('='.repeat(30));
+  //   console.log(dataSource);
+  //   console.log('='.repeat(30));
+  // }, [dataSource]);
 
   const handleDelete = (key: React.Key) => {
     const newData = dataSource.filter((item) => item.key !== key);

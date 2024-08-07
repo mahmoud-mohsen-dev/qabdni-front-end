@@ -1,21 +1,26 @@
 import { Form, InputNumber, Spin } from 'antd';
-import SubHeading from '../SubHeading';
 import LabelInput from '../LabelInput';
 import CustomSelect from '../../../../components/CustomSelect';
 import PositionsDrawer from '../../../company/components/Drawer/PositionsDrawer';
 import { RootState } from '../../../../store';
 import { useSelector } from 'react-redux';
 import useDrawer from '../../../../hooks/useDrawer';
-import { ValueItemType } from '../../../../types';
+import { attendanceAndDepartureInfoDataType, ValueItemType } from '../../../../types';
 import DepartmentsDrawer from '../../../company/components/Drawer/DepartmentsDrawer';
-import useSubHeading from '../../hooks/useSubHeading';
-import { useForm } from 'antd/es/form/Form';
+import useActionBtns from '../../hooks/useActionBtns';
+import type { FormInstance } from 'antd';
+import ActionBtns from '../ActionBtns';
+import SubHeading from '../SubHeading';
 
-function AttendanceAndDepartureInformation() {
+interface AttendanceAndDepartureInformationProps {
+  form: FormInstance<attendanceAndDepartureInfoDataType>;
+  isEditable?: boolean;
+}
+
+function AttendanceAndDepartureInformation({ isEditable = false, form }: AttendanceAndDepartureInformationProps) {
   const { positions, departments } = useSelector((state: RootState) => state);
   const { openedDrawer, loading, closeDrawer, showLoading } = useDrawer();
-  const { isSaved, handleSave, handleCancel, handleEdit, isLoading } = useSubHeading();
-  const [form] = useForm();
+  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns();
   return (
     <Form
       labelCol={{ span: 10 }}
@@ -25,13 +30,19 @@ function AttendanceAndDepartureInformation() {
       requiredMark={false}
       onFinish={(values) => {
         console.log(values);
-        handleSave();
+        if (isEditable) {
+          handleSave();
+        }
       }}
       form={form}
     >
-      <SubHeading form={form} isSaved={isSaved} handleCancel={handleCancel} handleEdit={handleEdit}>
-        Attendance and departure information
-      </SubHeading>
+      {isEditable ? (
+        <ActionBtns form={form} isSaved={isSaved} handleEdit={handleEdit} handleCancel={handleCancel}>
+          <SubHeading>Attendance and departure information</SubHeading>
+        </ActionBtns>
+      ) : (
+        <SubHeading>Attendance and departure information</SubHeading>
+      )}
 
       {isLoading ? (
         <div className="m-auto grid place-items-center py-20">
@@ -104,7 +115,7 @@ function AttendanceAndDepartureInformation() {
             }}
           />
 
-          {/* Annual Leaves Balance */}
+          {/* annualLeavesBalance */}
           <Form.Item
             name="annualLeavesBalance"
             label={
@@ -113,6 +124,19 @@ function AttendanceAndDepartureInformation() {
                 description="The total number of leaves allowed to an employee per year"
               />
             }
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (typeof value !== 'number' || value < 0) {
+                    return Promise.reject(
+                      new Error('Annual leaves balance must have a value equal or bigger than zero')
+                    );
+                  }
+                  return Promise.resolve();
+                }
+              }
+            ]}
+            initialValue={0}
           >
             <InputNumber min={0} max={365} defaultValue={0} className="w-full" disabled={isSaved} />
           </Form.Item>

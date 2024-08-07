@@ -1,24 +1,30 @@
 import { DatePicker, Form, Input, Select, Spin } from 'antd';
-import SubHeading from '../SubHeading';
+import type { FormInstance } from 'antd';
 import LabelInput from '../LabelInput';
 import CustomSelect from '../../../../components/CustomSelect';
 import PositionsDrawer from '../../../company/components/Drawer/PositionsDrawer';
 import { RootState } from '../../../../store';
 import { useSelector } from 'react-redux';
 import useDrawer from '../../../../hooks/useDrawer';
-import { ValueItemType } from '../../../../types';
+import { basicInfoDataType, ValueItemType } from '../../../../types';
 import DepartmentsDrawer from '../../../company/components/Drawer/DepartmentsDrawer';
 import { IoIosArrowDown } from 'react-icons/io';
 import { capitalizeName } from '../../../../utils/user';
 import { RadioButton, RadioGroup } from '../../../../components/RadioGroup';
-import useSubHeading from '../../hooks/useSubHeading';
-import { useForm } from 'antd/es/form/Form';
+import useActionBtns from '../../hooks/useActionBtns';
+import SubHeading from '../SubHeading';
+import ActionBtns from '../ActionBtns';
 
-function BasicInformationForm() {
+interface BasicInfoFormProps {
+  form: FormInstance<basicInfoDataType>;
+  isEditable?: boolean;
+  employeeId: string;
+}
+
+function BasicInformationForm({ isEditable = false, form, employeeId }: BasicInfoFormProps) {
   const { positions, departments } = useSelector((state: RootState) => state);
   const { openedDrawer, loading, closeDrawer, showLoading } = useDrawer();
-  const { isSaved, handleSave, handleCancel, handleEdit, isLoading } = useSubHeading();
-  const [form] = useForm();
+  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns();
   return (
     <Form
       labelCol={{ span: 10 }}
@@ -28,13 +34,19 @@ function BasicInformationForm() {
       requiredMark={false}
       onFinish={(values) => {
         console.log(values);
-        handleSave();
+        if (isEditable) {
+          handleSave();
+        }
       }}
       form={form}
     >
-      <SubHeading form={form} isSaved={isSaved} handleCancel={handleCancel} handleEdit={handleEdit}>
-        Basic Information
-      </SubHeading>
+      {isEditable ? (
+        <ActionBtns form={form} isSaved={isSaved} handleEdit={handleEdit} handleCancel={handleCancel}>
+          <SubHeading>Basic Information</SubHeading>
+        </ActionBtns>
+      ) : (
+        <SubHeading>Basic Information</SubHeading>
+      )}
 
       {isLoading ? (
         <div className="m-auto grid place-items-center py-20">
@@ -45,11 +57,11 @@ function BasicInformationForm() {
       ) : (
         <>
           <div className="mb-4 flex items-center">
-            <h4 className="min-w-[200px] max-w-[45.83333333333333%] flex-[0_0_45.83333333333333%] text-[13px] font-medium uppercase leading-4">
+            <h4 className="min-w-[200px] max-w-[41.66666666666667%] flex-[0_0_41.66666666666667%] text-[13px] font-medium uppercase leading-4">
               ID NO.
             </h4>
-            <p className="max-w-[54.166666666666664%] flex-[0_0_54.166666666666664%] text-[13px] font-medium uppercase leading-4 text-gray/dark">
-              01
+            <p className="max-w-[58.333333333333336%] flex-[0_0_58.333333333333336%] text-[13px] font-medium uppercase leading-4 text-gray/dark">
+              {employeeId}
             </p>
           </div>
           {/* Full Name */}
@@ -120,7 +132,7 @@ function BasicInformationForm() {
               options={[
                 { label: 'Active', value: 'active' },
                 { label: 'On Holiday', value: 'onHoliday' },
-                { label: 'Remote' },
+                { label: 'Remote', value: 'remote' },
                 { label: 'Terminated', value: 'terminated' }
               ]}
             />
@@ -142,7 +154,6 @@ function BasicInformationForm() {
           <Form.Item
             name="dateOfDeparture"
             label={<LabelInput title="Date of Departure" description="Choose employee's departure date" />}
-            // rules={[{ required: true, message: 'Date of Departure is required' }]}
           >
             <DatePicker
               placeholder={capitalizeName("Select employee's departure date")}
@@ -171,8 +182,9 @@ function BasicInformationForm() {
           <Form.Item
             name="employmentType"
             label={<LabelInput title="Employment Type" description="Pick one or multiple options" />}
+            initialValue={form.getFieldValue('employmentType') ?? 'fullTime'}
           >
-            <RadioGroup disabled={isSaved} defaultValue="fullTime">
+            <RadioGroup disabled={isSaved} defaultValue={form.getFieldValue('employmentType') ?? 'fullTime'}>
               <RadioButton value="fullTime">Full time</RadioButton>
               <RadioButton value="partTime">Part Time</RadioButton>
               <RadioButton value="contract">Contract</RadioButton>

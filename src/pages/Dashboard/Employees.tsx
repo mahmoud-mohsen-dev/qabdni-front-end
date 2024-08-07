@@ -8,42 +8,17 @@ import FilterByDepartment from '../../features/employees/components/FilterByDepa
 import { FaPlus } from 'react-icons/fa6';
 import HeadingTitle from '../../components/HeadingTitle';
 import { Button } from 'antd';
-
-const employee = {
-  imageUrl: '/images/account-image-1.png',
-  name: 'Sebastian bennett',
-  position: 'C++ Game Developer',
-  status: 'active' as const, // active | remoter | onHoliday | terminated
-  department: 'Sales & Marketing',
-  dateOfJoining: '',
-  email: 'bennett-seb@example.com',
-  phone: '01006879945'
-};
-
-const employees = [
-  employee,
-  employee,
-  {
-    ...employee,
-    dateOfJoining: '2024-02-19T22:00:00.000Z',
-    imageUrl: '/images/mahmoud-porfile-reducedVersion.jpg'
-  },
-  { ...employee, imageUrl: '/images/ahmed-cover.jpg' },
-  { ...employee, imageUrl: '/images/christian-buehne.jpg' },
-  employee,
-  employee,
-  employee,
-  employee,
-  employee,
-  employee,
-  employee,
-  employee,
-  employee,
-  employee,
-  employee
-];
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 function Employees() {
+  const { basicEmployeesData: employees } = useSelector((state: RootState) => state.employees);
+  const navigate = useNavigate();
+  const handleAddEmployee = () => {
+    navigate('/dashboard/create-employee');
+  };
+
   return (
     <div>
       <div className="flex w-full flex-wrap items-center justify-between gap-3">
@@ -62,7 +37,7 @@ function Employees() {
             <FaPlus />
             <span>Add Employee</span>
           </Btn> */}
-          <Button type="primary" size="large">
+          <Button type="primary" size="large" onClick={handleAddEmployee}>
             <FaPlus />
             <span>Add Employee</span>
           </Button>
