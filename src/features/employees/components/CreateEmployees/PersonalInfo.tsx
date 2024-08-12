@@ -8,15 +8,44 @@ import TextArea from 'antd/es/input/TextArea';
 import SubHeading from '../SubHeading';
 import ActionBtns from '../ActionBtns';
 import type { FormInstance } from 'antd';
-import { personalInfoDataType } from '../../../../types';
+import { personalInfoFormType } from '../../../../types';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../../store';
+import { updateCurrentEmployee } from '../../store/employeesSlice';
+import { useEffect } from 'react';
+import { parseDayjsToIsoString, parseIsoStringToDayjs } from '../../../../utils/date';
+import { valueInArray } from '../../../../utils/helpers';
 
 interface PersonalInfoProps {
-  form: FormInstance<personalInfoDataType>;
-  isEditable?: boolean;
+  form: FormInstance<personalInfoFormType>;
+  isEmployeeDetailsPage?: boolean;
 }
 
-function PersonalInfo({ isEditable = false, form }: PersonalInfoProps) {
-  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns();
+function PersonalInfo({ isEmployeeDetailsPage = false, form }: PersonalInfoProps) {
+  const {
+    personalInfoData,
+    basicInfoData: { id: employeeId }
+  } = useSelector((state: RootState) => {
+    return state.employees.currentEmployee;
+  });
+  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns({
+    isSavedInitialValue: isEmployeeDetailsPage,
+    form: form,
+    id: employeeId,
+    target: 'personalInfoData'
+  });
+  const dispatch = useDispatch();
+
+  // Update form fields from the current employee data from redux store
+  useEffect(() => {
+    form.setFieldsValue({
+      ...personalInfoData,
+      gender: valueInArray(personalInfoData.gender, ['male', 'female']),
+      nationalIdExpDate: parseIsoStringToDayjs(personalInfoData.nationalIdExpDate),
+      dateOfBirth: parseIsoStringToDayjs(personalInfoData.dateOfBirth)
+    });
+  }, [personalInfoData]);
+
   return (
     <Form
       labelCol={{ span: 10 }}
@@ -24,16 +53,22 @@ function PersonalInfo({ isEditable = false, form }: PersonalInfoProps) {
       labelAlign="left"
       colon={false}
       requiredMark={false}
-      onFinish={(values) => {
-        console.log(values);
-        if (isEditable) {
-          handleSave();
-        }
-      }}
+      // onFinish={(values) => {
+      //   console.log(values);
+      //   if (isEditable) {
+      //     handleSave();
+      //   }
+      // }}
       form={form}
+      initialValues={{
+        ...personalInfoData,
+        gender: valueInArray(personalInfoData.gender, ['male', 'female']),
+        nationalIdExpDate: parseIsoStringToDayjs(personalInfoData.nationalIdExpDate),
+        dateOfBirth: parseIsoStringToDayjs(personalInfoData.dateOfBirth)
+      }}
     >
-      {isEditable ? (
-        <ActionBtns form={form} isSaved={isSaved} handleEdit={handleEdit} handleCancel={handleCancel}>
+      {isEmployeeDetailsPage ? (
+        <ActionBtns isSaved={isSaved} handleSave={handleSave} handleEdit={handleEdit} handleCancel={handleCancel}>
           <SubHeading>Personal Info</SubHeading>
         </ActionBtns>
       ) : (
@@ -54,7 +89,15 @@ function PersonalInfo({ isEditable = false, form }: PersonalInfoProps) {
             label={<LabelInput title="National ID No." description="Add Passport No." />}
             rules={[{ whitespace: true }, { max: 35 }]}
           >
-            <Input placeholder="National ID No." disabled={isSaved} />
+            <Input
+              placeholder="National ID No."
+              disabled={isSaved}
+              onChange={(e) => {
+                console.log(e.target.value);
+                const value = e.target.value;
+                dispatch(updateCurrentEmployee({ target: 'personalInfoData', data: { nationlIdNum: value } }));
+              }}
+            />
           </Form.Item>
 
           {/* National ID Exp Date. */}
@@ -67,6 +110,14 @@ function PersonalInfo({ isEditable = false, form }: PersonalInfoProps) {
               className="w-full py-[7px]"
               allowClear
               disabled={isSaved}
+              onChange={(value) => {
+                dispatch(
+                  updateCurrentEmployee({
+                    target: 'personalInfoData',
+                    data: { nationalIdExpDate: parseDayjsToIsoString(value) }
+                  })
+                );
+              }}
             />
           </Form.Item>
 
@@ -81,6 +132,16 @@ function PersonalInfo({ isEditable = false, form }: PersonalInfoProps) {
               className="w-full py-[7px]"
               allowClear
               disabled={isSaved}
+              onChange={(value) => {
+                console.log(value);
+                console.log(parseDayjsToIsoString(value));
+                dispatch(
+                  updateCurrentEmployee({
+                    target: 'personalInfoData',
+                    data: { dateOfBirth: parseDayjsToIsoString(value) }
+                  })
+                );
+              }}
             />
           </Form.Item>
 
@@ -88,12 +149,17 @@ function PersonalInfo({ isEditable = false, form }: PersonalInfoProps) {
           <Form.Item
             name="maritalStatus"
             label={<LabelInput title="Marital status" description="Choose option if available" />}
-            initialValue={form.getFieldValue('maritalStatus') ?? 'single'}
+            // initialValue={form.getFieldValue('maritalStatus') ?? 'single'}
           >
             <RadioGroup
-              disabled={isSaved}
-              defaultValue={form.getFieldValue('maritalStatus') ?? 'single'}
               className="self-center"
+              form={form}
+              name="maritalStatus"
+              disabled={isSaved}
+              onChange={(value) => {
+                // form.setFieldValue('maritalStatus', value);d
+                dispatch(updateCurrentEmployee({ target: 'personalInfoData', data: { maritalStatus: value } }));
+              }}
             >
               <RadioButton value="single">Single</RadioButton>
               <RadioButton value="married">Married</RadioButton>
@@ -113,9 +179,12 @@ function PersonalInfo({ isEditable = false, form }: PersonalInfoProps) {
               allowClear
               disabled={isSaved}
               options={[
-                { label: 'male', value: 'Male' },
-                { label: 'female', value: 'Female' }
+                { label: 'Male', value: 'male' },
+                { label: 'Female', value: 'female' }
               ]}
+              onChange={(value) => {
+                dispatch(updateCurrentEmployee({ target: 'personalInfoData', data: { gender: value } }));
+              }}
             />
           </Form.Item>
 
@@ -123,9 +192,17 @@ function PersonalInfo({ isEditable = false, form }: PersonalInfoProps) {
           <Form.Item
             name="educationStatus"
             label={<LabelInput title="Education status" description="Choose if the employee is a student or not" />}
-            initialValue={form.getFieldValue('educationStatus') ?? 'notAStudent'}
+            // initialValue={form.getFieldValue('educationStatus') ?? 'notAStudent'}
           >
-            <RadioGroup disabled={isSaved} defaultValue={form.getFieldValue('educationStatus') ?? 'notAStudent'}>
+            <RadioGroup
+              form={form}
+              name="educationStatus"
+              disabled={isSaved}
+              onChange={(value) => {
+                // form.setFieldValue('educationStatus', value);
+                dispatch(updateCurrentEmployee({ target: 'personalInfoData', data: { educationStatus: value } }));
+              }}
+            >
               <RadioButton value="student">A student</RadioButton>
               <RadioButton value="notAStudent">Not a student</RadioButton>
             </RadioGroup>
@@ -138,6 +215,9 @@ function PersonalInfo({ isEditable = false, form }: PersonalInfoProps) {
               disabled={isSaved}
               className="leading-5 placeholder:leading-5"
               rows={5}
+              onChange={(e) => {
+                dispatch(updateCurrentEmployee({ target: 'personalInfoData', data: { education: e.target.value } }));
+              }}
             />
           </Form.Item>
         </>

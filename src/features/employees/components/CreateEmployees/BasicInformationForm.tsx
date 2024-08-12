@@ -1,12 +1,12 @@
-import { DatePicker, Form, Input, Select, Spin } from 'antd';
+import { DatePicker, Form, Input, Select } from 'antd';
 import type { FormInstance } from 'antd';
 import LabelInput from '../LabelInput';
 import CustomSelect from '../../../../components/CustomSelect';
 import PositionsDrawer from '../../../company/components/Drawer/PositionsDrawer';
 import { RootState } from '../../../../store';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useDrawer from '../../../../hooks/useDrawer';
-import { basicInfoDataType, ValueItemType } from '../../../../types';
+import { basicInfoFormType, ValueItemType } from '../../../../types';
 import DepartmentsDrawer from '../../../company/components/Drawer/DepartmentsDrawer';
 import { IoIosArrowDown } from 'react-icons/io';
 import { capitalizeName } from '../../../../utils/user';
@@ -14,17 +14,63 @@ import { RadioButton, RadioGroup } from '../../../../components/RadioGroup';
 import useActionBtns from '../../hooks/useActionBtns';
 import SubHeading from '../SubHeading';
 import ActionBtns from '../ActionBtns';
+import SpinnerAnt from '../../../../components/SpinnerAnt';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { updateCurrentEmployee } from '../../store/employeesSlice';
+import { parseDayjsToIsoString, parseIsoStringToDayjs } from '../../../../utils/date';
+import { valueInArray, valueInArrayObjectOfNames } from '../../../../utils/helpers';
+// import moment from 'moment';
 
 interface BasicInfoFormProps {
-  form: FormInstance<basicInfoDataType>;
-  isEditable?: boolean;
-  employeeId: string;
+  form: FormInstance<basicInfoFormType>;
+  isEmployeeDetailsPage?: boolean;
+  employeeIdCreateProps?: string;
 }
 
-function BasicInformationForm({ isEditable = false, form, employeeId }: BasicInfoFormProps) {
-  const { positions, departments } = useSelector((state: RootState) => state);
+function BasicInformationForm({ isEmployeeDetailsPage = false, form, employeeIdCreateProps = '' }: BasicInfoFormProps) {
+  const { all: positionsFinalAll } = useSelector((state: RootState) => state.positions.final);
+  const { all: departmentsFinalAll } = useSelector((state: RootState) => state.departments.final);
+  const { basic: basicInfo, id: employeeId } = useSelector((state: RootState) => {
+    return state.employees.currentEmployee.basicInfoData;
+  });
   const { openedDrawer, loading, closeDrawer, showLoading } = useDrawer();
-  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns();
+  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns({
+    isSavedInitialValue: isEmployeeDetailsPage,
+    form: form,
+    id: employeeId,
+    target: 'basicInfoData'
+  });
+
+  // This for updating employee Id in the basic info form
+  const location = useLocation();
+  const { pathname } = location;
+  // Split the pathname by '/' and get the last segment
+  const lastSegment = pathname.split('/').filter(Boolean).pop();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (lastSegment === 'create-employee') {
+      dispatch(updateCurrentEmployee({ target: 'basicInfoData', data: { id: employeeIdCreateProps } }));
+    }
+  }, []);
+
+  // Update form fields from the current employee data from redux store
+  useEffect(() => {
+    form.setFieldsValue({
+      ...basicInfo,
+      position: valueInArrayObjectOfNames(basicInfo.position, positionsFinalAll),
+      department: valueInArrayObjectOfNames(basicInfo.department, departmentsFinalAll),
+      status: valueInArray(basicInfo.status, ['active', 'onHoliday', 'terminated', 'remote']),
+      employmentType: valueInArray(
+        basicInfo.employmentType,
+        ['fullTime', 'partTime', 'contract', 'freelance', 'remote'],
+        'fullTime'
+      ),
+      dateOfJoining: parseIsoStringToDayjs(basicInfo.dateOfJoining),
+      dateOfDeparture: parseIsoStringToDayjs(basicInfo.dateOfDeparture)
+    });
+  }, [basicInfo]);
+
   return (
     <Form
       labelCol={{ span: 10 }}
@@ -32,16 +78,23 @@ function BasicInformationForm({ isEditable = false, form, employeeId }: BasicInf
       labelAlign="left"
       colon={false}
       requiredMark={false}
-      onFinish={(values) => {
-        console.log(values);
-        if (isEditable) {
-          handleSave();
-        }
-      }}
       form={form}
+      initialValues={{
+        ...basicInfo,
+        position: valueInArrayObjectOfNames(basicInfo.position, positionsFinalAll),
+        department: valueInArrayObjectOfNames(basicInfo.department, departmentsFinalAll),
+        status: valueInArray(basicInfo.status, ['active', 'onHoliday', 'terminated', 'remote']),
+        employmentType: valueInArray(
+          basicInfo.employmentType,
+          ['fullTime', 'partTime', 'contract', 'freelance', 'remote'],
+          'fullTime'
+        ),
+        dateOfJoining: parseIsoStringToDayjs(basicInfo.dateOfJoining),
+        dateOfDeparture: parseIsoStringToDayjs(basicInfo.dateOfDeparture)
+      }}
     >
-      {isEditable ? (
-        <ActionBtns form={form} isSaved={isSaved} handleEdit={handleEdit} handleCancel={handleCancel}>
+      {isEmployeeDetailsPage ? (
+        <ActionBtns isSaved={isSaved} handleSave={handleSave} handleEdit={handleEdit} handleCancel={handleCancel}>
           <SubHeading>Basic Information</SubHeading>
         </ActionBtns>
       ) : (
@@ -49,11 +102,7 @@ function BasicInformationForm({ isEditable = false, form, employeeId }: BasicInf
       )}
 
       {isLoading ? (
-        <div className="m-auto grid place-items-center py-20">
-          <Spin tip="Loading" size="large">
-            <div style={{ padding: '50px' }} />
-          </Spin>
-        </div>
+        <SpinnerAnt />
       ) : (
         <>
           <div className="mb-4 flex items-center">
@@ -75,46 +124,66 @@ function BasicInformationForm({ isEditable = false, form, employeeId }: BasicInf
               { max: 35 }
             ]}
           >
-            <Input placeholder="Employee Name" disabled={isSaved} />
+            <Input
+              name="fullName"
+              placeholder="Employee Name"
+              disabled={isSaved}
+              onChange={(e) => {
+                const value = e.target.value;
+                dispatch(updateCurrentEmployee({ target: 'basicInfoData/basic', data: { fullName: value } }));
+              }}
+            />
           </Form.Item>
           {/* Positions */}
           <PositionsDrawer isOpened={openedDrawer === 'positions'} loading={loading} closeDrawer={closeDrawer} />
           <CustomSelect
             name="position"
+            // form={form}
             label={<LabelInput title="Position" description="Choose a role" isRequired={true} />}
             rules={[{ required: true, message: 'Position is required' }]}
             placeHolder="Choose position"
             createText="Create new position"
             disabled={isSaved}
             options={() => {
-              return positions.final.all.map((position: ValueItemType) => ({
+              return positionsFinalAll.map((position: ValueItemType) => ({
                 value: position.name,
                 label: <span className="capitalize">{position.name}</span>
               }));
             }}
             handleDrawerOpen={() => {
               showLoading('positions');
-              form.setFieldValue('department', null);
+              dispatch(updateCurrentEmployee({ target: 'basicInfoData/basic', data: { position: null } }));
+              console.log(basicInfo);
+              form.setFieldValue('position', null);
+            }}
+            onChange={(value) => {
+              dispatch(updateCurrentEmployee({ target: 'basicInfoData/basic', data: { position: value } }));
             }}
           />
           {/* Departments */}
           <DepartmentsDrawer isOpened={openedDrawer === 'departments'} loading={loading} closeDrawer={closeDrawer} />
           <CustomSelect
             name="department"
+            // form={form}
             label={<LabelInput title="Department" description="Choose department" isRequired={true} />}
             rules={[{ required: true, message: 'Department is required' }]}
             disabled={isSaved}
             placeHolder="Choose Category"
             createText="Create new department"
+            // value={basicInfo.department}
             options={() => {
-              return departments.final.all.map((department: ValueItemType) => ({
+              return departmentsFinalAll.map((department: ValueItemType) => ({
                 value: department.name,
                 label: <span className="capitalize">{department.name}</span>
               }));
             }}
             handleDrawerOpen={() => {
               showLoading('departments');
+              dispatch(updateCurrentEmployee({ target: 'basicInfoData/basic', data: { department: null } }));
               form.setFieldValue('department', null);
+            }}
+            onChange={(value) => {
+              dispatch(updateCurrentEmployee({ target: 'basicInfoData/basic', data: { department: value } }));
             }}
           />
           {/* Status Type */}
@@ -122,13 +191,15 @@ function BasicInformationForm({ isEditable = false, form, employeeId }: BasicInf
             name="status"
             label={<LabelInput title="status type" description="Choose status" isRequired={true} />}
             rules={[{ required: true, message: 'Status is required' }]}
-            // initialValue={null}
           >
             <Select
               placeholder={capitalizeName('Choose Employee Working Status')}
               suffixIcon={<IoIosArrowDown size={16} />}
               allowClear
               disabled={isSaved}
+              onChange={(value) => {
+                dispatch(updateCurrentEmployee({ target: 'basicInfoData/basic', data: { status: value } }));
+              }}
               options={[
                 { label: 'Active', value: 'active' },
                 { label: 'On Holiday', value: 'onHoliday' },
@@ -148,6 +219,15 @@ function BasicInformationForm({ isEditable = false, form, employeeId }: BasicInf
               className="w-full py-[7px]"
               allowClear
               disabled={isSaved}
+              onChange={(value) => {
+                console.log(value);
+                dispatch(
+                  updateCurrentEmployee({
+                    target: 'basicInfoData/basic',
+                    data: { dateOfJoining: parseDayjsToIsoString(value) }
+                  })
+                );
+              }}
             />
           </Form.Item>
           {/* Date Of Departure */}
@@ -160,6 +240,14 @@ function BasicInformationForm({ isEditable = false, form, employeeId }: BasicInf
               className="w-full py-[7px]"
               allowClear
               disabled={isSaved}
+              onChange={(value) => {
+                dispatch(
+                  updateCurrentEmployee({
+                    target: 'basicInfoData/basic',
+                    data: { dateOfDeparture: parseDayjsToIsoString(value) }
+                  })
+                );
+              }}
             />
           </Form.Item>
           {/* Phone Number */}
@@ -168,7 +256,14 @@ function BasicInformationForm({ isEditable = false, form, employeeId }: BasicInf
             label={<LabelInput title="Phone Number" description="Only numbers" />}
             rules={[{ whitespace: true }, { max: 35 }]}
           >
-            <Input placeholder={capitalizeName('Enter Employee Phone Number')} disabled={isSaved} />
+            <Input
+              placeholder={capitalizeName('Enter Employee Phone Number')}
+              disabled={isSaved}
+              onChange={(e) => {
+                const value = e.target.value;
+                dispatch(updateCurrentEmployee({ target: 'basicInfoData/basic', data: { phone: value } }));
+              }}
+            />
           </Form.Item>
           {/* Email Address */}
           <Form.Item
@@ -176,15 +271,29 @@ function BasicInformationForm({ isEditable = false, form, employeeId }: BasicInf
             label={<LabelInput title="Email Address" description="Add employee email" />}
             rules={[{ whitespace: true }, { type: 'email' }]}
           >
-            <Input placeholder={'qabdni@example.com'} disabled={isSaved} />
+            <Input
+              placeholder={'qabdni@example.com'}
+              disabled={isSaved}
+              onChange={(e) => {
+                const value = e.target.value;
+                dispatch(updateCurrentEmployee({ target: 'basicInfoData/basic', data: { email: value } }));
+              }}
+            />
           </Form.Item>
           {/* Employment Type */}
           <Form.Item
             name="employmentType"
             label={<LabelInput title="Employment Type" description="Pick one or multiple options" />}
-            initialValue={form.getFieldValue('employmentType') ?? 'fullTime'}
           >
-            <RadioGroup disabled={isSaved} defaultValue={form.getFieldValue('employmentType') ?? 'fullTime'}>
+            <RadioGroup
+              form={form}
+              name="employmentType"
+              disabled={isSaved}
+              onChange={(value) => {
+                // form.setFieldValue('employmentType', value);
+                dispatch(updateCurrentEmployee({ target: 'basicInfoData/basic', data: { employmentType: value } }));
+              }}
+            >
               <RadioButton value="fullTime">Full time</RadioButton>
               <RadioButton value="partTime">Part Time</RadioButton>
               <RadioButton value="contract">Contract</RadioButton>

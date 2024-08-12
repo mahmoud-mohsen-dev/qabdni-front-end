@@ -156,3 +156,39 @@
 .ant-table-thead .ant-table-cell {
   cursor: default;
 }
+
+.table-disabled .ant-table-thead .ant-table-cell {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+.table-disabled .ant-table-cell {
+  background-color: #fafafa;
+}
+
+/* Ant Upload Image */
+.ant-upload-wrapper
+  .ant-upload-list.ant-upload-list-picture-circle
+  .ant-upload-list-item
+  .ant-upload-list-item-thumbnail
+  .anticon {
+  font-size: 36px;
+}
+
+.ant-upload-wrapper.ant-upload-picture-circle-wrapper
+  .ant-upload-list.ant-upload-list-picture-circle
+  .ant-upload-list-item-thumbnail {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ant-upload-wrapper.ant-upload-picture-circle-wrapper
+  .ant-upload-list.ant-upload-list-picture-circle
+  .ant-upload-list-item {
+  justify-content: center;
+}
+
+.ant-upload-wrapper.ant-upload-picture-circle-wrapper
+  .ant-upload-list.ant-upload-list-picture-circle
+  .ant-upload-list-item-thumbnail {
+  font-size: 12px;
+}

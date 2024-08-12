@@ -7,7 +7,7 @@ import FilterByDepartment from '../../features/employees/components/FilterByDepa
 // import Btn from '../../components/Btn';
 import { FaPlus } from 'react-icons/fa6';
 import HeadingTitle from '../../components/HeadingTitle';
-import { Button } from 'antd';
+import { Button, Empty, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -46,9 +46,25 @@ function Employees() {
 
       {/* Employees card */}
       <div className="mt-6 grid grid-cols-350 gap-5">
-        {employees.map((employee) => (
-          <EmployeeCard employee={employee} key={uuidv4()} />
-        ))}
+        {employees.length > 0 ? (
+          employees.map((employee) => <EmployeeCard employee={employee} key={uuidv4()} />)
+        ) : (
+          // <Empty imageStyle={{ width: 300, height: 200 }} style={{ width: 300, placeSelf: 'center' }} />
+          <Empty
+            image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+            imageStyle={{ height: 154, width: 250 }}
+            style={{ width: 250, placeSelf: 'center' }}
+            description={<Typography.Text>No Data</Typography.Text>}
+          >
+            <Button
+              type="dashed"
+              className="mt-1 text-sm focus:outline-none"
+              onClick={() => navigate('/dashboard/create-employee')}
+            >
+              Create Now
+            </Button>
+          </Empty>
+        )}
       </div>
     </div>
   );

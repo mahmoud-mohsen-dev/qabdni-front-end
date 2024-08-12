@@ -6,46 +6,48 @@ import { IoMdMail } from 'react-icons/io';
 import { FaPhone } from 'react-icons/fa6';
 import Btn from '../../../components/Btn';
 import { basicInfoDataWithImageType } from '../../../types';
+import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
+import { capitalizeName } from '../../../utils/user';
 
 interface EmployeeCardType {
-  // employee: {
-  //   imageUrl: string;
-  //   name: string;
-  //   position: string;
-  //   status: 'active' | 'remote' | 'onHoliday' | 'terminated' | '';
-  //   department: string;
-  //   dateOfJoining: string;
-  //   email: string;
-  //   phone: string;
-  // };
   employee: basicInfoDataWithImageType;
 }
 
 function EmployeeCard({ employee }: EmployeeCardType) {
-  const { avatarUrl, fullName, position, status, department, dateOfJoining, email, phone } = employee;
-  console.log(employee);
-  const normalizedStatus = status.normalize();
+  const {
+    avatarInfo,
+    id,
+    basic: { fullName, position, status, department, dateOfJoining, email, phone }
+  } = employee;
+  const navigate = useNavigate();
+  // const normalizedStatus = status?.normalize() ?? 'not valid';
   let resStatus;
-  switch (normalizedStatus) {
-    case 'active' || 'remote' || 'onHoliday' || 'terminated':
-      resStatus = normalizedStatus;
+  switch (status) {
+    case 'active':
+    case 'remote':
+    case 'terminated':
+      resStatus = status;
+      break;
+    case 'onHoliday':
+      resStatus = 'on holiday';
       break;
     default:
-      resStatus = '';
+      resStatus = 'status not available';
       break;
   }
   return (
-    <div className="rounded-[20px] border border-gray/light p-6">
+    <div className="rounded-[20px] border border-gray/light px-6 py-8">
       <div className="flex items-center justify-end gap-2">
-        <StatusTag status={status}>{resStatus}</StatusTag>
+        <StatusTag status={resStatus}>{resStatus}</StatusTag>
         <DotsMenu employee={employee} />
       </div>
 
       {/* Profile Name and Image */}
       <div className="mt-2 flex gap-3">
-        {avatarUrl ? (
+        {avatarInfo.url ? (
           <img
-            src={avatarUrl}
+            src={avatarInfo.url}
             alt="profile_photo"
             className="h-[70px] w-[70px]"
             style={{
@@ -60,20 +62,22 @@ function EmployeeCard({ employee }: EmployeeCardType) {
         )}
 
         <div className="flex flex-col items-start justify-center">
-          <h3 className="text-xl font-medium">{fullName ? fullName : 'Not Valid'}</h3>
-          <h4 className="text-base font-medium">{position ? position : 'Not Valid'}</h4>
+          <h3 className="text-xl font-medium">{fullName ? capitalizeName(fullName) : 'Full name not available'}</h3>
+          <h4 className="text-base font-medium">{position ? capitalizeName(position) : 'Position not available'}</h4>
         </div>
       </div>
 
       <div className="mt-5 flex justify-between pr-5">
         <div className="flex flex-col gap-2">
           <span className="font-mullish text-xs font-normal uppercase text-gray/darkest">Department</span>
-          <span className="font-mullish text-sm font-medium">{department ? department : 'Not Specified'}</span>
+          <span className="font-mullish text-sm font-medium">
+            {department ? capitalizeName(department) : 'Not Specified'}
+          </span>
         </div>
         <div className="flex flex-col gap-2">
           <span className="font-mullish text-xs font-normal uppercase text-gray/darkest">Date of joining</span>
           <span className="font-mullish text-sm font-medium">
-            {dateOfJoining ? dateOfJoining.format('DD/MM/YYYY') : '-- / -- / ----'}
+            {dateOfJoining ? moment(dateOfJoining).format('DD/MM/YYYY') : '-- / -- / ----'}
           </span>
         </div>
       </div>
@@ -95,7 +99,13 @@ function EmployeeCard({ employee }: EmployeeCardType) {
         <Btn color="blueAccent" size="lg" className="w-full rounded-lg">
           Records
         </Btn>
-        <Btn size="lg" className="w-full">
+        <Btn
+          size="lg"
+          className="w-full"
+          onClick={() => {
+            navigate(`/dashboard/employees/${id}`);
+          }}
+        >
           Details
         </Btn>
       </div>

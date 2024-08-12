@@ -3,7 +3,7 @@ import LabelInput from '../LabelInput';
 import CustomSelect from '../../../../components/CustomSelect';
 import PositionsDrawer from '../../../company/components/Drawer/PositionsDrawer';
 import { RootState } from '../../../../store';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useDrawer from '../../../../hooks/useDrawer';
 import { attendanceAndDepartureInfoDataType, ValueItemType } from '../../../../types';
 import DepartmentsDrawer from '../../../company/components/Drawer/DepartmentsDrawer';
@@ -11,16 +11,41 @@ import useActionBtns from '../../hooks/useActionBtns';
 import type { FormInstance } from 'antd';
 import ActionBtns from '../ActionBtns';
 import SubHeading from '../SubHeading';
+import { useEffect } from 'react';
+import { updateCurrentEmployee } from '../../store/employeesSlice';
 
 interface AttendanceAndDepartureInformationProps {
   form: FormInstance<attendanceAndDepartureInfoDataType>;
-  isEditable?: boolean;
+  isEmployeeDetailsPage?: boolean;
 }
 
-function AttendanceAndDepartureInformation({ isEditable = false, form }: AttendanceAndDepartureInformationProps) {
+function AttendanceAndDepartureInformation({
+  isEmployeeDetailsPage = false,
+  form
+}: AttendanceAndDepartureInformationProps) {
   const { positions, departments } = useSelector((state: RootState) => state);
   const { openedDrawer, loading, closeDrawer, showLoading } = useDrawer();
-  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns();
+  const {
+    attendanceAndDepartureInfoData,
+    basicInfoData: { id: employeeId }
+  } = useSelector((state: RootState) => {
+    return state.employees.currentEmployee;
+  });
+  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns({
+    isSavedInitialValue: isEmployeeDetailsPage,
+    form: form,
+    id: employeeId,
+    target: 'attendanceAndDepartureInfoData'
+  });
+  const dispatch = useDispatch();
+
+  // Update form fields from the current employee data from redux store
+  useEffect(() => {
+    form.setFieldsValue({
+      ...attendanceAndDepartureInfoData
+    });
+  }, [attendanceAndDepartureInfoData]);
+
   return (
     <Form
       labelCol={{ span: 10 }}
@@ -28,16 +53,11 @@ function AttendanceAndDepartureInformation({ isEditable = false, form }: Attenda
       labelAlign="left"
       colon={false}
       requiredMark={false}
-      onFinish={(values) => {
-        console.log(values);
-        if (isEditable) {
-          handleSave();
-        }
-      }}
       form={form}
+      initialValues={{ ...attendanceAndDepartureInfoData }}
     >
-      {isEditable ? (
-        <ActionBtns form={form} isSaved={isSaved} handleEdit={handleEdit} handleCancel={handleCancel}>
+      {isEmployeeDetailsPage ? (
+        <ActionBtns isSaved={isSaved} handleSave={handleSave} handleEdit={handleEdit} handleCancel={handleCancel}>
           <SubHeading>Attendance and departure information</SubHeading>
         </ActionBtns>
       ) : (
@@ -56,6 +76,7 @@ function AttendanceAndDepartureInformation({ isEditable = false, form }: Attenda
           <PositionsDrawer isOpened={openedDrawer === 'positions'} loading={loading} closeDrawer={closeDrawer} />
           <CustomSelect
             name="fingerprintDevice"
+            // form={form}
             label={<LabelInput title="Fingerprint Device" description="Choose Fingerprint Device" isRequired={true} />}
             rules={[{ required: true, message: 'Fingerprint device is is required' }]}
             placeHolder="Choose Fingerprint Device"
@@ -71,12 +92,21 @@ function AttendanceAndDepartureInformation({ isEditable = false, form }: Attenda
               showLoading('positions');
               form.setFieldValue('department', null);
             }}
+            onChange={(value) => {
+              dispatch(
+                updateCurrentEmployee({
+                  target: 'attendanceAndDepartureInfoData',
+                  data: { fingerprintDevice: value }
+                })
+              );
+            }}
           />
 
           {/* Branch */}
           <DepartmentsDrawer isOpened={openedDrawer === 'departments'} loading={loading} closeDrawer={closeDrawer} />
           <CustomSelect
             name="branch"
+            // form={form}
             label={<LabelInput title="BRANCh" description="Choose Branch" isRequired={true} />}
             rules={[{ required: true, message: 'Branch is required' }]}
             disabled={isSaved}
@@ -92,12 +122,21 @@ function AttendanceAndDepartureInformation({ isEditable = false, form }: Attenda
               showLoading('departments');
               form.setFieldValue('department', null);
             }}
+            onChange={(value) => {
+              dispatch(
+                updateCurrentEmployee({
+                  target: 'attendanceAndDepartureInfoData',
+                  data: { branch: value }
+                })
+              );
+            }}
           />
 
           {/* Work Plan */}
           <DepartmentsDrawer isOpened={openedDrawer === 'departments'} loading={loading} closeDrawer={closeDrawer} />
           <CustomSelect
             name="workPlan"
+            // form={form}
             label={<LabelInput title="Work Plan" description="Select The Employee Work Shift" isRequired={true} />}
             rules={[{ required: true, message: 'Work plan is required' }]}
             disabled={isSaved}
@@ -112,6 +151,14 @@ function AttendanceAndDepartureInformation({ isEditable = false, form }: Attenda
             handleDrawerOpen={() => {
               showLoading('departments');
               form.setFieldValue('department', null);
+            }}
+            onChange={(value) => {
+              dispatch(
+                updateCurrentEmployee({
+                  target: 'attendanceAndDepartureInfoData',
+                  data: { workPlan: value }
+                })
+              );
             }}
           />
 
@@ -136,9 +183,21 @@ function AttendanceAndDepartureInformation({ isEditable = false, form }: Attenda
                 }
               }
             ]}
-            initialValue={0}
           >
-            <InputNumber min={0} max={365} defaultValue={0} className="w-full" disabled={isSaved} />
+            <InputNumber
+              min={0}
+              max={365}
+              className="w-full"
+              disabled={isSaved}
+              onChange={(value) => {
+                dispatch(
+                  updateCurrentEmployee({
+                    target: 'attendanceAndDepartureInfoData',
+                    data: { annualLeavesBalance: value }
+                  })
+                );
+              }}
+            />
           </Form.Item>
         </>
       )}

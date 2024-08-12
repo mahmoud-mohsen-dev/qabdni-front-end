@@ -8,7 +8,7 @@ const handleChange = (value: string) => {
 function SortBy() {
   return (
     <Select
-      defaultValue="Sort by"
+      // defaultValue="Sort by"
       placeholder="Sort by"
       style={{ minWidth: 220 }}
       size="large"

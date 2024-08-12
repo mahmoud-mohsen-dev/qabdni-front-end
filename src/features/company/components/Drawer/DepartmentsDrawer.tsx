@@ -17,6 +17,7 @@ import Btn from '../../../../components/Btn';
 import LabelInput from '../../../employees/components/LabelInput';
 import CustomDrawer from '../../../../components/CustomDrawer';
 import AddedItem from '../AddedItem';
+// import { capitalizeName } from '../../../../utils/user';
 
 interface CustomDrawerType {
   isOpened: boolean;
@@ -88,7 +89,11 @@ function DepartmentsDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType)
                 }
               ]}
             >
-              <Input type="text" placeholder="Enter Department Title" />
+              <Input
+                type="text"
+                placeholder="Enter Department Title"
+                // value={capitalizeName(form.getFieldValue('department'))}
+              />
             </Form.Item>
             <Form.Item>
               <Btn color="black" size="lg" type="submit">

@@ -1,26 +1,29 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Login from './pages/Login.tsx';
-import AuthLayout from './layouts/AuthLayout.tsx';
-import Signup from './pages/Signup.tsx';
-import Root from './layouts/Root.tsx';
-import ErrorPage from './pages/PageNotFound.tsx';
 import { ConfigProvider } from 'antd';
+import Root from './layouts/Root.tsx';
+import AuthLayout from './layouts/AuthLayout.tsx';
+import PageNotFound from './pages/PageNotFound.tsx';
 import FormElement from './components/FormElement.tsx';
 import Dashboard from './pages/Dashboard/Dashboard.tsx';
-import Overview from './pages/Dashboard/Overview.tsx';
-import Employees from './pages/Dashboard/Employees.tsx';
-import Attendance from './pages/Dashboard/Attendance.tsx';
-import Analytics from './pages/Dashboard/Analytics.tsx';
-import Payroll from './pages/Dashboard/Payroll.tsx';
-import Settings from './pages/Dashboard/Settings.tsx';
-import CreateEmployee from './features/employees/pages/CreateEmployee.tsx';
-import Leaves from './features/employees/pages/Leaves.tsx';
+import { lazy } from 'react';
+import EmployeeDetails from './features/employees/pages/EmployeeDetails.tsx';
+
+const Login = lazy(() => import('./pages/Login.tsx'));
+const Signup = lazy(() => import('./pages/Signup.tsx'));
+const Overview = lazy(() => import('./pages/Dashboard/Overview.tsx'));
+const Attendance = lazy(() => import('./pages/Dashboard/Attendance.tsx'));
+const Employees = lazy(() => import('./pages/Dashboard/Employees.tsx'));
+const CreateEmployee = lazy(() => import('./features/employees/pages/CreateEmployee.tsx'));
+const Leaves = lazy(() => import('./features/employees/pages/Leaves.tsx'));
+const Analytics = lazy(() => import('./pages/Dashboard/Analytics.tsx'));
+const Payroll = lazy(() => import('./pages/Dashboard/Payroll.tsx'));
+const Settings = lazy(() => import('./pages/Dashboard/Settings.tsx'));
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Root />,
-    errorElement: <ErrorPage />,
+    errorElement: <PageNotFound />,
     children: [
       {
         element: <AuthLayout />,
@@ -46,6 +49,7 @@ const router = createBrowserRouter([
       {
         path: 'dashboard',
         element: <Dashboard />,
+
         children: [
           {
             path: 'overview',
@@ -58,7 +62,13 @@ const router = createBrowserRouter([
           {
             path: 'employees',
             element: <Employees />
+            // loader: async () => {
+            //   // Simulate a data loading delay
+            //   await new Promise((resolve) => setTimeout(resolve, 5000));
+            //   return {};
+            // }
           },
+          { path: 'employees/:employeeId', element: <EmployeeDetails /> },
           { path: 'create-employee', element: <CreateEmployee /> },
           { path: 'leaves', element: <Leaves /> },
           {

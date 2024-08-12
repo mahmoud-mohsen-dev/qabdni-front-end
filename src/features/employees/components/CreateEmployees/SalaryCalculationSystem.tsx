@@ -7,19 +7,52 @@ import type { FormInstance } from 'antd';
 import ActionBtns from '../ActionBtns';
 import SubHeading from '../SubHeading';
 import { salaryCalculationSystemDataType } from '../../../../types';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../../store';
+import { useEffect } from 'react';
+import { updateCurrentEmployee } from '../../store/employeesSlice';
+import { valueInArray } from '../../../../utils/helpers';
 
 interface SalaryCalculationSystemProps {
   form: FormInstance<salaryCalculationSystemDataType>;
-  isEditable?: boolean;
+  isEmployeeDetailsPage?: boolean;
 }
 
-function SalaryCalculationSystem({ isEditable = false, form }: SalaryCalculationSystemProps) {
-  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns();
+function SalaryCalculationSystem({ isEmployeeDetailsPage = false, form }: SalaryCalculationSystemProps) {
+  const {
+    salaryCalculationSystemData,
+    basicInfoData: { id: idEmployee }
+  } = useSelector((state: RootState) => {
+    return state.employees.currentEmployee;
+  });
+  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns({
+    isSavedInitialValue: isEmployeeDetailsPage,
+    form: form,
+    id: idEmployee,
+    target: 'salaryCalculationSystemData'
+  });
+  const dispatch = useDispatch();
+  // Update form fields from the current employee data from redux store
+  useEffect(() => {
+    form.setFieldsValue({
+      ...salaryCalculationSystemData,
+      // currency: valueInArray(salaryCalculationSystemData.currency, ['EGP', 'USD', 'EUR', 'GBP', 'CNY'], 'EGP'),
+      currency: valueInArray(salaryCalculationSystemData.currency, ['EGP', 'USD', 'EUR'], 'EGP'),
+      period: valueInArray(salaryCalculationSystemData.period, ['hourly', 'monthly'], 'monthly')
+    });
+  }, [salaryCalculationSystemData]);
 
   const { Option } = Select;
   const selectBefore = (
-    <Form.Item name="currency" className="!mb-0 flex h-[32px] items-center justify-center" initialValue="EGP">
-      <Select style={{ width: 80 }} suffixIcon={<IoIosArrowDown size={18} color="rgba(0, 0, 0, 0.20)" />}>
+    <Form.Item name="currency" className="!mb-0 flex h-[32px] items-center justify-center">
+      <Select
+        style={{ width: 80 }}
+        suffixIcon={<IoIosArrowDown size={18} color="rgba(0, 0, 0, 0.20)" />}
+        disabled={isSaved}
+        onChange={(value) => {
+          dispatch(updateCurrentEmployee({ target: 'salaryCalculationSystemData', data: { currency: value } }));
+        }}
+      >
         <Option value="EGP">ج.م</Option>
         <Option value="USD">$</Option>
         <Option value="EUR">€</Option>
@@ -29,8 +62,15 @@ function SalaryCalculationSystem({ isEditable = false, form }: SalaryCalculation
     </Form.Item>
   );
   const selectAfter = (
-    <Form.Item name="period" className="!mb-0 flex h-[32px] items-center justify-center" initialValue={'monthly'}>
-      <Select style={{ width: 120 }} suffixIcon={<IoIosArrowDown size={18} color="rgba(0, 0, 0, 0.20)" />}>
+    <Form.Item name="period" className="!mb-0 flex h-[32px] items-center justify-center">
+      <Select
+        style={{ width: 120 }}
+        suffixIcon={<IoIosArrowDown size={18} color="rgba(0, 0, 0, 0.20)" />}
+        disabled={isSaved}
+        onChange={(value) => {
+          dispatch(updateCurrentEmployee({ target: 'salaryCalculationSystemData', data: { period: value } }));
+        }}
+      >
         <Option value="hourly">Hourly</Option>
         <Option value="monthly">Monthly</Option>
       </Select>
@@ -44,16 +84,15 @@ function SalaryCalculationSystem({ isEditable = false, form }: SalaryCalculation
       labelAlign="left"
       colon={false}
       requiredMark={false}
-      onFinish={(values) => {
-        console.log(values);
-        if (isEditable) {
-          handleSave();
-        }
-      }}
       form={form}
+      initialValues={{
+        ...salaryCalculationSystemData,
+        currency: valueInArray(salaryCalculationSystemData.currency, ['EGP', 'USD', 'EUR'], 'EGP'),
+        period: valueInArray(salaryCalculationSystemData.period, ['hourly', 'monthly'], 'monthly')
+      }}
     >
-      {isEditable ? (
-        <ActionBtns form={form} isSaved={isSaved} handleEdit={handleEdit} handleCancel={handleCancel}>
+      {isEmployeeDetailsPage ? (
+        <ActionBtns isSaved={isSaved} handleSave={handleSave} handleEdit={handleEdit} handleCancel={handleCancel}>
           <SubHeading>Salary Calculation System</SubHeading>
         </ActionBtns>
       ) : (
@@ -83,9 +122,18 @@ function SalaryCalculationSystem({ isEditable = false, form }: SalaryCalculation
                 }
               }
             ]}
-            initialValue={0}
+
+            // initialValue={0}
           >
-            <InputNumber addonBefore={selectBefore} addonAfter={selectAfter} disabled={isSaved} />
+            <InputNumber
+              min={0}
+              addonBefore={selectBefore}
+              addonAfter={selectAfter}
+              disabled={isSaved}
+              onChange={(value) => {
+                dispatch(updateCurrentEmployee({ target: 'salaryCalculationSystemData', data: { salary: value } }));
+              }}
+            />
           </Form.Item>
 
           {/* Insurances */}
@@ -109,9 +157,17 @@ function SalaryCalculationSystem({ isEditable = false, form }: SalaryCalculation
                 }
               }
             ]}
-            initialValue={0}
+            // initialValue={0}
           >
-            <InputNumber min={0} style={{ width: '100%' }} placeholder="Employee Pays Amount" disabled={isSaved} />
+            <InputNumber
+              min={0}
+              style={{ width: '100%' }}
+              placeholder="Employee Pays Amount"
+              disabled={isSaved}
+              onChange={(value) => {
+                dispatch(updateCurrentEmployee({ target: 'salaryCalculationSystemData', data: { insurances: value } }));
+              }}
+            />
           </Form.Item>
 
           {/* Taxes */}
@@ -123,20 +179,26 @@ function SalaryCalculationSystem({ isEditable = false, form }: SalaryCalculation
                 validator: (_, value) => {
                   console.log(value);
                   if (typeof value !== 'number' || value < 0) {
-                    return Promise.reject(new Error('Taxes must have a value equal or bigger than zero'));
+                    return Promise.reject(new Error('Taxes must have a value equal or bigger than 0%'));
+                  }
+                  if (typeof value == 'number' && value > 100) {
+                    return Promise.reject(new Error('Taxes must have a value equal or less than 100%'));
                   }
                   return Promise.resolve();
                 }
               }
             ]}
-            initialValue={0}
+            // initialValue={0}
           >
             <InputNumber
               min={0}
-              max={100}
+              // max={100}
               placeholder={capitalizeName('Enter Taxes Percentage')}
               disabled={isSaved}
               className="w-full"
+              onChange={(value) => {
+                dispatch(updateCurrentEmployee({ target: 'salaryCalculationSystemData', data: { taxes: value } }));
+              }}
             />
           </Form.Item>
         </>

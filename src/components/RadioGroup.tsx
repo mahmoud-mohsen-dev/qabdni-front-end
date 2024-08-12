@@ -1,8 +1,10 @@
-import { createContext, useContext, useState, ReactNode, ChangeEvent } from 'react';
+import { createContext, useContext, ReactNode, ChangeEvent } from 'react';
+import type { FormInstance } from 'antd';
 
 // Create context
 interface RadioGroupContextProps {
-  selectedValue: string;
+  form: FormInstance<any>;
+  name: string;
   disabled: boolean;
   handleChange: (value: string) => void;
 }
@@ -20,24 +22,23 @@ const useRadioGroup = () => {
 // RadioGroup component
 interface RadioGroupProps {
   children: ReactNode;
-  defaultValue?: string;
+  form: FormInstance<any>;
+  name: string;
   className?: string;
   disabled?: boolean;
-  onChange?: (value: string) => void;
+  onChange: (value: any) => void;
 }
 
-const RadioGroup = ({ children, className = '', defaultValue, disabled = false, onChange }: RadioGroupProps) => {
-  const [selectedValue, setSelectedValue] = useState(defaultValue || '');
+const RadioGroup = ({ children, form, name, className = '', disabled = false, onChange }: RadioGroupProps) => {
+  // const [selectedValue, setSelectedValue] = useState(radioValue);
 
   const handleChange = (value: string) => {
-    setSelectedValue(value);
-    if (onChange) {
-      onChange(value);
-    }
+    // setSelectedValue(value);
+    onChange(value);
   };
 
   return (
-    <RadioGroupContext.Provider value={{ selectedValue, handleChange, disabled }}>
+    <RadioGroupContext.Provider value={{ form, name, handleChange, disabled }}>
       <div className={`flex flex-wrap items-center gap-3 ${className}`}>{children}</div>
     </RadioGroupContext.Provider>
   );
@@ -50,13 +51,12 @@ interface RadioButtonType {
 }
 
 function RadioButton({ value, children = '' }: RadioButtonType) {
-  const { selectedValue, handleChange, disabled } = useRadioGroup();
+  const { form, name, handleChange, disabled } = useRadioGroup();
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.name);
+    // console.log(e.target.name);
     handleChange(e.target.value);
   };
-
   return (
     <label className={`radio-color-label radio-group capitalize ${disabled ? 'disabled' : ''}`}>
       <input
@@ -64,11 +64,11 @@ function RadioButton({ value, children = '' }: RadioButtonType) {
         type="radio"
         value={value}
         onChange={onChange}
-        checked={selectedValue === value}
+        checked={form.getFieldValue(name) === value}
         disabled={disabled}
       />
       <span
-        className={`custom-radio ${disabled ? (selectedValue === value ? 'after:bg-gray-200' : 'bg-[rgb(0,0,0,0.04)]') : selectedValue === value ? 'after:bg-indigo/accent' : 'after:bg-white'}`}
+        className={`custom-radio ${disabled ? (form.getFieldValue(name) === value ? 'after:bg-gray-200' : 'bg-[rgb(0,0,0,0.04)]') : form.getFieldValue(name) === value ? 'after:bg-indigo/accent' : 'after:bg-white'}`}
       />
       {children}
     </label>

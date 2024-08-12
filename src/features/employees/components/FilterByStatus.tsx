@@ -8,7 +8,7 @@ const handleChange = (value: string) => {
 function FilterByStatus() {
   return (
     <Select
-      defaultValue="Status"
+      // defaultValue="Status"
       placeholder="Status"
       // style={{ minWidth: 180 }}
       size="large"

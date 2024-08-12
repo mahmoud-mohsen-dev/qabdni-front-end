@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, message, Upload } from 'antd';
 import type { GetProp, UploadFile, UploadProps } from 'antd';
 import ImgCrop from 'antd-img-crop';
@@ -6,6 +6,10 @@ import ImgCrop from 'antd-img-crop';
 import { FiPaperclip } from 'react-icons/fi';
 import { v4 } from 'uuid';
 import type { UploadChangeParam } from 'antd/es/upload';
+import { AvatarInfo } from '../types';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store';
+import { updateCurrentEmployee } from '../features/employees/store/employeesSlice';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -29,33 +33,37 @@ const beforeUpload = (file: FileType) => {
   return isJpgOrPng && isLt2M;
 };
 
-export interface ImageInfoType {
-  uid: string;
-  name: string;
-  status: 'uploading' | 'done' | 'error';
-  url: string;
-}
+// interface UploadImageProps {
+//   imageInfo: AvatarInfo;
+//   setImageInfo: React.Dispatch<React.SetStateAction<AvatarInfo>>;
+// }
 
-interface UploadImageProps {
-  imageInfo: ImageInfoType;
-  setImageInfo: React.Dispatch<React.SetStateAction<ImageInfoType>>;
-}
-
-function UploadImage({ imageInfo, setImageInfo }: UploadImageProps) {
+function UploadImage() {
+  const { avatarInfo } = useSelector((state: RootState) => state.employees.currentEmployee.basicInfoData);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
-  const [fileList, setFileList] = useState<UploadFile[]>([imageInfo]);
+  const [fileList, setFileList] = useState<UploadFile[]>([avatarInfo]);
 
-  const getImageData = (info: UploadChangeParam<UploadFile<ImageInfoType>>) => {
+  // console.log(JSON.parse(JSON.stringify(avatarInfo)));
+  // console.log(JSON.parse(JSON.stringify(fileList)));
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    setFileList([avatarInfo]);
+  }, [avatarInfo]);
+
+  const getImageData = (info: UploadChangeParam<UploadFile<AvatarInfo>>) => {
     const uid = v4();
+    console.log(`${info.file.name}`);
+    const arr = info.file.name.split('.');
+    const fileType = arr[arr.length - 1];
     const value = {
       uid: uid,
-      name: `image-${uid}`,
+      name: `image-${uid}.${fileType}`,
       status: 'done' as const,
-      url: `${info.file.url}`
+      url: info.file.url ?? ''
     };
-    setImageInfo(value);
-    console.log(value);
+    dispatch(updateCurrentEmployee({ target: 'basicInfoData', data: { avatarInfo: value } }));
   };
 
   const onChange: UploadProps['onChange'] = (info) => {
@@ -68,8 +76,8 @@ function UploadImage({ imageInfo, setImageInfo }: UploadImageProps) {
       getImageData(info);
     } else if (info.file.status === 'error') {
       message.error(`${info.file.name} file upload failed.`);
-      getImageData(info);
     }
+    // getImageData(info);
   };
 
   const onPreview = async (file: UploadFile) => {
@@ -82,7 +90,7 @@ function UploadImage({ imageInfo, setImageInfo }: UploadImageProps) {
   };
 
   return (
-    <div className="">
+    <div>
       <ImgCrop rotationSlider>
         <Upload
           action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"

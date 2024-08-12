@@ -6,14 +6,38 @@ import SubHeading from '../SubHeading';
 import type { FormInstance } from 'antd';
 import ActionBtns from '../ActionBtns';
 import { emergencyContactDataType } from '../../../../types';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../../store';
+import { useEffect } from 'react';
+import { updateCurrentEmployee } from '../../store/employeesSlice';
 
 interface EmergencyContactProps {
   form: FormInstance<emergencyContactDataType>;
-  isEditable?: boolean;
+  isEmployeeDetailsPage?: boolean;
 }
 
-function EmergencyContact({ isEditable = false, form }: EmergencyContactProps) {
-  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns();
+function EmergencyContact({ isEmployeeDetailsPage = false, form }: EmergencyContactProps) {
+  const {
+    emergencyContactData,
+    basicInfoData: { id: employeeId }
+  } = useSelector((state: RootState) => {
+    return state.employees.currentEmployee;
+  });
+  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns({
+    isSavedInitialValue: isEmployeeDetailsPage,
+    form: form,
+    id: employeeId,
+    target: 'emergencyContactData'
+  });
+  const dispatch = useDispatch();
+
+  // Update form fields from the current employee data from redux store
+  useEffect(() => {
+    form.setFieldsValue({
+      ...emergencyContactData
+    });
+  }, [emergencyContactData]);
+
   return (
     <Form
       labelCol={{ span: 10 }}
@@ -21,16 +45,11 @@ function EmergencyContact({ isEditable = false, form }: EmergencyContactProps) {
       labelAlign="left"
       colon={false}
       requiredMark={false}
-      onFinish={(values) => {
-        console.log(values);
-        if (isEditable) {
-          handleSave();
-        }
-      }}
       form={form}
+      initialValues={{ ...emergencyContactData }}
     >
-      {isEditable ? (
-        <ActionBtns form={form} isSaved={isSaved} handleEdit={handleEdit} handleCancel={handleCancel}>
+      {isEmployeeDetailsPage ? (
+        <ActionBtns isSaved={isSaved} handleSave={handleSave} handleEdit={handleEdit} handleCancel={handleCancel}>
           <SubHeading>Bank information</SubHeading>
         </ActionBtns>
       ) : (
@@ -51,7 +70,16 @@ function EmergencyContact({ isEditable = false, form }: EmergencyContactProps) {
             label={<LabelInput title="Emergency Contact Name" description="Add emergency contact full name " />}
             rules={[{ whitespace: true }, { max: 35 }]}
           >
-            <Input placeholder={capitalizeName('Contact Name')} disabled={isSaved} />
+            <Input
+              placeholder={capitalizeName('Contact Name')}
+              disabled={isSaved}
+              onChange={(e) => {
+                const value = e.target.value;
+                dispatch(
+                  updateCurrentEmployee({ target: 'emergencyContactData', data: { emergencyContactName: value } })
+                );
+              }}
+            />
           </Form.Item>
 
           {/* Phone Number */}
@@ -60,7 +88,16 @@ function EmergencyContact({ isEditable = false, form }: EmergencyContactProps) {
             label={<LabelInput title="Phone Number" description="Only numbers" />}
             rules={[{ whitespace: true }, { max: 35 }]}
           >
-            <Input placeholder={capitalizeName('Enter Emergency Contact Number')} disabled={isSaved} />
+            <Input
+              placeholder={capitalizeName('Enter Emergency Contact Number')}
+              disabled={isSaved}
+              onChange={(e) => {
+                const value = e.target.value;
+                dispatch(
+                  updateCurrentEmployee({ target: 'emergencyContactData', data: { emergencyContactPhone: value } })
+                );
+              }}
+            />
           </Form.Item>
         </>
       )}

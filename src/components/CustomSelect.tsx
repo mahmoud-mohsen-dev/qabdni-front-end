@@ -1,10 +1,14 @@
 import { Divider, Form, Select, Space } from 'antd';
+// import type { FormInstance } from 'antd';
 import { FaPlus } from 'react-icons/fa6';
 import { IoIosArrowDown } from 'react-icons/io';
 import { capitalizeName } from '../utils/user';
 
 interface CustomSelectType {
   name: string;
+  // form: FormInstance<any>;
+  // value: string | null;
+  onChange: (value: string) => void;
   label: JSX.Element;
   rules: {
     [keyof: string]: unknown;
@@ -21,12 +25,15 @@ interface CustomSelectType {
 
 function CustomSelect({
   name,
+  // form,
   label,
   rules,
   placeHolder,
   disabled,
   createText,
   options,
+  // value,
+  onChange,
   handleDrawerOpen
 }: CustomSelectType) {
   const finalOptions = options();
@@ -34,7 +41,7 @@ function CustomSelect({
   const handleClick = () => {
     handleDrawerOpen();
   };
-
+  // initialValue={form.getFieldValue(name) ?? ''}
   return (
     <Form.Item name={name} label={label} rules={rules}>
       <Select
@@ -43,6 +50,10 @@ function CustomSelect({
         options={finalOptions}
         allowClear
         disabled={disabled}
+        // value={value ?? null}
+        onChange={(value) => {
+          onChange(value);
+        }}
         dropdownRender={(menu) => (
           <>
             {menu}

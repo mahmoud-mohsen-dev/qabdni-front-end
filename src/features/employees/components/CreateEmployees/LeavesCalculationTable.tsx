@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { GetRef } from 'antd';
 import { Form, InputNumber, Table } from 'antd';
 import { LeavesTableData } from '../../../../types';
+import { useParams } from 'react-router-dom';
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
 const EditableContext = React.createContext<FormInstance<unknown> | null>(null);
 
 interface Item {
+  key: string;
   emergencyLeave: number;
   otherLeave: number;
   personalLeave: number;
@@ -48,7 +50,8 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   handleSave,
   ...restProps
 }) => {
-  const [editing, setEditing] = useState(false);
+  const { employeeId } = useParams();
+  const [editing, setEditing] = useState(() => (employeeId ? true : false));
 
   const inputRef = useRef<any>(null);
   const form = useContext(EditableContext)!;
@@ -79,14 +82,18 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
   if (editable) {
     childNode = editing ? (
-      <Form.Item style={{ margin: 0 }} name={dataIndex} className="flex w-full items-center justify-center">
+      <Form.Item
+        style={{ margin: 0 }}
+        name={dataIndex}
+        className="flex w-full items-center justify-center"
+        initialValue={record[dataIndex]}
+      >
         <InputNumber
           ref={inputRef}
           className="flex w-[140px] items-center justify-center"
           addonAfter="Day(s)"
           min={0}
           onBlur={save}
-          defaultValue={0}
         />
       </Form.Item>
     ) : (
@@ -112,10 +119,14 @@ type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
 const LeavesCalculationTable = ({
   dataSource,
-  setDataSource
+  setDataSource,
+  isEmployeeDetailsPage = false,
+  isSaved = false
 }: {
-  dataSource: LeavesTableData[];
-  setDataSource: React.Dispatch<React.SetStateAction<LeavesTableData[]>>;
+  dataSource: [LeavesTableData];
+  setDataSource: React.Dispatch<React.SetStateAction<[LeavesTableData]>>;
+  isEmployeeDetailsPage?: boolean;
+  isSaved?: boolean;
 }) => {
   // useEffect(() => {
   //   console.log('='.repeat(30));
@@ -137,12 +148,16 @@ const LeavesCalculationTable = ({
       title: 'Emergency Leave',
       dataIndex: 'emergencyLeave',
       align: 'center',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       render: (value) => {
         return (
-          <p className="flex items-center justify-center gap-1">
-            <span>{value}</span>
-            <span>day(s)</span>
+          <p className="flex min-h-[11px] items-center justify-center gap-1">
+            {value && (
+              <>
+                <span>{value}</span>
+                <span>day(s)</span>
+              </>
+            )}
           </p>
         );
       }
@@ -151,12 +166,16 @@ const LeavesCalculationTable = ({
       title: 'Other Leave',
       dataIndex: 'otherLeave',
       align: 'center',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       render: (value) => {
         return (
-          <p className="flex items-center justify-center gap-1">
-            <span>{value}</span>
-            <span>day(s)</span>
+          <p className="flex min-h-[11px] items-center justify-center gap-1">
+            {value && (
+              <>
+                <span>{value}</span>
+                <span>day(s)</span>
+              </>
+            )}
           </p>
         );
       }
@@ -165,12 +184,16 @@ const LeavesCalculationTable = ({
       title: 'Personal Leave',
       dataIndex: 'personalLeave',
       align: 'center',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       render: (value) => {
         return (
-          <p className="flex items-center justify-center gap-1">
-            <span>{value}</span>
-            <span>day(s)</span>
+          <p className="flex min-h-[11px] items-center justify-center gap-1">
+            {value && (
+              <>
+                <span>{value}</span>
+                <span>day(s)</span>
+              </>
+            )}
           </p>
         );
       }
@@ -179,12 +202,16 @@ const LeavesCalculationTable = ({
       title: 'Public Holidays',
       dataIndex: 'publicHolidays',
       align: 'center',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       render: (value) => {
         return (
-          <p className="flex items-center justify-center gap-1">
-            <span>{value}</span>
-            <span>day(s)</span>
+          <p className="flex min-h-[11px] items-center justify-center gap-1">
+            {value && (
+              <>
+                <span>{value}</span>
+                <span>day(s)</span>
+              </>
+            )}
           </p>
         );
       }
@@ -193,12 +220,16 @@ const LeavesCalculationTable = ({
       title: 'Sick Leave',
       dataIndex: 'sickLeave',
       align: 'center',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       render: (value) => {
         return (
-          <p className="flex items-center justify-center gap-1">
-            <span>{value}</span>
-            <span>day(s)</span>
+          <p className="flex min-h-[11px] items-center justify-center gap-1">
+            {value && (
+              <>
+                <span>{value}</span>
+                <span>day(s)</span>
+              </>
+            )}
           </p>
         );
       }
@@ -207,12 +238,16 @@ const LeavesCalculationTable = ({
       title: 'Study Leave',
       dataIndex: 'studyLeave',
       align: 'center',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       render: (value) => {
         return (
-          <p className="flex items-center justify-center gap-1">
-            <span>{value}</span>
-            <span>day(s)</span>
+          <p className="flex min-h-[11px] items-center justify-center gap-1">
+            {value && (
+              <>
+                <span>{value}</span>
+                <span>day(s)</span>
+              </>
+            )}
           </p>
         );
       }
@@ -221,12 +256,16 @@ const LeavesCalculationTable = ({
       title: 'Unauthorized Leave',
       dataIndex: 'unauthorizedLeave',
       align: 'center',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       render: (value) => {
         return (
-          <p className="flex items-center justify-center gap-1">
-            <span>{value}</span>
-            <span>day(s)</span>
+          <p className="flex min-h-[11px] items-center justify-center gap-1">
+            {value && (
+              <>
+                <span>{value}</span>
+                <span>day(s)</span>
+              </>
+            )}
           </p>
         );
       }
@@ -235,12 +274,16 @@ const LeavesCalculationTable = ({
       title: 'Unpaid Leave',
       dataIndex: 'unpaidLeave',
       align: 'center',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       render: (value) => {
         return (
-          <p className="flex items-center justify-center gap-1">
-            <span>{value}</span>
-            <span>day(s)</span>
+          <p className="flex min-h-[11px] items-center justify-center gap-1">
+            {value && (
+              <>
+                <span>{value}</span>
+                <span>day(s)</span>
+              </>
+            )}
           </p>
         );
       }
@@ -249,12 +292,16 @@ const LeavesCalculationTable = ({
       title: 'Vacation Leave',
       dataIndex: 'vacationLeave',
       align: 'center',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       render: (value) => {
         return (
-          <p className="flex items-center justify-center gap-1">
-            <span>{value}</span>
-            <span>day(s)</span>
+          <p className="flex min-h-[11px] items-center justify-center gap-1">
+            {value && (
+              <>
+                <span>{value}</span>
+                <span>day(s)</span>
+              </>
+            )}
           </p>
         );
       }
@@ -263,12 +310,16 @@ const LeavesCalculationTable = ({
       title: 'Work From Home',
       dataIndex: 'workFromHome',
       align: 'center',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       render: (value) => {
         return (
-          <p className="flex items-center justify-center gap-1">
-            <span>{value}</span>
-            <span>day(s)</span>
+          <p className="flex min-h-[11px] items-center justify-center gap-1">
+            {value && (
+              <>
+                <span>{value}</span>
+                <span>day(s)</span>
+              </>
+            )}
           </p>
         );
       }
@@ -276,13 +327,8 @@ const LeavesCalculationTable = ({
   ];
 
   const handleSave = (row: LeavesTableData) => {
-    const newData = [...dataSource];
-    const item = newData[0];
-    newData.splice(0, 1, {
-      ...item,
-      ...row
-    });
-    setDataSource(newData);
+    const newData = { ...dataSource[0], ...row };
+    setDataSource([newData]);
   };
 
   const components = {
@@ -318,7 +364,7 @@ const LeavesCalculationTable = ({
         columns={columns as ColumnTypes}
         pagination={{ position: ['none'] }}
         scroll={{ x: 1800 }}
-        className="overflow-x-auto"
+        className={`${isSaved ? 'table-disabled' : ''}`}
       />
     </div>
   );

@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const getNavDate = () => {
   const date = new Date();
   return date.toLocaleString('en-US', {
@@ -32,4 +34,34 @@ const convertToCustomDate = (date: string) => {
   }).format(new Date(date));
 };
 
-export { getNavDate, getNavTime, convertToCustomDate, isoToDate };
+const parseIsoStringToDayjs = (value) => {
+  // Check if value is falsy
+  if (!value) {
+    return null;
+  }
+
+  // Check if value is a valid ISO string
+  if (typeof value === 'string' && dayjs(value).isValid()) {
+    return dayjs(value);
+  }
+
+  // Return null for invalid date strings or other values
+  return null;
+};
+
+const parseDayjsToIsoString = (value) => {
+  // Check if value is falsy
+  if (!value) {
+    return null;
+  }
+
+  // Check if value is a valid dayjs object
+  if (typeof value === 'object' && value.isValid()) {
+    return value.toISOString();
+  }
+
+  // Return null for invalid date strings or other values
+  return null;
+};
+
+export { getNavDate, getNavTime, parseIsoStringToDayjs, parseDayjsToIsoString, convertToCustomDate, isoToDate };

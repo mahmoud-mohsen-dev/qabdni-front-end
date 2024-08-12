@@ -3,7 +3,6 @@ import { HiMiniXMark } from 'react-icons/hi2';
 import { IoIosSave } from 'react-icons/io';
 import { MdSync } from 'react-icons/md';
 import Btn from '../../../components/Btn';
-import type { FormInstance } from 'antd';
 import { GoDotFill } from 'react-icons/go';
 
 interface ActionBtnsType {
@@ -14,35 +13,30 @@ interface ActionBtnsType {
   appliedGlobalSettings?: boolean;
   handleOnlyGlobal?: () => void;
   handleGlobal?: () => void;
+  handleSave: () => void;
   handleEdit: () => void;
   handleCancel: () => void;
-  form: FormInstance<unknown>;
 }
 
 function ActionBtns({
   children,
   isSaved = true,
   handleGlobal = () => {},
+  handleSave,
   handleCancel,
   handleEdit,
   global,
   handleOnlyGlobal,
   onlyGlobal = false,
-  appliedGlobalSettings = false,
-  form
+  appliedGlobalSettings = false
 }: ActionBtnsType) {
-  const styles = `text-sm font-medium text-gray/darkest`;
+  const styles = `text-xs font-semibold text-gray/darkest`;
   const iconSize = 18;
-
-  const onCancel = () => {
-    handleCancel();
-    form.resetFields();
-  };
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
       {children}
-      <div className="mb-4 flex items-center gap-4">
+      <div className="mb-4 flex items-center gap-[10px]">
         {onlyGlobal ? (
           appliedGlobalSettings ? (
             <Btn color="greenOutline" className={`${styles}`} type="button" size="none" onClick={handleOnlyGlobal}>
@@ -69,11 +63,11 @@ function ActionBtns({
                 Apply Global Settings
               </Btn>
             )}
-            <Btn color="none" className={`${styles}`} type="button" size="none" onClick={onCancel}>
+            <Btn color="none" className={`${styles}`} type="button" size="none" onClick={handleCancel}>
               <HiMiniXMark size={iconSize} />
               Cancel
             </Btn>
-            <Btn color="none" className={`${styles}`} type="submit" size="none">
+            <Btn color="none" className={`${styles}`} type="submit" size="none" onClick={handleSave}>
               <IoIosSave size={iconSize} />
               Save
             </Btn>

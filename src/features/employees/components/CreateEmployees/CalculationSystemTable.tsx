@@ -2,11 +2,12 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { GetRef } from 'antd';
 import { Form, InputNumber, Popconfirm, Select, Switch, Table, TimePicker, Tooltip } from 'antd';
 import BtnAddNewRow from '../../../../components/BtnAddNewRow';
-import type { Moment } from 'moment';
-import moment from 'moment';
 import { IoIosArrowDown } from 'react-icons/io';
 import { QuestionCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { TableRowType } from '../../../../types';
+import { useParams } from 'react-router-dom';
+import { parseDayjsToIsoString, parseIsoStringToDayjs } from '../../../../utils/date';
+import dayjs, { Dayjs } from 'dayjs';
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
@@ -30,6 +31,7 @@ interface EditableCellProps {
   dataIndex: keyof TableRowType;
   record: TableRowType;
   handleSave: (record: TableRowType) => void;
+  handleDataSourceWithTimePickerISODate: (newData: DataType[]) => void;
 }
 
 const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
@@ -41,7 +43,10 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   handleSave,
   ...restProps
 }) => {
-  const [editing, setEditing] = useState(false);
+  const { employeeId } = useParams();
+
+  const [editing, setEditing] = useState(() => (employeeId ? true : false));
+  const [openMenu, setOpenMenu] = useState(false);
 
   const inputRef = useRef<any>(null);
   // const timePickerRef = useRef<any>(null);
@@ -57,6 +62,8 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
   const toggleEdit = () => {
     setEditing(!editing);
+    // setEditing(false);
+    // dispatch(toggleTableEditing());
     form.setFieldsValue({ [dataIndex]: record[dataIndex] });
   };
 
@@ -76,8 +83,25 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
   if (editable) {
     childNode = editing ? (
-      <Form.Item style={{ margin: 0 }} name={dataIndex}>
-        {dataIndex === 'multiplier' ? (
+      <Form.Item style={{ margin: 0 }} name={dataIndex} initialValue={record[dataIndex]}>
+        {(dataIndex === 'durationStart' || dataIndex === 'durationEnd') && (
+          <TimePicker
+            // ref={inputRef}
+            onOk={save}
+            defaultOpen={openMenu}
+            format="HH:mm"
+            showNow={false}
+            onFocus={() => {
+              setOpenMenu(true);
+            }}
+            onBlur={() => {
+              setOpenMenu(false);
+            }}
+            className="min-h-[32px] w-[140px]"
+          />
+        )}
+
+        {dataIndex === 'multiplier' && (
           <InputNumber
             // ref={inputRef}
             className="flex w-[180px] items-center justify-center"
@@ -88,14 +112,14 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
                 initialValue={record['multiplier-duration'] ?? 'times'}
               >
                 <Select
-                  defaultValue={record['multiplier-duration'] ?? 'times'}
+                  // defaultValue={record['multiplier-duration'] ?? 'times'}
                   style={{ width: 110 }}
                   suffixIcon={<IoIosArrowDown size={16} color="rgba(0, 0, 0, 0.20)" />}
                   options={[
                     { label: 'Times', value: 'times' },
                     { label: 'Day(s)', value: 'day(s)' }
                   ]}
-                  value={record['multiplier-duration'] ?? 'times'}
+                  // value={record['multiplier-duration'] ?? 'times'}
                   onChange={(value: 'day(s)' | 'times') => handleSave({ ...record, 'multiplier-duration': value })}
                   onBlur={save}
                 />
@@ -104,24 +128,24 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
             min={0}
             onPressEnter={save}
             onBlur={save}
+            // disabled={calculationSystemsTablesIsEditable}
           />
-        ) : dataIndex === 'durationStart' || dataIndex === 'durationEnd' ? (
-          <TimePicker ref={inputRef} onOk={save} defaultOpen format="HH:mm" />
-        ) : (
+        )}
+        {dataIndex === 'minimumOccurrences' && (
           <InputNumber
-            ref={inputRef}
+            // ref={inputRef}
             className="mx-auto flex w-[140px] items-center justify-center"
-            addonAfter="Times"
+            addonAfter="Time(s)"
             min={0}
             onPressEnter={save}
             onBlur={save}
-            defaultValue={record['minimumOccurrences'] ?? 0}
+            // defaultValue={record['minimumOccurrences'] ?? 0}
           />
         )}
       </Form.Item>
     ) : (
       <button
-        className="editable-cell-value-wrap rounded-lg border-2 border-solid border-transparent px-[11px] py-2 hover:border-gray/lighter focus:outline-none"
+        className="editable-cell-value-wrap min-h-[30px] min-w-[100px] rounded-lg border-2 border-solid border-transparent px-[11px] py-2 hover:border-gray/lighter focus:outline-none"
         onClick={toggleEdit}
       >
         {children}
@@ -141,8 +165,8 @@ type EditableTableProps = Parameters<typeof Table>[0];
 export interface DataType {
   key: string | number;
   isEnabled: boolean;
-  durationStart: Moment;
-  durationEnd: Moment;
+  durationStart: Dayjs | null;
+  durationEnd: Dayjs | null;
   multiplier: number;
   'multiplier-duration': 'day(s)' | 'times';
   minimumOccurrences: number;
@@ -153,14 +177,25 @@ type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 const CalculationSystemTable = ({
   tooltipDurationStart,
   tooltipDurationEnd,
-  dataSource,
-  setDataSource
+  dataSourceWithTimePickerString,
+  setDataSourceWithTimePickerString,
+  isSaved = false,
+  isEmployeeDetailsPage = false
 }: {
   tooltipDurationStart: string;
   tooltipDurationEnd: string;
-  dataSource: DataType[];
-  setDataSource: React.Dispatch<React.SetStateAction<DataType[]>>;
+  dataSourceWithTimePickerString: TableRowType[];
+  setDataSourceWithTimePickerString: React.Dispatch<React.SetStateAction<TableRowType[]>>;
+  isSaved?: boolean;
+  isEmployeeDetailsPage?: boolean;
 }) => {
+  const [dataSource, setDataSource] = useState<DataType[]>(() => {
+    return dataSourceWithTimePickerString.map((item) => ({
+      ...item,
+      durationStart: parseIsoStringToDayjs(item.durationStart),
+      durationEnd: parseIsoStringToDayjs(item.durationEnd)
+    }));
+  });
   const [count, setCount] = useState(dataSource.length);
 
   // useEffect(() => {
@@ -172,6 +207,7 @@ const CalculationSystemTable = ({
   const handleDelete = (key: React.Key) => {
     const newData = dataSource.filter((item) => item.key !== key);
     setDataSource(newData);
+    handleDataSourceWithTimePickerISODate(newData);
   };
 
   const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[] = [
@@ -183,8 +219,15 @@ const CalculationSystemTable = ({
       render: (_, record) => (
         <div className="flex items-center justify-center gap-2">
           <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-            <button className="flex h-5 w-5 items-center justify-center focus:outline-none">
-              <img src="/images/trash-icon.svg" alt="trash icon" />
+            <button
+              className={`flex h-5 w-5 items-center justify-center focus:outline-none disabled:cursor-not-allowed`}
+              disabled={isEmployeeDetailsPage ? isSaved : false}
+            >
+              <img
+                src="/images/trash-icon.svg"
+                alt="trash icon"
+                className={`${isEmployeeDetailsPage ? (isSaved ? 'opacity-65' : '') : ''}`}
+              />
             </button>
           </Popconfirm>
 
@@ -203,17 +246,20 @@ const CalculationSystemTable = ({
           <QuestionCircleOutlined className="text-other/black" />
         </Tooltip>
       ),
-
       dataIndex: 'durationStart',
       align: 'center',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       render: (durationStart) => {
         return (
-          <div className="flex w-[111.5px] items-center justify-between gap-5">
-            <p>{durationStart?.format('HH:mm')}</p>
-            <span>
-              <ClockCircleOutlined size={14} style={{ color: 'rgba(0, 0, 0, 0.25)' }} />
-            </span>
+          <div className="flex min-h-[11px] w-[111.5px] items-center justify-between gap-5">
+            {durationStart && (
+              <>
+                <p>{durationStart?.format('HH:mm')}</p>
+                <span>
+                  <ClockCircleOutlined size={14} style={{ color: 'rgba(0, 0, 0, 0.25)' }} />
+                </span>
+              </>
+            )}
           </div>
         );
       }
@@ -226,15 +272,19 @@ const CalculationSystemTable = ({
         </Tooltip>
       ),
       dataIndex: 'durationEnd',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       align: 'center',
       render: (durationEnd) => {
         return (
-          <div className="flex w-[111.5px] items-center justify-between gap-5">
-            <p>{durationEnd?.format('HH:mm')}</p>
-            <span>
-              <ClockCircleOutlined size={14} style={{ color: 'rgba(0, 0, 0, 0.25)' }} />
-            </span>
+          <div className="flex min-h-[11px] w-[111.5px] items-center justify-between gap-5">
+            {durationEnd && (
+              <>
+                <p>{durationEnd.format('HH:mm')}</p>
+                <span>
+                  <ClockCircleOutlined size={14} style={{ color: 'rgba(0, 0, 0, 0.25)' }} />
+                </span>
+              </>
+            )}
           </div>
         );
       }
@@ -243,7 +293,7 @@ const CalculationSystemTable = ({
       title: <p className="cursor-default">Multiplier</p>,
       dataIndex: 'multiplier',
       align: 'center',
-      editable: true,
+      editable: isEmployeeDetailsPage ? !isSaved : true,
       render: (_, record) => {
         return (
           <div className="flex items-center justify-center gap-2 py-1">
@@ -261,34 +311,59 @@ const CalculationSystemTable = ({
       title: <p className="cursor-default">Minimum Allowed Occurrences.</p>,
       dataIndex: 'minimumOccurrences',
       align: 'center',
-      editable: true
+      editable: isEmployeeDetailsPage ? !isSaved : true,
+      render: (_, record) => {
+        return (
+          <div className="flex items-center justify-center gap-2 py-1">
+            {record?.minimumOccurrences > 0 && (
+              <>
+                <p>{record.minimumOccurrences}</p>
+                <span>time(s)</span>
+              </>
+            )}
+          </div>
+        );
+      }
     }
   ];
+  const handleDataSourceWithTimePickerISODate = (newData: DataType[]) => {
+    const convertTimePickerValuesToStr = newData.map((item) => {
+      return {
+        ...item,
+        durationStart: parseDayjsToIsoString(item.durationStart),
+        durationEnd: parseDayjsToIsoString(item.durationEnd)
+      };
+    });
+    setDataSourceWithTimePickerString(convertTimePickerValuesToStr);
+  };
 
   const handleAdd = () => {
     const newData: DataType = {
       key: count,
       isEnabled: false,
-      durationStart: moment('00:00', 'HH:mm'),
-      durationEnd: moment('00:00', 'HH:mm'),
-      multiplier: 0,
+      durationStart: dayjs('00:00', 'HH:mm'),
+      durationEnd: dayjs('00:00', 'HH:mm'),
+      multiplier: 1.25,
       'multiplier-duration': 'times',
-      minimumOccurrences: 0
+      minimumOccurrences: 1
     };
 
     setDataSource([...dataSource, newData]);
     setCount(count + 1);
+    handleDataSourceWithTimePickerISODate([...dataSource, newData]);
   };
 
   const handleSave = (row: DataType) => {
     const newData = [...dataSource];
     const index = newData.findIndex((item) => row.key === item.key);
+
     const item = newData[index];
     newData.splice(index, 1, {
       ...item,
       ...row
     });
     setDataSource(newData);
+    handleDataSourceWithTimePickerISODate(newData);
   };
 
   const components = {
@@ -323,10 +398,23 @@ const CalculationSystemTable = ({
         dataSource={dataSource}
         columns={columns as ColumnTypes}
         pagination={{ position: ['bottomRight'], pageSize: 3 }}
-        scroll={{ x: 800 }}
-        className="overflow-x-auto"
+        scroll={{ x: dataSource.length > 0 ? 800 : 0 }}
+        className={`${dataSource.length > 0 ? '' : 'mb-[18px]'} ${isSaved ? 'table-disabled' : ''}`}
       />
-      <BtnAddNewRow onClick={handleAdd} className="absolute bottom-[18px] left-1" />
+      {/* Will be displayed in employee details page */}
+      {isEmployeeDetailsPage && !isSaved && (
+        <BtnAddNewRow
+          onClick={handleAdd}
+          className={`${dataSource.length > 0 ? 'absolute bottom-[18px] left-1' : 'mb-[18px] mt-4'}`}
+        />
+      )}
+      {/* Will be displayed in create employee page */}
+      {!isEmployeeDetailsPage && (
+        <BtnAddNewRow
+          onClick={handleAdd}
+          className={`${dataSource.length > 0 ? 'absolute bottom-[18px] left-1' : 'mb-[18px] mt-4'}`}
+        />
+      )}
     </div>
   );
 };

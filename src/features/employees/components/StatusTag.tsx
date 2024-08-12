@@ -12,22 +12,27 @@ const statuses = {
   terminated: 'orange'
 } as const;
 
-type StatusType = 'active' | 'remote' | 'onHoliday' | 'terminated' | '';
+type StatusType = 'active' | 'remote' | 'on holiday' | 'terminated' | '';
 interface StatusTagType {
-  status: StatusType;
+  status: StatusType | null;
   className?: string;
   children: string;
 }
 
 function StatusTag({ status, className = '', children }: StatusTagType) {
-  const normalizedStatus = status.normalize();
+  // const normalizedStatus = status?.normalize() ?? 'not valid';
   let color;
-  switch (normalizedStatus) {
-    case 'active' || 'remote' || 'onHoliday' || 'terminated':
-      color = colors[statuses[normalizedStatus]];
+  switch (status) {
+    case 'active':
+    case 'remote':
+    case 'terminated':
+      color = colors[statuses[status]];
+      break;
+    case 'on holiday':
+      color = colors[statuses['onHoliday']];
       break;
     default:
-      color = '';
+      color = 'bg-other/black text-white';
       break;
   }
   return (

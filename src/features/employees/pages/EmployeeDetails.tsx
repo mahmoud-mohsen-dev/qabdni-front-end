@@ -1,38 +1,13 @@
-import { message } from 'antd';
-import { ValidateErrorEntity } from 'rc-field-form/lib/interface';
-import EmployeeForms from '../components/CreateEmployees/EmployeeForms';
-import useEmployeeForms from '../hooks/useEmployeeForms';
 import { useEffect } from 'react';
+import { viewEmployee } from '../store/employeesSlice';
 import { useDispatch } from 'react-redux';
-import { updateCurrentEmployee } from '../store/employeesSlice';
+import { useParams } from 'react-router-dom';
+import EmployeeForms from '../components/CreateEmployees/EmployeeForms';
+import { ValidateErrorEntity } from 'rc-field-form/lib/interface';
+import { message } from 'antd';
+import useEmployeeForms from '../hooks/useEmployeeForms';
 
-// interface CreateEmployeeProps {
-//   // isEmployeeDetailsPage?: boolean;
-// }
-
-function CreateEmployee() {
-  // const {
-  //   basicInfoData,
-  //   personalInfoData,
-  //   bankInformationData,
-  //   emergencyContactData,
-  //   attendanceAndDepartureInfoData,
-  //   salaryCalculationSystemData,
-  //   otherCalculationSystemData,
-  //   earlyArrivalData,
-  //   earlyDepartureData,
-  //   lateArrivalData,
-  //   lateDepartureData,
-  //   leavesTableData
-  // } = useSelector((state: RootState) => {
-  //   return state.employees.currentEmployee;
-  // });
-
-  // const { avatarInfo, id: storeId, ...basicInfoRestData } = basicInfoData;
-  // console.log(storeId);
-  const employeeId = '01';
-  const dispatch = useDispatch();
-  // Forms States
+function EmployeeDetails() {
   const {
     basicInfoForm,
     personalInfoForm,
@@ -42,40 +17,43 @@ function CreateEmployee() {
     salaryCalculationSystemForm,
     otherCalculationSystemForm
   } = useEmployeeForms();
-  // Tables States
+
+  const { employeeId } = useParams();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // basicInfoForm.setFieldsValue({ ...basicInfoRestData });
-    dispatch(updateCurrentEmployee({ target: 'basicInfoData', data: { id: employeeId } }));
+    if (employeeId) {
+      dispatch(viewEmployee({ id: employeeId }));
+    }
   }, []);
 
-  const handleCreateEmployee = async () => {
+  const handleEditEmployee = async () => {
     try {
       const [
-        resBasicInfoData
-        // resPersonalInfoData,
-        // resBankInformationData,
-        // resEmergencyContactData,
-        // resAttendanceAndDepartureInfoData,
-        // resSalaryCalculationSystemData,
-        // resOtherCalculationSystemData
+        resBasicInfoData,
+        resPersonalInfoData,
+        resBankInformationData,
+        resEmergencyContactData,
+        resAttendanceAndDepartureInfoData,
+        resSalaryCalculationSystemData,
+        resOtherCalculationSystemData
       ] = await Promise.all([
-        basicInfoForm.validateFields()
-        // personalInfoForm.validateFields(),
-        // bankInformationForm.validateFields(),
-        // emergencyContactForm.validateFields(),
-        // attendanceAndDepartureInfoForm.validateFields(),
-        // salaryCalculationSystemForm.validateFields(),
-        // otherCalculationSystemForm.validateFields()
+        basicInfoForm.validateFields(),
+        personalInfoForm.validateFields(),
+        bankInformationForm.validateFields(),
+        emergencyContactForm.validateFields(),
+        attendanceAndDepartureInfoForm.validateFields(),
+        salaryCalculationSystemForm.validateFields(),
+        otherCalculationSystemForm.validateFields()
       ]);
       console.log(
-        resBasicInfoData
-        // resPersonalInfoData,
-        // resBankInformationData,
-        // resEmergencyContactData,
-        // resAttendanceAndDepartureInfoData,
-        // resSalaryCalculationSystemData,
-        // resOtherCalculationSystemData
+        resBasicInfoData,
+        resPersonalInfoData,
+        resBankInformationData,
+        resEmergencyContactData,
+        resAttendanceAndDepartureInfoData,
+        resSalaryCalculationSystemData,
+        resOtherCalculationSystemData
       );
       // const employeeData: CurrentEmployeeType = {
       //   basicInfoData: { ...basicInfoData, avatarInfo: imageInfo, id: employeeUniqueId, ...resBasicInfoData },
@@ -103,7 +81,7 @@ function CreateEmployee() {
 
   return (
     <EmployeeForms
-      employeeIdCreateProps={employeeId}
+      handleEditEmployee={handleEditEmployee}
       basicInfoForm={basicInfoForm}
       personalInfoForm={personalInfoForm}
       bankInformationForm={bankInformationForm}
@@ -111,9 +89,8 @@ function CreateEmployee() {
       attendanceAndDepartureInfoForm={attendanceAndDepartureInfoForm}
       salaryCalculationSystemForm={salaryCalculationSystemForm}
       otherCalculationSystemForm={otherCalculationSystemForm}
-      handleCreateEmployee={handleCreateEmployee}
     />
   );
 }
 
-export default CreateEmployee;
+export default EmployeeDetails;

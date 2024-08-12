@@ -13,6 +13,7 @@ const store = configureStore({
     positions: positionsReducer,
     departments: departmentsReducer,
     employees: employeesReducer
+
     // payroll: payrollReducer
   }
 });
