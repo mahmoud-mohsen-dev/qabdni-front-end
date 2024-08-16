@@ -1,7 +1,6 @@
 import { Form, Input } from 'antd';
 import LabelInput from '../LabelInput';
 import { capitalizeName } from '../../../../utils/user';
-import useActionBtns from '../../hooks/useActionBtns';
 import SubHeading from '../SubHeading';
 import type { FormInstance } from 'antd';
 import ActionBtns from '../ActionBtns';
@@ -11,25 +10,42 @@ import { RootState } from '../../../../store';
 import SpinnerAnt from '../../../../components/SpinnerAnt';
 import { useEffect } from 'react';
 import { updateCurrentEmployee } from '../../store/employeesSlice';
+import { UseActionType } from '../../types';
 
 interface BankInformationProps {
   form: FormInstance<bankInformationDataType>;
   isEmployeeDetailsPage?: boolean;
+  actionBtns?: UseActionType;
 }
 
-function BankInformation({ isEmployeeDetailsPage = false, form }: BankInformationProps) {
-  const {
-    bankInformationData,
-    basicInfoData: { id: employeeId }
-  } = useSelector((state: RootState) => {
+function BankInformation({ isEmployeeDetailsPage = false, form, actionBtns }: BankInformationProps) {
+  const { bankInformationData } = useSelector((state: RootState) => {
     return state.employees.currentEmployee;
   });
-  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns({
-    isSavedInitialValue: isEmployeeDetailsPage,
-    form: form,
-    id: employeeId,
-    target: 'bankInformationData'
-  });
+  let isSaved, handleSave, isLoading, handleEdit, handleCancel;
+  if (actionBtns) {
+    isSaved = actionBtns.isSaved ?? false;
+    handleSave =
+      actionBtns.handleSave ??
+      (() => {
+        console.error('error at handleSave');
+      });
+    isLoading =
+      actionBtns.isLoading ??
+      (() => {
+        console.error('error at isLoading');
+      });
+    handleEdit =
+      actionBtns.handleEdit ??
+      (() => {
+        console.error('error at handleEdit');
+      });
+    handleCancel =
+      actionBtns.handleCancel ??
+      (() => {
+        console.error('error at handleCancel');
+      });
+  }
   const dispatch = useDispatch();
 
   // Update form fields from the current employee data from redux store

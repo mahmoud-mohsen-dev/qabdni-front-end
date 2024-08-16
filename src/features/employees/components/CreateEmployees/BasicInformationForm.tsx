@@ -11,7 +11,6 @@ import DepartmentsDrawer from '../../../company/components/Drawer/DepartmentsDra
 import { IoIosArrowDown } from 'react-icons/io';
 import { capitalizeName } from '../../../../utils/user';
 import { RadioButton, RadioGroup } from '../../../../components/RadioGroup';
-import useActionBtns from '../../hooks/useActionBtns';
 import SubHeading from '../SubHeading';
 import ActionBtns from '../ActionBtns';
 import SpinnerAnt from '../../../../components/SpinnerAnt';
@@ -20,27 +19,47 @@ import { useLocation } from 'react-router-dom';
 import { updateCurrentEmployee } from '../../store/employeesSlice';
 import { parseDayjsToIsoString, parseIsoStringToDayjs } from '../../../../utils/date';
 import { valueInArray, valueInArrayObjectOfNames } from '../../../../utils/helpers';
-// import moment from 'moment';
+import { UseActionType } from '../../types';
 
 interface BasicInfoFormProps {
   form: FormInstance<basicInfoFormType>;
   isEmployeeDetailsPage?: boolean;
   employeeIdCreateProps?: string;
+  actionBtns?: UseActionType;
 }
 
-function BasicInformationForm({ isEmployeeDetailsPage = false, form, employeeIdCreateProps = '' }: BasicInfoFormProps) {
+function BasicInformationForm({ isEmployeeDetailsPage = false, form, actionBtns }: BasicInfoFormProps) {
   const { all: positionsFinalAll } = useSelector((state: RootState) => state.positions.final);
   const { all: departmentsFinalAll } = useSelector((state: RootState) => state.departments.final);
   const { basic: basicInfo, id: employeeId } = useSelector((state: RootState) => {
     return state.employees.currentEmployee.basicInfoData;
   });
   const { openedDrawer, loading, closeDrawer, showLoading } = useDrawer();
-  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns({
-    isSavedInitialValue: isEmployeeDetailsPage,
-    form: form,
-    id: employeeId,
-    target: 'basicInfoData'
-  });
+
+  let isSaved, handleSave, isLoading, handleEdit, handleCancel;
+  if (actionBtns) {
+    isSaved = actionBtns.isSaved ?? false;
+    handleSave =
+      actionBtns.handleSave ??
+      (() => {
+        console.error('error at handleSave');
+      });
+    isLoading =
+      actionBtns.isLoading ??
+      (() => {
+        console.error('error at isLoading');
+      });
+    handleEdit =
+      actionBtns.handleEdit ??
+      (() => {
+        console.error('error at handleEdit');
+      });
+    handleCancel =
+      actionBtns.handleCancel ??
+      (() => {
+        console.error('error at handleCancel');
+      });
+  }
 
   // This for updating employee Id in the basic info form
   const location = useLocation();
@@ -50,7 +69,7 @@ function BasicInformationForm({ isEmployeeDetailsPage = false, form, employeeIdC
   const dispatch = useDispatch();
   useEffect(() => {
     if (lastSegment === 'create-employee') {
-      dispatch(updateCurrentEmployee({ target: 'basicInfoData', data: { id: employeeIdCreateProps } }));
+      isSaved = false;
     }
   }, []);
 
@@ -224,7 +243,7 @@ function BasicInformationForm({ isEmployeeDetailsPage = false, form, employeeIdC
                 dispatch(
                   updateCurrentEmployee({
                     target: 'basicInfoData/basic',
-                    data: { dateOfJoining: parseDayjsToIsoString(value) }
+                    data: { dateOfJoining: parseDayjsToIsoString(value) as string }
                   })
                 );
               }}
@@ -244,7 +263,7 @@ function BasicInformationForm({ isEmployeeDetailsPage = false, form, employeeIdC
                 dispatch(
                   updateCurrentEmployee({
                     target: 'basicInfoData/basic',
-                    data: { dateOfDeparture: parseDayjsToIsoString(value) }
+                    data: { dateOfDeparture: parseDayjsToIsoString(value) as string }
                   })
                 );
               }}

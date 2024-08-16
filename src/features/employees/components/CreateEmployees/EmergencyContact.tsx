@@ -1,7 +1,6 @@
 import { Form, Input, Spin } from 'antd';
 import LabelInput from '../LabelInput';
 import { capitalizeName } from '../../../../utils/user';
-import useActionBtns from '../../hooks/useActionBtns';
 import SubHeading from '../SubHeading';
 import type { FormInstance } from 'antd';
 import ActionBtns from '../ActionBtns';
@@ -10,25 +9,42 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../store';
 import { useEffect } from 'react';
 import { updateCurrentEmployee } from '../../store/employeesSlice';
+import { UseActionType } from '../../types';
 
 interface EmergencyContactProps {
   form: FormInstance<emergencyContactDataType>;
   isEmployeeDetailsPage?: boolean;
+  actionBtns?: UseActionType;
 }
 
-function EmergencyContact({ isEmployeeDetailsPage = false, form }: EmergencyContactProps) {
-  const {
-    emergencyContactData,
-    basicInfoData: { id: employeeId }
-  } = useSelector((state: RootState) => {
+function EmergencyContact({ isEmployeeDetailsPage = false, form, actionBtns }: EmergencyContactProps) {
+  const { emergencyContactData } = useSelector((state: RootState) => {
     return state.employees.currentEmployee;
   });
-  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns({
-    isSavedInitialValue: isEmployeeDetailsPage,
-    form: form,
-    id: employeeId,
-    target: 'emergencyContactData'
-  });
+  let isSaved, handleSave, isLoading, handleEdit, handleCancel;
+  if (actionBtns) {
+    isSaved = actionBtns.isSaved ?? false;
+    handleSave =
+      actionBtns.handleSave ??
+      (() => {
+        console.error('error at handleSave');
+      });
+    isLoading =
+      actionBtns.isLoading ??
+      (() => {
+        console.error('error at isLoading');
+      });
+    handleEdit =
+      actionBtns.handleEdit ??
+      (() => {
+        console.error('error at handleEdit');
+      });
+    handleCancel =
+      actionBtns.handleCancel ??
+      (() => {
+        console.error('error at handleCancel');
+      });
+  }
   const dispatch = useDispatch();
 
   // Update form fields from the current employee data from redux store

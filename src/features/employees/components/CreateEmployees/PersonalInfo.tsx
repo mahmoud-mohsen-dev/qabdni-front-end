@@ -3,7 +3,6 @@ import LabelInput from '../LabelInput';
 import { IoIosArrowDown } from 'react-icons/io';
 import { capitalizeName } from '../../../../utils/user';
 import { RadioButton, RadioGroup } from '../../../../components/RadioGroup';
-import useActionBtns from '../../hooks/useActionBtns';
 import TextArea from 'antd/es/input/TextArea';
 import SubHeading from '../SubHeading';
 import ActionBtns from '../ActionBtns';
@@ -15,25 +14,43 @@ import { updateCurrentEmployee } from '../../store/employeesSlice';
 import { useEffect } from 'react';
 import { parseDayjsToIsoString, parseIsoStringToDayjs } from '../../../../utils/date';
 import { valueInArray } from '../../../../utils/helpers';
+import { UseActionType } from '../../types';
 
 interface PersonalInfoProps {
   form: FormInstance<personalInfoFormType>;
   isEmployeeDetailsPage?: boolean;
+  actionBtns?: UseActionType;
 }
 
-function PersonalInfo({ isEmployeeDetailsPage = false, form }: PersonalInfoProps) {
-  const {
-    personalInfoData,
-    basicInfoData: { id: employeeId }
-  } = useSelector((state: RootState) => {
+function PersonalInfo({ isEmployeeDetailsPage = false, form, actionBtns }: PersonalInfoProps) {
+  const { personalInfoData } = useSelector((state: RootState) => {
     return state.employees.currentEmployee;
   });
-  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns({
-    isSavedInitialValue: isEmployeeDetailsPage,
-    form: form,
-    id: employeeId,
-    target: 'personalInfoData'
-  });
+
+  let isSaved, handleSave, isLoading, handleEdit, handleCancel;
+  if (actionBtns) {
+    isSaved = actionBtns.isSaved ?? false;
+    handleSave =
+      actionBtns.handleSave ??
+      (() => {
+        console.error('error at handleSave');
+      });
+    isLoading =
+      actionBtns.isLoading ??
+      (() => {
+        console.error('error at isLoading');
+      });
+    handleEdit =
+      actionBtns.handleEdit ??
+      (() => {
+        console.error('error at handleEdit');
+      });
+    handleCancel =
+      actionBtns.handleCancel ??
+      (() => {
+        console.error('error at handleCancel');
+      });
+  }
   const dispatch = useDispatch();
 
   // Update form fields from the current employee data from redux store
@@ -114,7 +131,7 @@ function PersonalInfo({ isEmployeeDetailsPage = false, form }: PersonalInfoProps
                 dispatch(
                   updateCurrentEmployee({
                     target: 'personalInfoData',
-                    data: { nationalIdExpDate: parseDayjsToIsoString(value) }
+                    data: { nationalIdExpDate: parseDayjsToIsoString(value) as string }
                   })
                 );
               }}
@@ -138,7 +155,7 @@ function PersonalInfo({ isEmployeeDetailsPage = false, form }: PersonalInfoProps
                 dispatch(
                   updateCurrentEmployee({
                     target: 'personalInfoData',
-                    data: { dateOfBirth: parseDayjsToIsoString(value) }
+                    data: { dateOfBirth: parseDayjsToIsoString(value) as string }
                   })
                 );
               }}

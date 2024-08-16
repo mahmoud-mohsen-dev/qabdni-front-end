@@ -4,7 +4,7 @@ import HeadingTitle from '../../../../components/HeadingTitle';
 import UploadImage from '../../../../components/UploadImage';
 import { FaRegPenToSquare } from 'react-icons/fa6';
 import BasicInformationForm from './BasicInformationForm';
-import { Divider } from 'antd';
+import { Divider, Empty } from 'antd';
 import type { FormInstance } from 'antd';
 import PersonalInfo from './PersonalInfo';
 import BankInformation from './BankInformation';
@@ -17,23 +17,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../../../store';
 import { clearCurrentEmployee } from '../../store/employeesSlice';
-import { useState } from 'react';
 import {
   attendanceAndDepartureInfoDataType,
   bankInformationDataType,
   basicInfoFormType,
   emergencyContactDataType,
-  LeavesTableData,
   OtherCalculationSystemDataType,
   personalInfoFormType,
-  salaryCalculationSystemDataType,
-  TableRowType
+  salaryCalculationSystemDataType
 } from '../../../../types';
+import { UseActionType } from '../../types';
+import SpinnerAnt from '../../../../components/SpinnerAnt';
 
 interface EmployeeFormsProps {
   handleCreateEmployee?: () => Promise<void>;
-  handleEditEmployee?: () => Promise<void>;
-  employeeIdCreateProps?: string;
+  handleEditEmployee?: () => void;
   basicInfoForm: FormInstance<basicInfoFormType>;
   personalInfoForm: FormInstance<personalInfoFormType>;
   bankInformationForm: FormInstance<bankInformationDataType>;
@@ -41,10 +39,20 @@ interface EmployeeFormsProps {
   attendanceAndDepartureInfoForm: FormInstance<attendanceAndDepartureInfoDataType>;
   salaryCalculationSystemForm: FormInstance<salaryCalculationSystemDataType>;
   otherCalculationSystemForm: FormInstance<OtherCalculationSystemDataType>;
+
+  basicActionBtns?: UseActionType;
+  personalInfoActionBtns?: UseActionType;
+  bankInfoActionBtns?: UseActionType;
+  emergencyContactActionBtns?: UseActionType;
+  attendanceAndDepartureInfoActionBtns?: UseActionType;
+  salaryCalculationSystemActionBtns?: UseActionType;
+  otherSalaryCalculationSystemActionBtns?: UseActionType;
+
+  isSavedGlobal?: boolean;
+  isSavedGlobalLoading?: boolean;
 }
 
 function EmployeeForms({
-  employeeIdCreateProps,
   handleCreateEmployee,
   handleEditEmployee,
   basicInfoForm,
@@ -53,20 +61,20 @@ function EmployeeForms({
   emergencyContactForm,
   attendanceAndDepartureInfoForm,
   salaryCalculationSystemForm,
-  otherCalculationSystemForm
+  otherCalculationSystemForm,
+
+  basicActionBtns,
+  personalInfoActionBtns,
+  bankInfoActionBtns,
+  emergencyContactActionBtns,
+  attendanceAndDepartureInfoActionBtns,
+  salaryCalculationSystemActionBtns,
+  otherSalaryCalculationSystemActionBtns,
+
+  isSavedGlobal = false,
+  isSavedGlobalLoading = false
 }: EmployeeFormsProps) {
-  const { earlyArrivalData, earlyDepartureData, lateArrivalData, lateDepartureData, leavesTableData } = useSelector(
-    (state: RootState) => {
-      return state.employees.currentEmployee;
-    }
-  );
-
-  const [earlyArrivalDataSource, setEarlyArrivalDataSource] = useState<TableRowType[]>(earlyArrivalData);
-  const [lateArrivalDataSource, setLateArrivalDataSource] = useState<TableRowType[]>(lateArrivalData);
-  const [earlyDepartureDataSource, setEarlyDepartureDataSource] = useState<TableRowType[]>(earlyDepartureData);
-  const [lateDepartureDataSource, setLateDepartureDataSource] = useState<TableRowType[]>(lateDepartureData);
-  const [leavesTableDataSource, setLeavesTableDataSource] = useState<[LeavesTableData]>(leavesTableData);
-
+  const { id: empoyeeId } = useSelector((state: RootState) => state.employees.currentEmployee.basicInfoData);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { employeeId: paramsEmployeeId } = useParams();
@@ -77,6 +85,10 @@ function EmployeeForms({
     dispatch(clearCurrentEmployee());
     navigate('/dashboard/employees');
   };
+
+  if (!isEmployeeDetailsPage && !empoyeeId) {
+    return <Empty description="Employee Not Found" className="grid min-h-[calc(100vh-150px)] place-content-center" />;
+  }
 
   return (
     <div className="create-employee">
@@ -98,10 +110,17 @@ function EmployeeForms({
           </Btn>
           {/* Save Button */}
           {paramsEmployeeId ? (
-            <Btn className="font-medium" size="md" type="submit" onClick={handleEditEmployee}>
-              <FaRegPenToSquare size={20} />
-              Edit
-            </Btn>
+            isSavedGlobal ? (
+              <Btn className="font-medium" size="md" type="submit" onClick={handleEditEmployee}>
+                <FaRegPenToSquare size={20} />
+                Edit
+              </Btn>
+            ) : (
+              <Btn className="font-medium" size="md" type="submit" onClick={handleEditEmployee}>
+                <IoIosSave size={20} />
+                Save
+              </Btn>
+            )
           ) : (
             <Btn className="font-medium" size="md" type="submit" onClick={handleCreateEmployee}>
               <IoIosSave size={20} />
@@ -111,47 +130,60 @@ function EmployeeForms({
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-two gap-4">
-        {/* Employee Info */}
-        <div className="rounded-[20px] border border-gray/light p-6">
-          <BasicInformationForm
-            form={basicInfoForm}
-            isEmployeeDetailsPage={isEmployeeDetailsPage}
-            employeeIdCreateProps={employeeIdCreateProps}
-          />
-          <Divider className="my-4" />
-          <PersonalInfo form={personalInfoForm} isEmployeeDetailsPage={isEmployeeDetailsPage} />
-          <Divider className="my-4" />
-          <BankInformation form={bankInformationForm} isEmployeeDetailsPage={isEmployeeDetailsPage} />
-          <Divider className="my-4" />
-          <EmergencyContact form={emergencyContactForm} isEmployeeDetailsPage={isEmployeeDetailsPage} />
-          <Divider className="my-4" />
-          <AttendanceAndDepartureInformation
-            form={attendanceAndDepartureInfoForm}
-            isEmployeeDetailsPage={isEmployeeDetailsPage}
-          />
-          <Divider className="my-4" />
-          <SalaryCalculationSystem form={salaryCalculationSystemForm} isEmployeeDetailsPage={isEmployeeDetailsPage} />
+      {/* Employee Info */}
+      {isSavedGlobalLoading ? (
+        <div className="mt-20">
+          <SpinnerAnt />
         </div>
-
-        {/* Calculation Systems */}
-        <div className="rounded-[20px] border border-gray/light p-6">
-          <CalculationSystemsSection
-            earlyArrivalDataSource={earlyArrivalDataSource}
-            setEarlyArrivalDataSource={setEarlyArrivalDataSource}
-            lateArrivalDataSource={lateArrivalDataSource}
-            setLateArrivalDataSource={setLateArrivalDataSource}
-            earlyDepartureDataSource={earlyDepartureDataSource}
-            setEarlyDepartureDataSource={setEarlyDepartureDataSource}
-            lateDepartureDataSource={lateDepartureDataSource}
-            setLateDepartureDataSource={setLateDepartureDataSource}
-            leavesTableDataSource={leavesTableDataSource}
-            setLeavesTableDataSource={setLeavesTableDataSource}
-            otherCalculationSystemForm={otherCalculationSystemForm}
-            isEmployeeDetailsPage={isEmployeeDetailsPage}
-          />
+      ) : (
+        <div className="mt-4 grid grid-cols-two gap-4">
+          <div className="rounded-[20px] border border-gray/light p-6">
+            <BasicInformationForm
+              form={basicInfoForm}
+              isEmployeeDetailsPage={isEmployeeDetailsPage}
+              actionBtns={basicActionBtns}
+            />
+            <Divider className="my-4" />
+            <PersonalInfo
+              form={personalInfoForm}
+              isEmployeeDetailsPage={isEmployeeDetailsPage}
+              actionBtns={personalInfoActionBtns}
+            />
+            <Divider className="my-4" />
+            <BankInformation
+              form={bankInformationForm}
+              isEmployeeDetailsPage={isEmployeeDetailsPage}
+              actionBtns={bankInfoActionBtns}
+            />
+            <Divider className="my-4" />
+            <EmergencyContact
+              form={emergencyContactForm}
+              isEmployeeDetailsPage={isEmployeeDetailsPage}
+              actionBtns={emergencyContactActionBtns}
+            />
+            <Divider className="my-4" />
+            <AttendanceAndDepartureInformation
+              form={attendanceAndDepartureInfoForm}
+              isEmployeeDetailsPage={isEmployeeDetailsPage}
+              actionBtns={attendanceAndDepartureInfoActionBtns}
+            />
+            <Divider className="my-4" />
+            <SalaryCalculationSystem
+              form={salaryCalculationSystemForm}
+              isEmployeeDetailsPage={isEmployeeDetailsPage}
+              actionBtns={salaryCalculationSystemActionBtns}
+            />
+          </div>
+          {/* Calculation Systems */}
+          <div className="rounded-[20px] border border-gray/light p-6">
+            <CalculationSystemsSection
+              otherCalculationSystemForm={otherCalculationSystemForm}
+              isEmployeeDetailsPage={isEmployeeDetailsPage}
+              actionBtns={otherSalaryCalculationSystemActionBtns}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

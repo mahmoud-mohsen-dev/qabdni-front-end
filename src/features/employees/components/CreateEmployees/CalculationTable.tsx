@@ -1,30 +1,28 @@
 import { Form } from 'antd';
 import CalculationSystemTable from './CalculationSystemTable';
-import { TableRowType } from '../../../../types';
+import { EmployeeCalculationTableNameType } from '../../../../types';
 
 function CalculationTable({
   heading,
   tooltipDurationStart,
   tooltipDurationEnd,
-  dataSource,
-  setDataSource,
+
   isSaved = false,
-  isEmployeeDetailsPage = false
+  isEmployeeDetailsPage = false,
+  tableName
 }: {
   heading: string;
   tooltipDurationStart: string;
   tooltipDurationEnd: string;
-  dataSource: TableRowType[];
-  setDataSource: React.Dispatch<React.SetStateAction<TableRowType[]>>;
   isSaved?: boolean;
   isEmployeeDetailsPage?: boolean;
+  tableName: EmployeeCalculationTableNameType;
 }) {
   return (
     <Form disabled={isEmployeeDetailsPage ? isSaved : false}>
       <h3 className="mb-4 text-[13px] font-medium uppercase leading-4 text-other/black">{heading}</h3>
       <CalculationSystemTable
-        dataSourceWithTimePickerString={dataSource}
-        setDataSourceWithTimePickerString={setDataSource}
+        tableName={tableName}
         tooltipDurationStart={tooltipDurationStart}
         tooltipDurationEnd={tooltipDurationEnd}
         isEmployeeDetailsPage={isEmployeeDetailsPage}

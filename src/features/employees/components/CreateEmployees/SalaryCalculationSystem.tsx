@@ -1,7 +1,6 @@
 import { Form, InputNumber, Select, Spin } from 'antd';
 import LabelInput from '../LabelInput';
 import { capitalizeName } from '../../../../utils/user';
-import useActionBtns from '../../hooks/useActionBtns';
 import { IoIosArrowDown } from 'react-icons/io';
 import type { FormInstance } from 'antd';
 import ActionBtns from '../ActionBtns';
@@ -12,25 +11,42 @@ import { RootState } from '../../../../store';
 import { useEffect } from 'react';
 import { updateCurrentEmployee } from '../../store/employeesSlice';
 import { valueInArray } from '../../../../utils/helpers';
+import { UseActionType } from '../../types';
 
 interface SalaryCalculationSystemProps {
   form: FormInstance<salaryCalculationSystemDataType>;
   isEmployeeDetailsPage?: boolean;
+  actionBtns?: UseActionType;
 }
 
-function SalaryCalculationSystem({ isEmployeeDetailsPage = false, form }: SalaryCalculationSystemProps) {
-  const {
-    salaryCalculationSystemData,
-    basicInfoData: { id: idEmployee }
-  } = useSelector((state: RootState) => {
+function SalaryCalculationSystem({ isEmployeeDetailsPage = false, form, actionBtns }: SalaryCalculationSystemProps) {
+  const { salaryCalculationSystemData } = useSelector((state: RootState) => {
     return state.employees.currentEmployee;
   });
-  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns({
-    isSavedInitialValue: isEmployeeDetailsPage,
-    form: form,
-    id: idEmployee,
-    target: 'salaryCalculationSystemData'
-  });
+  let isSaved, handleSave, isLoading, handleEdit, handleCancel;
+  if (actionBtns) {
+    isSaved = actionBtns.isSaved ?? false;
+    handleSave =
+      actionBtns.handleSave ??
+      (() => {
+        console.error('error at handleSave');
+      });
+    isLoading =
+      actionBtns.isLoading ??
+      (() => {
+        console.error('error at isLoading');
+      });
+    handleEdit =
+      actionBtns.handleEdit ??
+      (() => {
+        console.error('error at handleEdit');
+      });
+    handleCancel =
+      actionBtns.handleCancel ??
+      (() => {
+        console.error('error at handleCancel');
+      });
+  }
   const dispatch = useDispatch();
   // Update form fields from the current employee data from redux store
   useEffect(() => {

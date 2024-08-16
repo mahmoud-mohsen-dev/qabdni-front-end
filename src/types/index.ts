@@ -1,6 +1,5 @@
 import { Dayjs } from 'dayjs';
 import React from 'react';
-// import type { Moment } from 'moment';
 
 export type DivOrString = React.ReactElement<HTMLDivElement> | string;
 
@@ -109,14 +108,14 @@ export interface OtherCalculationSystemDataType {
 export interface TableRowType {
   key: string | number;
   isEnabled: boolean;
-  durationStart: string | null;
-  durationEnd: string | null;
+  durationStart: Dayjs | string | null;
+  durationEnd: Dayjs | string | null;
   multiplier: number;
   'multiplier-duration': 'day(s)' | 'times';
   minimumOccurrences: number;
 }
 
-export interface LeavesTableData {
+export interface LeavesTableDataType {
   key: string;
   emergencyLeave: number;
   otherLeave: number;
@@ -148,7 +147,7 @@ export interface CurrentEmployeeType {
   lateArrivalData: TableRowType[];
   earlyDepartureData: TableRowType[];
   lateDepartureData: TableRowType[];
-  leavesTableData: [LeavesTableData];
+  leavesTableData: [LeavesTableDataType];
 }
 
 export type CurrentEmployeeValuesType = Partial<CurrentEmployeeType[keyof CurrentEmployeeType]>;
@@ -163,6 +162,12 @@ export type OptionalEmployeeSectionsType =
   | Partial<salaryCalculationSystemDataType>
   | Partial<OtherCalculationSystemDataType>
   | TableRowType[]
-  | Partial<LeavesTableData>;
+  | Partial<LeavesTableDataType>;
 
 export type EmployeeCurrentKeysNameType = keyof CurrentEmployeeType | 'basicInfoData/basic';
+
+export type EmployeeCalculationTableNameType =
+  | 'earlyArrivalData'
+  | 'lateArrivalData'
+  | 'earlyDepartureData'
+  | 'lateDepartureData';

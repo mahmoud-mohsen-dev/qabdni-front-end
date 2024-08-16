@@ -1,8 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { GetRef } from 'antd';
 import { Form, InputNumber, Table } from 'antd';
-import { LeavesTableData } from '../../../../types';
+import { LeavesTableDataType } from '../../../../types';
 import { useParams } from 'react-router-dom';
+import { RootState } from '../../../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateCurrentEmployee } from '../../store/employeesSlice';
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
@@ -118,20 +121,19 @@ type EditableTableProps = Parameters<typeof Table>[0];
 type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
 const LeavesCalculationTable = ({
-  dataSource,
-  setDataSource,
   isEmployeeDetailsPage = false,
   isSaved = false
 }: {
-  dataSource: [LeavesTableData];
-  setDataSource: React.Dispatch<React.SetStateAction<[LeavesTableData]>>;
   isEmployeeDetailsPage?: boolean;
   isSaved?: boolean;
 }) => {
+  const { leavesTableData: dataSource } = useSelector((state: RootState) => {
+    return state.employees.currentEmployee;
+  });
+  const dispatch = useDispatch();
+
   // useEffect(() => {
-  //   console.log('='.repeat(30));
-  //   console.log(dataSource);
-  //   console.log('='.repeat(30));
+  //   dispatch(updateCurrentEmployee({ target: 'leavesTableData', data: dataSource[0] }));
   // }, [dataSource]);
 
   const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[] = [
@@ -326,9 +328,9 @@ const LeavesCalculationTable = ({
     }
   ];
 
-  const handleSave = (row: LeavesTableData) => {
+  const handleSave = (row: LeavesTableDataType) => {
     const newData = { ...dataSource[0], ...row };
-    setDataSource([newData]);
+    dispatch(updateCurrentEmployee({ target: 'leavesTableData', data: newData }));
   };
 
   const components = {
@@ -344,7 +346,7 @@ const LeavesCalculationTable = ({
     }
     return {
       ...col,
-      onCell: (record: LeavesTableData) => ({
+      onCell: (record: LeavesTableDataType) => ({
         record,
         editable: col.editable,
         dataIndex: col.dataIndex,

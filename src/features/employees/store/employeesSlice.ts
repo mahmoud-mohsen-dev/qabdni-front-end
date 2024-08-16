@@ -444,32 +444,22 @@ const initialState: initialStateType = {
       'breakAfter-deductValue-multiplierDuration': 'day(s)',
       'breakAfter-deductValue': 0
     },
-    earlyArrivalData: [
-      {
-        key: '0',
-        isEnabled: false,
-        durationStart: '2024-08-08T07:30:00.000Z',
-        durationEnd: '2024-08-08T07:30:00.000Z',
-        multiplier: 1.25,
-        'multiplier-duration': 'day(s)',
-        minimumOccurrences: 5
-      }
-    ],
+    earlyArrivalData: [],
     earlyDepartureData: [],
     lateArrivalData: [],
     lateDepartureData: [],
     leavesTableData: [
       {
-        key: '0',
+        key: 'leavesTableData-0',
         emergencyLeave: 0,
-        otherLeave: 1,
-        personalLeave: 1,
+        otherLeave: 0,
+        personalLeave: 0,
         publicHolidays: 0,
         sickLeave: 0,
-        studyLeave: 1,
-        unauthorizedLeave: 3,
-        unpaidLeave: 1,
-        vacationLeave: 1,
+        studyLeave: 0,
+        unauthorizedLeave: 0,
+        unpaidLeave: 0,
+        vacationLeave: 0,
         workFromHome: 0
       }
     ]
@@ -516,15 +506,29 @@ const employeesReducer = createSlice({
       state.currentEmployee =
         state.fullEmployeesData.find((item) => item.basicInfoData.id === action.payload.id) ?? state.currentEmployee;
     },
-    viewEmployeeSection: (state, action: PayloadAction<{ id: string; sectionName: keyof CurrentEmployeeType }>) => {
-      let foundEmployee;
-      state.fullEmployeesData.find((item) =>
-        item.basicInfoData.id === action.payload.id ? (foundEmployee = item[action.payload.sectionName]) : null
+    onCancelEmployeeSection: (
+      state,
+      action: PayloadAction<{ id: string | null; sectionName: keyof CurrentEmployeeType }>
+    ) => {
+      // let foundEmployee;
+      const foundEmployee = state.fullEmployeesData.find(
+        (item) =>
+          // item.basicInfoData.id === action.payload.id ? (foundEmployee = item[action.payload.sectionName]) : null
+          item.basicInfoData.id === action.payload.id
       );
       if (typeof foundEmployee === 'object') {
-        state.currentEmployee[action.payload.sectionName] = foundEmployee;
+        if (action.payload.sectionName === 'basicInfoData') {
+          state.currentEmployee.basicInfoData = {
+            ...state.currentEmployee.basicInfoData,
+            basic: foundEmployee.basicInfoData.basic
+          };
+        } else {
+          state.currentEmployee = {
+            ...state.currentEmployee,
+            [action.payload.sectionName]: foundEmployee[action.payload.sectionName]
+          };
+        }
       }
-      console.log(JSON.parse(JSON.stringify(foundEmployee)));
     },
     editEmployee: (
       state,
@@ -553,7 +557,7 @@ const employeesReducer = createSlice({
           ? { ...employee, [action.payload.target]: { ...employee[action.payload.target], ...action.payload.data } }
           : employee;
       });
-      console.log(state.fullEmployeesData);
+      // console.log(state.fullEmployeesData);
       // if (Object.keys(action.payload.data).includes('id')) {
       //   state.basicEmployeesData = state.basicEmployeesData.map((employee) =>
       //     employee.id === action.payload.id ? { ...employee, ...action.payload.data } : employee
@@ -652,7 +656,7 @@ const employeesReducer = createSlice({
 export const {
   createEmployee,
   viewEmployee,
-  viewEmployeeSection,
+  onCancelEmployeeSection,
   editEmployee,
   deleteEmployee,
   updateCurrentEmployee,

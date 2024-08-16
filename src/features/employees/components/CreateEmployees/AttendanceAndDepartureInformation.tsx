@@ -7,36 +7,53 @@ import { useDispatch, useSelector } from 'react-redux';
 import useDrawer from '../../../../hooks/useDrawer';
 import { attendanceAndDepartureInfoDataType, ValueItemType } from '../../../../types';
 import DepartmentsDrawer from '../../../company/components/Drawer/DepartmentsDrawer';
-import useActionBtns from '../../hooks/useActionBtns';
 import type { FormInstance } from 'antd';
 import ActionBtns from '../ActionBtns';
 import SubHeading from '../SubHeading';
 import { useEffect } from 'react';
 import { updateCurrentEmployee } from '../../store/employeesSlice';
+import { UseActionType } from '../../types';
 
 interface AttendanceAndDepartureInformationProps {
   form: FormInstance<attendanceAndDepartureInfoDataType>;
   isEmployeeDetailsPage?: boolean;
+  actionBtns?: UseActionType;
 }
 
 function AttendanceAndDepartureInformation({
   isEmployeeDetailsPage = false,
-  form
+  form,
+  actionBtns
 }: AttendanceAndDepartureInformationProps) {
   const { positions, departments } = useSelector((state: RootState) => state);
   const { openedDrawer, loading, closeDrawer, showLoading } = useDrawer();
-  const {
-    attendanceAndDepartureInfoData,
-    basicInfoData: { id: employeeId }
-  } = useSelector((state: RootState) => {
+  const { attendanceAndDepartureInfoData } = useSelector((state: RootState) => {
     return state.employees.currentEmployee;
   });
-  const { isSaved, handleSave, isLoading, handleEdit, handleCancel } = useActionBtns({
-    isSavedInitialValue: isEmployeeDetailsPage,
-    form: form,
-    id: employeeId,
-    target: 'attendanceAndDepartureInfoData'
-  });
+  let isSaved, handleSave, isLoading, handleEdit, handleCancel;
+  if (actionBtns) {
+    isSaved = actionBtns.isSaved ?? false;
+    handleSave =
+      actionBtns.handleSave ??
+      (() => {
+        console.error('error at handleSave');
+      });
+    isLoading =
+      actionBtns.isLoading ??
+      (() => {
+        console.error('error at isLoading');
+      });
+    handleEdit =
+      actionBtns.handleEdit ??
+      (() => {
+        console.error('error at handleEdit');
+      });
+    handleCancel =
+      actionBtns.handleCancel ??
+      (() => {
+        console.error('error at handleCancel');
+      });
+  }
   const dispatch = useDispatch();
 
   // Update form fields from the current employee data from redux store

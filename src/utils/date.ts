@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 const getNavDate = () => {
   const date = new Date();
@@ -34,7 +34,7 @@ const convertToCustomDate = (date: string) => {
   }).format(new Date(date));
 };
 
-const parseIsoStringToDayjs = (value) => {
+const parseIsoStringToDayjs = (value): null | string | Dayjs => {
   // Check if value is falsy
   if (!value) {
     return null;
@@ -45,11 +45,15 @@ const parseIsoStringToDayjs = (value) => {
     return dayjs(value);
   }
 
+  if (typeof value === 'object' && value.isValid()) {
+    return value;
+  }
+
   // Return null for invalid date strings or other values
   return null;
 };
 
-const parseDayjsToIsoString = (value) => {
+const parseDayjsToIsoString = (value: string | Dayjs): null | string | Dayjs => {
   // Check if value is falsy
   if (!value) {
     return null;
@@ -60,8 +64,24 @@ const parseDayjsToIsoString = (value) => {
     return value.toISOString();
   }
 
+  if (typeof value === 'string' && dayjs(value).isValid()) {
+    return value;
+  }
+
   // Return null for invalid date strings or other values
   return null;
 };
 
-export { getNavDate, getNavTime, parseIsoStringToDayjs, parseDayjsToIsoString, convertToCustomDate, isoToDate };
+const formatDayjsToStrHoursAndMinutes = (value) => {
+  return value.isValid() ? value.format('HH:mm') : '';
+};
+
+export {
+  getNavDate,
+  getNavTime,
+  parseIsoStringToDayjs,
+  parseDayjsToIsoString,
+  convertToCustomDate,
+  isoToDate,
+  formatDayjsToStrHoursAndMinutes
+};

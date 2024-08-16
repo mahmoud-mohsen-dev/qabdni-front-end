@@ -6,9 +6,9 @@ import { IoMdMail } from 'react-icons/io';
 import { FaPhone } from 'react-icons/fa6';
 import Btn from '../../../components/Btn';
 import { basicInfoDataWithImageType } from '../../../types';
-import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import { capitalizeName } from '../../../utils/user';
+import dayjs from 'dayjs';
 
 interface EmployeeCardType {
   employee: basicInfoDataWithImageType;
@@ -77,7 +77,7 @@ function EmployeeCard({ employee }: EmployeeCardType) {
         <div className="flex flex-col gap-2">
           <span className="font-mullish text-xs font-normal uppercase text-gray/darkest">Date of joining</span>
           <span className="font-mullish text-sm font-medium">
-            {dateOfJoining ? moment(dateOfJoining).format('DD/MM/YYYY') : '-- / -- / ----'}
+            {dateOfJoining ? dayjs(dateOfJoining).format('DD/MM/YYYY') : '-- / -- / ----'}
           </span>
         </div>
       </div>

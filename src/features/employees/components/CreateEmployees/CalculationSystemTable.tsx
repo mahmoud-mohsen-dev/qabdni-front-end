@@ -4,10 +4,14 @@ import { Form, InputNumber, Popconfirm, Select, Switch, Table, TimePicker, Toolt
 import BtnAddNewRow from '../../../../components/BtnAddNewRow';
 import { IoIosArrowDown } from 'react-icons/io';
 import { QuestionCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
-import { TableRowType } from '../../../../types';
+import { EmployeeCalculationTableNameType, TableRowType } from '../../../../types';
 import { useParams } from 'react-router-dom';
-import { parseDayjsToIsoString, parseIsoStringToDayjs } from '../../../../utils/date';
+import { formatDayjsToStrHoursAndMinutes, parseDayjsToIsoString, parseIsoStringToDayjs } from '../../../../utils/date';
 import dayjs, { Dayjs } from 'dayjs';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../../store';
+import { updateCurrentEmployee } from '../../store/employeesSlice';
+import { v4 } from 'uuid';
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
@@ -49,7 +53,6 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   const [openMenu, setOpenMenu] = useState(false);
 
   const inputRef = useRef<any>(null);
-  // const timePickerRef = useRef<any>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -62,8 +65,6 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
   const toggleEdit = () => {
     setEditing(!editing);
-    // setEditing(false);
-    // dispatch(toggleTableEditing());
     form.setFieldsValue({ [dataIndex]: record[dataIndex] });
   };
 
@@ -112,14 +113,12 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
                 initialValue={record['multiplier-duration'] ?? 'times'}
               >
                 <Select
-                  // defaultValue={record['multiplier-duration'] ?? 'times'}
                   style={{ width: 110 }}
                   suffixIcon={<IoIosArrowDown size={16} color="rgba(0, 0, 0, 0.20)" />}
                   options={[
                     { label: 'Times', value: 'times' },
                     { label: 'Day(s)', value: 'day(s)' }
                   ]}
-                  // value={record['multiplier-duration'] ?? 'times'}
                   onChange={(value: 'day(s)' | 'times') => handleSave({ ...record, 'multiplier-duration': value })}
                   onBlur={save}
                 />
@@ -128,7 +127,6 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
             min={0}
             onPressEnter={save}
             onBlur={save}
-            // disabled={calculationSystemsTablesIsEditable}
           />
         )}
         {dataIndex === 'minimumOccurrences' && (
@@ -139,7 +137,6 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
             min={0}
             onPressEnter={save}
             onBlur={save}
-            // defaultValue={record['minimumOccurrences'] ?? 0}
           />
         )}
       </Form.Item>
@@ -165,8 +162,8 @@ type EditableTableProps = Parameters<typeof Table>[0];
 export interface DataType {
   key: string | number;
   isEnabled: boolean;
-  durationStart: Dayjs | null;
-  durationEnd: Dayjs | null;
+  durationStart: Dayjs | string | null;
+  durationEnd: Dayjs | string | null;
   multiplier: number;
   'multiplier-duration': 'day(s)' | 'times';
   minimumOccurrences: number;
@@ -175,39 +172,29 @@ export interface DataType {
 type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
 const CalculationSystemTable = ({
+  tableName,
   tooltipDurationStart,
   tooltipDurationEnd,
-  dataSourceWithTimePickerString,
-  setDataSourceWithTimePickerString,
   isSaved = false,
   isEmployeeDetailsPage = false
 }: {
+  tableName: EmployeeCalculationTableNameType;
   tooltipDurationStart: string;
   tooltipDurationEnd: string;
-  dataSourceWithTimePickerString: TableRowType[];
-  setDataSourceWithTimePickerString: React.Dispatch<React.SetStateAction<TableRowType[]>>;
   isSaved?: boolean;
   isEmployeeDetailsPage?: boolean;
 }) => {
-  const [dataSource, setDataSource] = useState<DataType[]>(() => {
-    return dataSourceWithTimePickerString.map((item) => ({
-      ...item,
-      durationStart: parseIsoStringToDayjs(item.durationStart),
-      durationEnd: parseIsoStringToDayjs(item.durationEnd)
-    }));
-  });
-  const [count, setCount] = useState(dataSource.length);
-
-  // useEffect(() => {
-  //   console.log('='.repeat(30));
-  //   console.log(dataSource);
-  //   console.log('='.repeat(30));
-  // }, [dataSource]);
+  const dispatch = useDispatch();
+  const targetTableDataSource = useSelector((state: RootState) => state.employees.currentEmployee[tableName]);
+  const dataSource = targetTableDataSource.map((item) => ({
+    ...item,
+    durationStart: parseIsoStringToDayjs(item.durationStart),
+    durationEnd: parseIsoStringToDayjs(item.durationEnd)
+  }));
 
   const handleDelete = (key: React.Key) => {
     const newData = dataSource.filter((item) => item.key !== key);
-    setDataSource(newData);
-    handleDataSourceWithTimePickerISODate(newData);
+    dispatch(updateCurrentEmployee({ target: tableName, data: newData }));
   };
 
   const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[] = [
@@ -254,7 +241,7 @@ const CalculationSystemTable = ({
           <div className="flex min-h-[11px] w-[111.5px] items-center justify-between gap-5">
             {durationStart && (
               <>
-                <p>{durationStart?.format('HH:mm')}</p>
+                <p>{formatDayjsToStrHoursAndMinutes(durationStart)}</p>
                 <span>
                   <ClockCircleOutlined size={14} style={{ color: 'rgba(0, 0, 0, 0.25)' }} />
                 </span>
@@ -279,7 +266,7 @@ const CalculationSystemTable = ({
           <div className="flex min-h-[11px] w-[111.5px] items-center justify-between gap-5">
             {durationEnd && (
               <>
-                <p>{durationEnd.format('HH:mm')}</p>
+                <p>{formatDayjsToStrHoursAndMinutes(durationEnd)}</p>
                 <span>
                   <ClockCircleOutlined size={14} style={{ color: 'rgba(0, 0, 0, 0.25)' }} />
                 </span>
@@ -334,12 +321,12 @@ const CalculationSystemTable = ({
         durationEnd: parseDayjsToIsoString(item.durationEnd)
       };
     });
-    setDataSourceWithTimePickerString(convertTimePickerValuesToStr);
+    dispatch(updateCurrentEmployee({ target: tableName, data: convertTimePickerValuesToStr }));
   };
 
   const handleAdd = () => {
     const newData: DataType = {
-      key: count,
+      key: v4(),
       isEnabled: false,
       durationStart: dayjs('00:00', 'HH:mm'),
       durationEnd: dayjs('00:00', 'HH:mm'),
@@ -348,8 +335,6 @@ const CalculationSystemTable = ({
       minimumOccurrences: 1
     };
 
-    setDataSource([...dataSource, newData]);
-    setCount(count + 1);
     handleDataSourceWithTimePickerISODate([...dataSource, newData]);
   };
 
@@ -362,7 +347,6 @@ const CalculationSystemTable = ({
       ...item,
       ...row
     });
-    setDataSource(newData);
     handleDataSourceWithTimePickerISODate(newData);
   };
 
@@ -385,7 +369,8 @@ const CalculationSystemTable = ({
         dataIndex: col.dataIndex,
         title: col.title,
         handleSave
-      })
+      }),
+      handleDataSourceWithTimePickerISODate
     };
   });
 

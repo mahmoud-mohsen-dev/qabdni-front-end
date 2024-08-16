@@ -5,42 +5,24 @@ import type { FormInstance } from 'antd';
 import CalculationTable from './CalculationTable';
 import LeavesCalculationTable from './LeavesCalculationTable';
 import { IoIosArrowDown } from 'react-icons/io';
-import useActionBtns from '../../hooks/useActionBtns';
-import { LeavesTableData, OtherCalculationSystemDataType, TableRowType } from '../../../../types';
+import { OtherCalculationSystemDataType } from '../../../../types';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../store';
 import SpinnerAnt from '../../../../components/SpinnerAnt';
 import { useEffect } from 'react';
-import { updateCurrentEmployee } from '../../store/employeesSlice';
+import { onCancelEmployeeSection, updateCurrentEmployee } from '../../store/employeesSlice';
+import { UseActionType } from '../../types';
 
 interface CalculationSystemsProps {
-  earlyArrivalDataSource: TableRowType[];
-  setEarlyArrivalDataSource: React.Dispatch<React.SetStateAction<TableRowType[]>>;
-  lateArrivalDataSource: TableRowType[];
-  setLateArrivalDataSource: React.Dispatch<React.SetStateAction<TableRowType[]>>;
-  earlyDepartureDataSource: TableRowType[];
-  setEarlyDepartureDataSource: React.Dispatch<React.SetStateAction<TableRowType[]>>;
-  lateDepartureDataSource: TableRowType[];
-  setLateDepartureDataSource: React.Dispatch<React.SetStateAction<TableRowType[]>>;
-  leavesTableDataSource: [LeavesTableData];
-  setLeavesTableDataSource: React.Dispatch<React.SetStateAction<[LeavesTableData]>>;
   otherCalculationSystemForm: FormInstance<OtherCalculationSystemDataType>;
   isEmployeeDetailsPage?: boolean;
+  actionBtns?: UseActionType;
 }
 
 function CalculationSystemsSection({
-  earlyArrivalDataSource,
-  setEarlyArrivalDataSource,
-  lateArrivalDataSource,
-  setLateArrivalDataSource,
-  earlyDepartureDataSource,
-  setEarlyDepartureDataSource,
-  lateDepartureDataSource,
-  setLateDepartureDataSource,
-  leavesTableDataSource,
-  setLeavesTableDataSource,
   otherCalculationSystemForm,
-  isEmployeeDetailsPage = false
+  isEmployeeDetailsPage = false,
+  actionBtns
 }: CalculationSystemsProps) {
   const {
     otherCalculationSystemData,
@@ -48,21 +30,46 @@ function CalculationSystemsSection({
   } = useSelector((state: RootState) => {
     return state.employees.currentEmployee;
   });
-  const {
-    isSaved,
-    isLoading,
-    handleGlobal,
-    handleCancel,
-    handleSave,
-    handleEdit,
-    appliedGlobalSettings,
-    handleOnlyGlobal
-  } = useActionBtns({
-    isSavedInitialValue: true,
-    form: otherCalculationSystemForm,
-    id: employeeId,
-    target: 'otherCalculationSystemData'
-  });
+
+  let isSaved, handleSave, isLoading, handleEdit, handleCancel, handleGlobal, appliedGlobalSettings, handleOnlyGlobal;
+  if (actionBtns) {
+    isSaved = actionBtns.isSaved ?? false;
+    handleSave =
+      actionBtns.handleSave ??
+      (() => {
+        console.error('error at handleSave');
+      });
+    isLoading =
+      actionBtns.isLoading ??
+      (() => {
+        console.error('error at isLoading');
+      });
+    handleEdit =
+      actionBtns.handleEdit ??
+      (() => {
+        console.error('error at handleEdit');
+      });
+    handleCancel =
+      actionBtns.handleCancel ??
+      (() => {
+        console.error('error at handleCancel');
+      });
+    handleGlobal =
+      actionBtns.handleCancel ??
+      (() => {
+        console.error('error at handleCancel');
+      });
+    appliedGlobalSettings =
+      actionBtns.handleCancel ??
+      (() => {
+        console.error('error at handleCancel');
+      });
+    handleOnlyGlobal =
+      actionBtns.handleCancel ??
+      (() => {
+        console.error('error at handleCancel');
+      });
+  }
 
   const dispatch = useDispatch();
 
@@ -79,21 +86,14 @@ function CalculationSystemsSection({
     });
   }, [otherCalculationSystemData]);
 
-  // Update (oearlyArrivalDataSource, lateArrivalDataSource, earlyDepartureDataSource, lateDepartureDataSource, leavesTableDataSource) fields from the current employee data from redux store
-  useEffect(() => {
-    console.log(earlyArrivalDataSource);
-    dispatch(updateCurrentEmployee({ target: 'earlyArrivalData', data: earlyArrivalDataSource ?? [] }));
-    dispatch(updateCurrentEmployee({ target: 'lateArrivalData', data: lateArrivalDataSource ?? [] }));
-    dispatch(updateCurrentEmployee({ target: 'earlyDepartureData', data: earlyDepartureDataSource ?? [] }));
-    dispatch(updateCurrentEmployee({ target: 'lateDepartureData', data: lateDepartureDataSource ?? [] }));
-    dispatch(updateCurrentEmployee({ target: 'leavesTableData', data: leavesTableDataSource[0] }));
-  }, [
-    earlyArrivalDataSource,
-    lateArrivalDataSource,
-    earlyDepartureDataSource,
-    lateDepartureDataSource,
-    leavesTableDataSource
-  ]);
+  const onCancel = () => {
+    dispatch(onCancelEmployeeSection({ id: employeeId, sectionName: 'earlyArrivalData' }));
+    dispatch(onCancelEmployeeSection({ id: employeeId, sectionName: 'lateArrivalData' }));
+    dispatch(onCancelEmployeeSection({ id: employeeId, sectionName: 'earlyDepartureData' }));
+    dispatch(onCancelEmployeeSection({ id: employeeId, sectionName: 'lateDepartureData' }));
+    dispatch(onCancelEmployeeSection({ id: employeeId, sectionName: 'leavesTableData' }));
+    handleCancel();
+  };
 
   return (
     <>
@@ -103,7 +103,7 @@ function CalculationSystemsSection({
           handleSave={handleSave}
           handleGlobal={handleGlobal}
           handleEdit={handleEdit}
-          handleCancel={handleCancel}
+          handleCancel={onCancel}
           appliedGlobalSettings={appliedGlobalSettings}
           global={true}
         >
@@ -116,7 +116,7 @@ function CalculationSystemsSection({
           isSaved={isSaved}
           handleGlobal={handleGlobal}
           handleEdit={handleEdit}
-          handleCancel={handleCancel}
+          handleCancel={onCancel}
           appliedGlobalSettings={appliedGlobalSettings}
           handleOnlyGlobal={handleOnlyGlobal}
         >
@@ -130,8 +130,7 @@ function CalculationSystemsSection({
       ) : (
         <>
           <CalculationTable
-            dataSource={earlyArrivalDataSource}
-            setDataSource={setEarlyArrivalDataSource}
+            tableName="earlyArrivalData"
             heading="Early Arrival calculation system"
             tooltipDurationStart="Applied before the start of the shift"
             tooltipDurationEnd="Applied before the start of the shift"
@@ -139,8 +138,7 @@ function CalculationSystemsSection({
             isSaved={isSaved}
           />
           <CalculationTable
-            dataSource={lateArrivalDataSource}
-            setDataSource={setLateArrivalDataSource}
+            tableName="lateArrivalData"
             heading="late Arrival Calculation System"
             tooltipDurationStart="Applied after the start of the shift"
             tooltipDurationEnd="Applied after the start of the shift"
@@ -148,8 +146,7 @@ function CalculationSystemsSection({
             isSaved={isSaved}
           />
           <CalculationTable
-            dataSource={earlyDepartureDataSource}
-            setDataSource={setEarlyDepartureDataSource}
+            tableName="earlyDepartureData"
             heading="EARLY Departure Calculation system"
             tooltipDurationStart="Applied before the end of the shift"
             tooltipDurationEnd="Applied before the end of the shift"
@@ -157,8 +154,7 @@ function CalculationSystemsSection({
             isSaved={isSaved}
           />
           <CalculationTable
-            dataSource={lateDepartureDataSource}
-            setDataSource={setLateDepartureDataSource}
+            tableName="lateDepartureData"
             heading="Late Departure calculation system"
             tooltipDurationStart="Applied after the end of the shift"
             tooltipDurationEnd="Applied after the end of the shift"
@@ -170,12 +166,7 @@ function CalculationSystemsSection({
             <h3 className="mb-4 text-[13px] font-medium uppercase leading-4 text-other/black">
               Leaves calculation system
             </h3>
-            <LeavesCalculationTable
-              dataSource={leavesTableDataSource}
-              setDataSource={setLeavesTableDataSource}
-              isEmployeeDetailsPage={isEmployeeDetailsPage}
-              isSaved={isSaved}
-            />
+            <LeavesCalculationTable isEmployeeDetailsPage={isEmployeeDetailsPage} isSaved={isSaved} />
           </div>
 
           <div className="mt-5">
