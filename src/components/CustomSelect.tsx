@@ -3,6 +3,8 @@ import { Divider, Form, Select, Space } from 'antd';
 import { FaPlus } from 'react-icons/fa6';
 import { IoIosArrowDown } from 'react-icons/io';
 import { capitalizeName } from '../utils/user';
+// import { BsGearFill } from 'react-icons/bs';
+import { PiGearDuotone } from 'react-icons/pi';
 
 interface CustomSelectType {
   name: string;
@@ -20,6 +22,7 @@ interface CustomSelectType {
     value: string;
     label: JSX.Element;
   }[];
+  isIconIsGear?: boolean;
   handleDrawerOpen: () => void;
 }
 
@@ -33,6 +36,7 @@ function CustomSelect({
   createText,
   options,
   // value,
+  isIconIsGear = false,
   onChange,
   handleDrawerOpen
 }: CustomSelectType) {
@@ -64,7 +68,8 @@ function CustomSelect({
                 type="button"
                 onClick={handleClick}
               >
-                <FaPlus size={12} />
+                {isIconIsGear ? <PiGearDuotone size={14} /> : <FaPlus size={12} />}
+
                 {createText}
               </button>
             </Space>

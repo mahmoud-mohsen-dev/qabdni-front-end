@@ -9,6 +9,8 @@ import { basicInfoDataWithImageType } from '../../../types';
 import { useNavigate } from 'react-router-dom';
 import { capitalizeName } from '../../../utils/user';
 import dayjs from 'dayjs';
+import { deleteEmployee } from '../store/employeesSlice';
+import { useDispatch } from 'react-redux';
 
 interface EmployeeCardType {
   employee: basicInfoDataWithImageType;
@@ -21,6 +23,11 @@ function EmployeeCard({ employee }: EmployeeCardType) {
     basic: { fullName, position, status, department, dateOfJoining, email, phone }
   } = employee;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleEmployeeDelete = () => {
+    dispatch(deleteEmployee(employee));
+  };
   // const normalizedStatus = status?.normalize() ?? 'not valid';
   let resStatus;
   switch (status) {
@@ -40,7 +47,11 @@ function EmployeeCard({ employee }: EmployeeCardType) {
     <div className="rounded-[20px] border border-gray/light px-6 py-8">
       <div className="flex items-center justify-end gap-2">
         <StatusTag status={resStatus}>{resStatus}</StatusTag>
-        <DotsMenu employee={employee} />
+        <DotsMenu
+          titleDeleteMessageConfirm="Delete Employee"
+          contentDeleteMessageConfirm="Are you sure to delete this employee?"
+          handleDelete={handleEmployeeDelete}
+        />
       </div>
 
       {/* Profile Name and Image */}

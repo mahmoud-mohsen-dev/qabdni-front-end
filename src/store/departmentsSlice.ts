@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { PositionsType } from './positionsReducer';
+import { PositionsType } from './positionsSlice';
 
 const initialState: PositionsType = {
   final: {

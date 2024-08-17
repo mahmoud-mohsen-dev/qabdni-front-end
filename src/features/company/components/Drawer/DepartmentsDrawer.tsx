@@ -10,13 +10,13 @@ import {
   removeDepartmentTemp,
   saveDepartment,
   updateDepartmendColorTemp
-} from '../../../../store/departmentsReducer';
+} from '../../../../store/departmentsSlice';
 import { AppDispatch, RootState } from '../../../../store';
 import { FiveColorsType, ValueItemType } from '../../../../types';
 import Btn from '../../../../components/Btn';
 import LabelInput from '../../../employees/components/LabelInput';
 import CustomDrawer from '../../../../components/CustomDrawer';
-import AddedItem from '../AddedItem';
+import AddedItem from '../UI/AddedItem';
 // import { capitalizeName } from '../../../../utils/user';
 
 interface CustomDrawerType {

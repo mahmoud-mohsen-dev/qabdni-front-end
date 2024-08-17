@@ -53,7 +53,7 @@ const parseIsoStringToDayjs = (value): null | string | Dayjs => {
   return null;
 };
 
-const parseDayjsToIsoString = (value: string | Dayjs): null | string | Dayjs => {
+const parseDayjsToIsoString = (value: string | Dayjs | null): null | string | Dayjs => {
   // Check if value is falsy
   if (!value) {
     return null;

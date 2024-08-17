@@ -10,13 +10,13 @@ import {
   removePositionTemp,
   savePosition,
   updatePositionColorTemp
-} from '../../../../store/positionsReducer';
+} from '../../../../store/positionsSlice';
 import { AppDispatch, RootState } from '../../../../store';
 import { FiveColorsType, ValueItemType } from '../../../../types';
 import Btn from '../../../../components/Btn';
 import LabelInput from '../../../employees/components/LabelInput';
 import CustomDrawer from '../../../../components/CustomDrawer';
-import AddedItem from '../AddedItem';
+import AddedItem from '../UI/AddedItem';
 
 interface CustomDrawerType {
   isOpened: boolean;

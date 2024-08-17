@@ -13,6 +13,8 @@ import SubHeading from '../SubHeading';
 import { useEffect } from 'react';
 import { updateCurrentEmployee } from '../../store/employeesSlice';
 import { UseActionType } from '../../types';
+import WorkPlanDrawer from '../../../company/components/Drawer/WorkPLanDrawer';
+import { WorkPlanStateItemType } from '../../../../store/workPlansSlice';
 
 interface AttendanceAndDepartureInformationProps {
   form: FormInstance<attendanceAndDepartureInfoDataType>;
@@ -26,6 +28,7 @@ function AttendanceAndDepartureInformation({
   actionBtns
 }: AttendanceAndDepartureInformationProps) {
   const { positions, departments } = useSelector((state: RootState) => state);
+  const { final: workPlanFinal } = useSelector((state: RootState) => state.workPlans);
   const { openedDrawer, loading, closeDrawer, showLoading } = useDrawer();
   const { attendanceAndDepartureInfoData } = useSelector((state: RootState) => {
     return state.employees.currentEmployee;
@@ -150,7 +153,7 @@ function AttendanceAndDepartureInformation({
           />
 
           {/* Work Plan */}
-          <DepartmentsDrawer isOpened={openedDrawer === 'departments'} loading={loading} closeDrawer={closeDrawer} />
+          <WorkPlanDrawer isOpened={openedDrawer === 'workPlan'} loading={loading} closeDrawer={closeDrawer} />
           <CustomSelect
             name="workPlan"
             // form={form}
@@ -158,16 +161,17 @@ function AttendanceAndDepartureInformation({
             rules={[{ required: true, message: 'Work plan is required' }]}
             disabled={isSaved}
             placeHolder="Select a work plan"
-            createText="Create new work plan"
+            createText="Manage work plan"
+            isIconIsGear={true}
             options={() => {
-              return departments.final.all.map((department: ValueItemType) => ({
-                value: department.name,
-                label: <span className="capitalize">{department.name}</span>
+              return workPlanFinal.map((workPlan: WorkPlanStateItemType) => ({
+                value: workPlan.workPlanName,
+                label: <span className="capitalize">{workPlan.workPlanName}</span>
               }));
             }}
             handleDrawerOpen={() => {
-              showLoading('departments');
-              form.setFieldValue('department', null);
+              showLoading('workPlan');
+              form.setFieldValue('workPlan', null);
             }}
             onChange={(value) => {
               dispatch(
