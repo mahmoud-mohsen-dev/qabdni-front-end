@@ -1,14 +1,22 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import type { GetRef } from 'antd';
-import { Form, Table, TimePicker } from 'antd';
+import { Form, Input, Table, TimePicker } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { TableRowType } from '../../../../types';
 import { formatDayjsToStrHoursAndMinutes, parseDayjsToIsoString, parseIsoStringToDayjs } from '../../../../utils/date';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../store';
-import { DaysType, TimePickerValueType, updateTempWorkPlan } from '../../../../store/workPlansSlice';
+import {
+  clearTempWorkPlanDayObj,
+  DaysType,
+  TimePickerValueType,
+  toggleTempIsDayOff,
+  updateTempWorkPlan
+} from '../../../../store/workPlansSlice';
 import { capitalizeName } from '../../../../utils/user';
 import dayjs from 'dayjs';
+import DotsMenu from '../../../../components/DotsMenu';
+import { valueInArray } from '../../../../utils/helpers';
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
@@ -16,9 +24,8 @@ const EditableContext = React.createContext<FormInstance<unknown> | null>(null);
 
 const EditableRow: React.FC = ({ ...props }) => {
   const [form] = Form.useForm();
-  // console.log(index);
   return (
-    <Form form={form} component={false} onFinish={(values) => console.log(values)}>
+    <Form form={form} component={false}>
       <EditableContext.Provider value={form}>
         <tr {...props} />
       </EditableContext.Provider>
@@ -32,7 +39,6 @@ interface EditableCellProps {
   dataIndex: keyof DataType;
   record: DataType;
   handleSave: (record: DataType) => void;
-  handleDataSourceWithTimePickerISODate: (newData: DataType[]) => void;
 }
 
 const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
@@ -44,23 +50,30 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   handleSave,
   ...restProps
 }) => {
-  // const  {wrokPlanId}  = useParams();
+  const { workTime } = record ?? 0;
   const wrokPlanId = true;
 
   const [editing, setEditing] = useState(() => (wrokPlanId ? true : false));
   const [openMenu, setOpenMenu] = useState(false);
 
-  const inputRef = useRef<any>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
-    if (editing) {
-      // if (dataIndex !== 'multiplier') {
-      //   inputRef.current?.focus();
-      // }
-      inputRef.current?.focus();
-    }
-  }, [editing, dataIndex]);
+    const handleWorkTime = async () => {
+      try {
+        if (dataIndex === 'workTime') {
+          form.setFieldValue('workTime', workTime ?? 0);
+          await form.getFieldValue(dataIndex);
+          const values = (await form.getFieldsValue()) as TableRowType;
+          handleSave({ ...record, ...values });
+        }
+      } catch (errInfo) {
+        console.log(title);
+        console.log('Save failed:', errInfo);
+      }
+    };
+    handleWorkTime();
+  }, [workTime]);
 
   const toggleEdit = () => {
     setEditing(!editing);
@@ -69,8 +82,8 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
   const save = async () => {
     try {
-      const values = (await form.validateFields()) as TableRowType;
-      console.log(values);
+      await form.getFieldValue(dataIndex);
+      const values = (await form.getFieldsValue()) as TableRowType;
       toggleEdit();
       handleSave({ ...record, ...values });
     } catch (errInfo) {
@@ -81,9 +94,45 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
   let childNode = children;
 
+  if (record && record.isDayOff) {
+    if (dataIndex === 'shiftStart') {
+      return (
+        <td {...restProps} align="center">
+          <p className="is-day-off">Day Off</p>
+        </td>
+      );
+    }
+  }
+
   if (editable) {
+    if (dataIndex === 'workTime') {
+      return (
+        <td {...restProps} align="center">
+          {childNode}
+          <Form.Item style={{ margin: 0 }} name="workTime" initialValue={record['workTime']}>
+            <Input hidden={true} />
+          </Form.Item>
+        </td>
+      );
+    }
+
     childNode = editing ? (
-      <Form.Item style={{ margin: 0 }} name={dataIndex} initialValue={record[dataIndex]}>
+      <Form.Item
+        style={{ margin: 0 }}
+        name={dataIndex}
+        initialValue={record[dataIndex]}
+        rules={[
+          {
+            required: dataIndex === 'shiftStart' || dataIndex === 'shiftEnd' ? true : false,
+            message:
+              dataIndex === 'shiftStart'
+                ? 'Shift start is required'
+                : dataIndex === 'shiftEnd'
+                  ? 'Shift end is required'
+                  : ''
+          }
+        ]}
+      >
         {(dataIndex === 'shiftStart' ||
           dataIndex === 'shiftEnd' ||
           dataIndex === 'breakStart' ||
@@ -153,23 +202,22 @@ const WorkPlanTable = ({
     breakEnd: parseIsoStringToDayjs(item.breakEnd)
   }));
 
-  // const handleClear = (key: React.Key) => {
-  // const newData = dataSource.filter((item) => item.key !== key);
-  // dispatch(updateCurrentEmployee({ target: tableName, data: newData }));
-  // };
+  type DefaultColumnsType = (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[];
 
-  const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[] = [
+  const handleClearDayValues = (day: DaysType) => {
+    if (valueInArray(day, ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']))
+      dispatch(clearTempWorkPlanDayObj({ dayName: day }));
+  };
+
+  const defaultColumns: DefaultColumnsType = [
     {
       title: <p className="cursor-default">Day</p>,
       dataIndex: 'day',
-      // width: '15%',
       align: 'center',
-      render: (day) => {
-        return <p>{capitalizeName(day)}</p>;
-      }
+      render: (day) => <p>{capitalizeName(day)}</p>
     },
     {
-      title: <p className="cursor-default">Shift Start</p>,
+      title: <p className={`cursor-default`}>Shift Start</p>,
       dataIndex: 'shiftStart',
       align: 'center',
       editable: isInViewDetails ? !isSaved : true,
@@ -212,7 +260,7 @@ const WorkPlanTable = ({
       title: <p className="cursor-default">Work Time</p>,
       dataIndex: 'workTime',
       align: 'center',
-      editable: false,
+      editable: true,
       render: (_, record) => {
         let difference = '0';
         const shiftStartIsValid = dayjs(record.shiftStart).isValid();
@@ -221,10 +269,9 @@ const WorkPlanTable = ({
         if (shiftStartIsValid && shiftEndIsValid && record.shiftStart && record.shiftEnd) {
           difference = Number(dayjs(record.shiftEnd).diff(dayjs(record.shiftStart), 'minutes') / 60).toFixed(2);
         }
-        console.log(difference);
-        record.workTime = difference;
+        record.workTime = Number(difference) ?? 0;
         return (
-          <div className="flex w-full items-center justify-center gap-3">
+          <div className="test flex w-full items-center justify-center gap-3">
             {Number(difference) > 0 && (
               <>
                 <span>
@@ -262,12 +309,12 @@ const WorkPlanTable = ({
       dataIndex: 'breakEnd',
       editable: isInViewDetails ? !isSaved : true,
       align: 'center',
-      render: (breakEnd) => {
+      render: (_, record) => {
         return (
           <div className="flex min-h-[11px] w-[111.5px] items-center justify-between gap-5">
-            {breakEnd && (
+            {record.breakEnd && (
               <>
-                <p>{formatDayjsToStrHoursAndMinutes(breakEnd)}</p>
+                <p>{formatDayjsToStrHoursAndMinutes(record.breakEnd)}</p>
                 <span>
                   <ClockCircleOutlined size={14} style={{ color: 'rgba(0, 0, 0, 0.25)' }} />
                 </span>
@@ -276,15 +323,36 @@ const WorkPlanTable = ({
           </div>
         );
       }
+    },
+    {
+      title: <p className="cursor-default">Actions</p>,
+      dataIndex: 'isDayOff',
+      editable: false,
+      align: 'center',
+      render: (_, record) => (
+        <DotsMenu
+          titleDeleteMessageConfirm="Reset day values"
+          contentDeleteMessageConfirm="Are you sure to delete this day values?"
+          isPageWorkPlan={true}
+          enableDayOff={true}
+          handleDotMenu={() => handleClearDayValues(record.day)}
+          handleDayOff={() => {
+            dispatch(toggleTempIsDayOff({ dayName: record.day }));
+          }}
+          isDayOff={record.isDayOff ?? null}
+        />
+      )
     }
   ];
+
   const handleDataSourceWithTimePickerISODate = (newData: DataType[]) => {
     const convertTimePickerValuesToStr = newData.map((item) => ({
       ...item,
       shiftStart: parseDayjsToIsoString(item.shiftStart),
       shiftEnd: parseDayjsToIsoString(item.shiftEnd),
       breakStart: parseDayjsToIsoString(item.breakStart),
-      breakEnd: parseDayjsToIsoString(item.breakEnd)
+      breakEnd: parseDayjsToIsoString(item.breakEnd),
+      workTime: Number(item.workTime) ?? 0
     }));
     dispatch(updateTempWorkPlan({ targetName: 'week', data: convertTimePickerValuesToStr }));
   };
@@ -309,19 +377,50 @@ const WorkPlanTable = ({
   };
 
   const columns = defaultColumns.map((col) => {
+    if (!col.editable && col.dataIndex === 'shiftStart') {
+      return {
+        ...col,
+        onCell: (record: DataType) => ({
+          record,
+          editable: col.editable,
+          dataIndex: col.dataIndex,
+          title: col.title,
+          handleSave,
+          colSapn: record?.isDayOff ? 5 : 1
+        })
+      };
+    }
+
+    if (col.dataIndex === 'day') {
+      return {
+        ...col,
+        render: (day, record) => <p className={record.isDayOff ? 'is-day-off' : ''}>{capitalizeName(day)}</p>
+      };
+    }
+
     if (!col.editable) {
       return col;
     }
+
     return {
       ...col,
-      onCell: (record: DataType) => ({
-        record,
-        editable: col.editable,
-        dataIndex: col.dataIndex,
-        title: col.title,
-        handleSave
-      }),
-      handleDataSourceWithTimePickerISODate
+      onCell: (record: DataType) => {
+        const basePropsOnCell = {
+          record,
+          editable: col.editable,
+          dataIndex: col.dataIndex,
+          title: col.title,
+          handleSave
+        };
+
+        if (record && record.isDayOff) {
+          if (col.dataIndex === 'shiftStart') {
+            return { ...basePropsOnCell, colSpan: 5 };
+          }
+          return { ...basePropsOnCell, colSpan: 0 };
+        }
+        return { ...basePropsOnCell, colSpan: 1 };
+      }
     };
   });
 

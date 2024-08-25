@@ -114,6 +114,58 @@ export interface TableRowType {
   'multiplier-duration': 'day(s)' | 'times';
   minimumOccurrences: number;
 }
+export interface WorkPlanFormType {
+  workPlanName: string;
+  'saturday-key': string | number;
+  'saturday-isEnabled': boolean;
+  'saturday-durationStart': Dayjs | string | null;
+  'saturday-durationEnd': Dayjs | string | null;
+  'saturday-multiplier': number;
+  'saturday-multiplier-duration': 'day(s)' | 'times';
+  'saturday-minimumOccurrences': number;
+  'sunday-key': string | number;
+  'sunday-isEnabled': boolean;
+  'sunday-durationStart': Dayjs | string | null;
+  'sunday-durationEnd': Dayjs | string | null;
+  'sunday-multiplier': number;
+  'sunday-multiplier-duration': 'day(s)' | 'times';
+  'sunday-minimumOccurrences': number;
+  'monday-key': string | number;
+  'monday-isEnabled': boolean;
+  'monday-durationStart': Dayjs | string | null;
+  'monday-durationEnd': Dayjs | string | null;
+  'monday-multiplier': number;
+  'monday-multiplier-duration': 'day(s)' | 'times';
+  'monday-minimumOccurrences': number;
+  'tuesday-key': string | number;
+  'tuesday-isEnabled': boolean;
+  'tuesday-durationStart': Dayjs | string | null;
+  'tuesday-durationEnd': Dayjs | string | null;
+  'tuesday-multiplier': number;
+  'tuesday-multiplier-duration': 'day(s)' | 'times';
+  'tuesday-minimumOccurrences': number;
+  'wednesday-key': string | number;
+  'wednesday-isEnabled': boolean;
+  'wednesday-durationStart': Dayjs | string | null;
+  'wednesday-durationEnd': Dayjs | string | null;
+  'wednesday-multiplier': number;
+  'wednesday-multiplier-duration': 'day(s)' | 'times';
+  'wednesday-minimumOccurrences': number;
+  'thursday-key': string | number;
+  'thursday-isEnabled': boolean;
+  'thursday-durationStart': Dayjs | string | null;
+  'thursday-durationEnd': Dayjs | string | null;
+  'thursday-multiplier': number;
+  'thursday-multiplier-duration': 'day(s)' | 'times';
+  'thursday-minimumOccurrences': number;
+  'friday-key': string | number;
+  'friday-isEnabled': boolean;
+  'friday-durationStart': Dayjs | string | null;
+  'friday-durationEnd': Dayjs | string | null;
+  'friday-multiplier': number;
+  'friday-multiplier-duration': 'day(s)' | 'times';
+  'friday-minimumOccurrences': number;
+}
 
 export interface LeavesTableDataType {
   key: string;

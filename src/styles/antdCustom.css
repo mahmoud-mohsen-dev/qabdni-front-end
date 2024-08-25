@@ -164,6 +164,11 @@
   background-color: #fafafa;
 }
 
+/*  Work Plan Table */
+.work-plan-table td.ant-table-cell:has(.is-day-off) {
+  background-color: rgb(250 250 250);
+}
+
 /* Ant Upload Image */
 .ant-upload-wrapper
   .ant-upload-list.ant-upload-list-picture-circle

@@ -50,7 +50,7 @@ function EmployeeCard({ employee }: EmployeeCardType) {
         <DotsMenu
           titleDeleteMessageConfirm="Delete Employee"
           contentDeleteMessageConfirm="Are you sure to delete this employee?"
-          handleDelete={handleEmployeeDelete}
+          handleDotMenu={handleEmployeeDelete}
         />
       </div>
 

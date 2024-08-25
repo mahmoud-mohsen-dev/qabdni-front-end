@@ -12,7 +12,7 @@ import { useState } from 'react';
 import SecondPageCustomDrawer from '../../../../components/SecondPageCustomDrawer';
 import LabelInput from '../../../employees/components/LabelInput';
 import { capitalizeName } from '../../../../utils/user';
-import { updateTempWorkPlan } from '../../../../store/workPlansSlice';
+import { clearTempWorkPlan, removeFinalWorkPlan, updateTempWorkPlan } from '../../../../store/workPlansSlice';
 import WorkPlanTable from '../UI/WorkPlanTable';
 
 interface CustomDrawerType {
@@ -40,6 +40,7 @@ function WorkPlanDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
   const handleCloseSecondDrawer = () => {
     setOpenSecondDrawer(false);
     setIsSecondDrawerLoading(false);
+    dispatch(clearTempWorkPlan());
   };
 
   const handleSaveSecondDrawer = () => {};
@@ -58,7 +59,9 @@ function WorkPlanDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
   //     form.resetFields();
   //   };
 
-  const handleWorkPlanDelete = () => {};
+  const handleWorkPlanDelete = (id: string) => {
+    dispatch(removeFinalWorkPlan({ id }));
+  };
 
   //   useEffect(() => {
   //     // console.log(isOpened);
@@ -89,18 +92,21 @@ function WorkPlanDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
                       <DotsMenu
                         titleDeleteMessageConfirm="Delete Work Plan"
                         contentDeleteMessageConfirm="Are you sure to delete this work Plan?"
-                        handleDelete={handleWorkPlanDelete}
+                        handleDotMenu={() => handleWorkPlanDelete(workPlan.id)}
                       />
                     </div>
-                    {i + 1 < arr.length && <Divider className="text-gray/ultraultralight my-5" />}
+                    {i + 1 < arr.length && <Divider className="my-5 text-gray/ultraultralight" />}
                   </div>
                 ))}
               </div>
-              <BtnAddNewRow hideText={true} onClick={handleOpenNextDrawer} className="ml-auto mt-8" size={24} />
             </>
           ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              className="flex min-h-[400px] flex-col items-center justify-center"
+            />
           )}
+          <BtnAddNewRow hideText={true} onClick={handleOpenNextDrawer} className="ml-auto mt-8" size={24} />
         </div>
       </FirstPageCustomDrawer>
       <SecondPageCustomDrawer
@@ -131,7 +137,7 @@ function WorkPlanDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
                   isRequired={true}
                 />
               }
-              rules={[{ required: true, message: 'Work plan is required' }, { whitespace: true }, { max: 35 }]}
+              rules={[{ required: true, message: 'Work plan name is required' }, { whitespace: true }, { max: 35 }]}
             >
               <Input
                 placeholder={capitalizeName('Work Plan Name')}
@@ -143,8 +149,8 @@ function WorkPlanDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
               />
             </Form.Item>
 
-            <div className="mt-8">
-              <WorkPlanTable isSaved={false} isInViewDetails={true} />
+            <div className="work-plan-table mt-8">
+              <WorkPlanTable isSaved={false} isInViewDetails={false} />
             </div>
           </Form>
         </div>

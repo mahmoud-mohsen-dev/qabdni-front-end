@@ -38,7 +38,7 @@ export default {
         'red/accent': '#FF2828',
 
         // Shades of gray
-        'gray/ultraultralight': '#0505050f',
+        'gray/ultraultralight': '#fafafa',
         'gray/ultralight': '#F4F5F7',
         'gray/lighter': '#d9d9d9',
         'gray/light': '#E0E4EA',

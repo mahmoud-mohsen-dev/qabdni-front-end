@@ -55,7 +55,7 @@ const initialState: WorkPlanType = {
           shiftEnd: null,
           breakStart: null,
           breakEnd: null,
-          isDayOff: false,
+          isDayOff: true,
           workTime: 0
         },
         {
@@ -330,16 +330,20 @@ const workPlansReducer = createSlice({
         }
       }
     },
-    removeFinalWorkPlan: (state, action) => {
+    removeFinalWorkPlan: (
+      state,
+      action: PayloadAction<{
+        id: string;
+      }>
+    ) => {
       state.final = state.final.filter((WorkPlan) => WorkPlan.id !== action.payload.id);
     },
     updateTempWorkPlanDayObj: (
       state,
       action: PayloadAction<{
-        id: string;
         dayName: DaysType;
         keyName: Partial<keyof DayObjType>;
-        data: Partial<DayObjType>;
+        data: Partial<DayObjType[keyof DayObjType]>;
       }>
     ) => {
       const dayFoundIndex = state.temp.week.findIndex((item) => item.day === action.payload.dayName);
@@ -350,11 +354,31 @@ const workPlansReducer = createSlice({
         };
       }
     },
+    toggleTempIsDayOff: (state, action: PayloadAction<{ dayName: DaysType }>) => {
+      const dayFoundIndex = state.temp.week.findIndex((item) => item.day === action.payload.dayName);
+      if (dayFoundIndex !== -1) {
+        state.temp.week[dayFoundIndex] = {
+          ...initialState.temp.week[dayFoundIndex],
+          isDayOff: !state.temp.week[dayFoundIndex].isDayOff
+        };
+      }
+    },
+    clearTempWorkPlanDayObj: (
+      state,
+      action: PayloadAction<{
+        dayName: DaysType;
+      }>
+    ) => {
+      const dayFoundIndex = state.temp.week.findIndex((item) => item.day === action.payload.dayName);
+      if (dayFoundIndex !== -1) {
+        state.temp.week[dayFoundIndex] = { ...initialState.temp.week[dayFoundIndex] };
+      }
+    },
     updateTempWorkPlan: (
       state,
       action: PayloadAction<{
         targetName: keyof WorkPlanStateItemType;
-        data: Partial<WorkPlanStateItemType[keyof WorkPlanStateItemType]>;
+        data: DayObjType[] | string;
       }>
     ) => {
       if (
@@ -386,6 +410,8 @@ export const {
   removeFinalWorkPlan,
   updateTempWorkPlanDayObj,
   updateTempWorkPlan,
+  clearTempWorkPlanDayObj,
+  toggleTempIsDayOff,
   clearTempWorkPlan
 } = workPlansReducer.actions;
 export default workPlansReducer.reducer;
