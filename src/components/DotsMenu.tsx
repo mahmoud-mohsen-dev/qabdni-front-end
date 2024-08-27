@@ -41,7 +41,7 @@ function DotsMenu({
       style: { top: '30%' },
       onOk() {
         handleDotMenu();
-        isPageWorkPlan ? message.success('Item deleted successfully') : message.success('Item cleared successfully');
+        isPageWorkPlan ? message.success('Item cleared successfully') : message.success('Item deleted successfully');
       },
       onCancel() {
         message.info('Operation Canceled');

@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
-import type { GetRef } from 'antd';
+import React, { useContext, useState } from 'react';
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
+
 import { Form, Input, Table, TimePicker } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import { TableRowType } from '../../../../types';
 import { formatDayjsToStrHoursAndMinutes, parseDayjsToIsoString, parseIsoStringToDayjs } from '../../../../utils/date';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../store';
@@ -17,13 +17,16 @@ import { capitalizeName } from '../../../../utils/user';
 import dayjs from 'dayjs';
 import DotsMenu from '../../../../components/DotsMenu';
 import { valueInArray } from '../../../../utils/helpers';
-
-type FormInstance<T> = GetRef<typeof Form<T>>;
+import type { FormInstance } from 'antd/es/form/Form';
+import { TableRowType } from '../../../../types';
+// import { TableRowType } from '../../../../types';
 
 const EditableContext = React.createContext<FormInstance<unknown> | null>(null);
 
-const EditableRow: React.FC = ({ ...props }) => {
-  const [form] = Form.useForm();
+const EditableRow: React.FC<{ form: FormInstance<any> }> = ({ form, ...props }) => {
+  // const [form] = useForm();
+  // console.log(form.getFieldsValue());
+  // console.log('EditableRow props:', props);
   return (
     <Form form={form} component={false}>
       <EditableContext.Provider value={form}>
@@ -38,6 +41,7 @@ interface EditableCellProps {
   editable: boolean;
   dataIndex: keyof DataType;
   record: DataType;
+  form: FormInstance<any>;
   handleSave: (record: DataType) => void;
 }
 
@@ -48,43 +52,56 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   dataIndex,
   record,
   handleSave,
+  // form,
   ...restProps
 }) => {
-  const { workTime } = record ?? 0;
+  // const { workTime } = record ?? 0;
   const wrokPlanId = true;
 
   const [editing, setEditing] = useState(() => (wrokPlanId ? true : false));
   const [openMenu, setOpenMenu] = useState(false);
 
   const form = useContext(EditableContext)!;
+  // console.log(form.getFieldsValue());
 
-  useEffect(() => {
-    const handleWorkTime = async () => {
-      try {
-        if (dataIndex === 'workTime') {
-          form.setFieldValue('workTime', workTime ?? 0);
-          await form.getFieldValue(dataIndex);
-          const values = (await form.getFieldsValue()) as TableRowType;
-          handleSave({ ...record, ...values });
-        }
-      } catch (errInfo) {
-        console.log(title);
-        console.log('Save failed:', errInfo);
-      }
-    };
-    handleWorkTime();
-  }, [workTime]);
+  // todo fix this - "this is will break my code"
+  // useEffect(() => {
+  //   const handleWorkTime = async () => {
+  //     try {
+  //       if (dataIndex === 'workTime') {
+  //         form.setFieldValue('workTime', workTime ?? 0);
+  //         await form.getFieldValue(dataIndex);
+  //         const values = (await form.getFieldsValue()) as TableRowType;
+  //         console.log(values);
+  //         handleSave({ ...record, ...values });
+  //       }
+  //     } catch (errInfo) {
+  //       console.log(title);
+  //       console.log('Save failed:', errInfo);
+  //     }
+  //   };
+  //   handleWorkTime();
+  // }, [workTime]);
 
-  const toggleEdit = () => {
+  const toggleEdit = (updatedValue) => {
     setEditing(!editing);
-    form.setFieldsValue({ [dataIndex]: record[dataIndex] });
+    console.log('**************************');
+    console.log({ [dataIndex]: record[dataIndex] });
+    console.log('**************************');
+    // form.setFieldsValue({ [dataIndex]: record[dataIndex] });
+    form.setFieldsValue({ [dataIndex]: updatedValue });
   };
 
   const save = async () => {
     try {
-      await form.getFieldValue(dataIndex);
+      const value = await form.getFieldValue(dataIndex);
       const values = (await form.getFieldsValue()) as TableRowType;
-      toggleEdit();
+      console.log('===============================');
+      console.log(value);
+      console.log(values);
+      console.log({ ...record, ...values });
+      console.log('===============================');
+      toggleEdit(values[dataIndex]);
       handleSave({ ...record, ...values });
     } catch (errInfo) {
       console.log(title);
@@ -187,10 +204,24 @@ type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
 const WorkPlanTable = ({
   isSaved = false,
-  isInViewDetails = false
+  isInViewDetails = false,
+  saturdayForm,
+  sundayForm,
+  mondayForm,
+  tuesdayForm,
+  wendesdayForm,
+  thursdayForm,
+  fridayForm
 }: {
   isSaved?: boolean;
   isInViewDetails?: boolean;
+  saturdayForm: FormInstance<any>;
+  sundayForm: FormInstance<any>;
+  mondayForm: FormInstance<any>;
+  tuesdayForm: FormInstance<any>;
+  wendesdayForm: FormInstance<any>;
+  thursdayForm: FormInstance<any>;
+  fridayForm: FormInstance<any>;
 }) => {
   const dispatch = useDispatch();
   const targetTableDataSource = useSelector((state: RootState) => state.workPlans.temp.week);
@@ -204,9 +235,21 @@ const WorkPlanTable = ({
 
   type DefaultColumnsType = (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[];
 
+  const dayToFormMap: Record<string, FormInstance<any>> = {
+    saturday: saturdayForm,
+    sunday: sundayForm,
+    monday: mondayForm,
+    tuesday: tuesdayForm,
+    wednesday: wendesdayForm,
+    thursday: thursdayForm,
+    friday: fridayForm
+  };
+
   const handleClearDayValues = (day: DaysType) => {
     if (valueInArray(day, ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']))
       dispatch(clearTempWorkPlanDayObj({ dayName: day }));
+    const form = dayToFormMap[day];
+    form.resetFields();
   };
 
   const defaultColumns: DefaultColumnsType = [
@@ -359,6 +402,8 @@ const WorkPlanTable = ({
 
   const handleSave = (row: DataType) => {
     const newData = [...dataSource];
+    console.log(row);
+    console.log(newData);
     const index = newData.findIndex((item) => row.key === item.key);
 
     const item = newData[index];
@@ -369,12 +414,12 @@ const WorkPlanTable = ({
     handleDataSourceWithTimePickerISODate(newData);
   };
 
-  const components = {
-    body: {
-      row: EditableRow,
-      cell: EditableCell
-    }
-  };
+  // const components = {
+  //   body: {
+  //     row: EditableRow,
+  //     cell: EditableCell
+  //   }
+  // };
 
   const columns = defaultColumns.map((col) => {
     if (!col.editable && col.dataIndex === 'shiftStart') {
@@ -424,6 +469,22 @@ const WorkPlanTable = ({
     };
   });
 
+  const components = {
+    body: {
+      row: ({ children, ...restProps }: any) => {
+        const day = dataSource.find((item) => item.key === restProps['data-row-key'])?.day || '';
+        const form = dayToFormMap[day];
+
+        return (
+          <EditableRow {...restProps} form={form}>
+            {children}
+          </EditableRow>
+        );
+      },
+      cell: EditableCell
+    }
+  };
+
   return (
     <div className="relative">
       <Table
@@ -432,6 +493,7 @@ const WorkPlanTable = ({
         bordered
         dataSource={dataSource}
         columns={columns as ColumnTypes}
+        rowKey={(record) => record.key}
         pagination={{ position: ['none'] }}
         scroll={{ x: dataSource.length > 0 ? 1000 : 0 }}
         className={`${dataSource.length > 0 ? '' : 'mb-[18px]'} ${isSaved ? 'table-disabled' : ''}`}

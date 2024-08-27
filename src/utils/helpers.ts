@@ -39,4 +39,12 @@ function valueInArrayObjectOfNames(value: any, array: ValueItemType[], defaultVa
   return result ? result.name : defaultValue;
 }
 
-export { isMatched, valueInArray, valueInArrayObjectOfNames };
+function normalize(value: any): string | null {
+  if (typeof value === 'string') {
+    // Trim extra spaces and convert to lowercase
+    return value.trim().toLowerCase().replace(/\s+/g, ' ');
+  }
+  return null;
+}
+
+export { isMatched, valueInArray, valueInArrayObjectOfNames, normalize };

@@ -1,7 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import { message } from 'antd';
 import { Dayjs } from 'dayjs';
 import { v4 } from 'uuid';
+import { normalize } from '../utils/helpers';
 
 export type TimePickerValueType = null | Dayjs | string;
 
@@ -273,10 +275,15 @@ const workPlansReducer = createSlice({
   initialState,
   reducers: {
     addFinalWorkPlan: (state) => {
-      const foundIndex = state.final.find((workPlan) => state.temp.id && workPlan.id === state.temp.id);
+      const foundIndex = state.final.find(
+        (workPlan) => state.temp.workPlanName && normalize(workPlan.workPlanName) === normalize(state.temp.workPlanName)
+      );
       if (!foundIndex) {
         state.final.push(state.temp);
         state.temp = { ...initialState.temp };
+      } else {
+        message.error('Work plan name exist!');
+        throw new Error('Work plan name exist!');
       }
     },
     updateFinalWorkPlan: (

@@ -1,4 +1,4 @@
-import { Divider, Empty, Form, Input } from 'antd';
+import { Divider, Empty, Form, Input, message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 // import { useForm } from 'antd/es/form/Form';
 import { AppDispatch, RootState } from '../../../../store';
@@ -12,8 +12,16 @@ import { useState } from 'react';
 import SecondPageCustomDrawer from '../../../../components/SecondPageCustomDrawer';
 import LabelInput from '../../../employees/components/LabelInput';
 import { capitalizeName } from '../../../../utils/user';
-import { clearTempWorkPlan, removeFinalWorkPlan, updateTempWorkPlan } from '../../../../store/workPlansSlice';
+import {
+  addFinalWorkPlan,
+  clearTempWorkPlan,
+  removeFinalWorkPlan,
+  updateTempWorkPlan
+} from '../../../../store/workPlansSlice';
 import WorkPlanTable from '../UI/WorkPlanTable';
+import { useForm } from 'antd/es/form/Form';
+import type { FormInstance } from 'antd/es/form/Form';
+// import CustomWorkPlanTable from '../UI/CustomWorkPlanTable';
 
 interface CustomDrawerType {
   isOpened: boolean;
@@ -26,6 +34,15 @@ function WorkPlanDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
   const dispatch = useDispatch<AppDispatch>();
   const [openSecondDrawer, setOpenSecondDrawer] = useState(false);
   const [isSecondDrawerLoading, setIsSecondDrawerLoading] = useState(false);
+
+  const [workPlanNameForm] = useForm();
+  const [saturdayForm] = useForm<FormInstance<any>>();
+  const [sundayForm] = useForm<FormInstance<any>>();
+  const [mondayForm] = useForm<FormInstance<any>>();
+  const [tuesdayForm] = useForm<FormInstance<any>>();
+  const [wendesdayForm] = useForm<FormInstance<any>>();
+  const [thursdayForm] = useForm<FormInstance<any>>();
+  const [fridayForm] = useForm<FormInstance<any>>();
 
   //   const handleSave = () => {
   //     //   dispatch(savePosition());
@@ -43,7 +60,37 @@ function WorkPlanDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
     dispatch(clearTempWorkPlan());
   };
 
-  const handleSaveSecondDrawer = () => {};
+  const handleSaveSecondDrawer = async () => {
+    try {
+      const data = await Promise.all([
+        workPlanNameForm.validateFields(),
+        saturdayForm.validateFields(),
+        sundayForm.validateFields(),
+        mondayForm.validateFields(),
+        tuesdayForm.validateFields(),
+        wendesdayForm.validateFields(),
+        thursdayForm.validateFields(),
+        fridayForm.validateFields()
+      ]);
+      console.log(data);
+      dispatch(addFinalWorkPlan());
+      setOpenSecondDrawer(false);
+
+      dispatch(clearTempWorkPlan());
+      workPlanNameForm.resetFields();
+      saturdayForm.resetFields();
+      sundayForm.resetFields();
+      mondayForm.resetFields();
+      tuesdayForm.resetFields();
+      wendesdayForm.resetFields();
+      thursdayForm.resetFields();
+      fridayForm.resetFields();
+    } catch (e: any) {
+      console.log('Failed to save second drawer');
+      console.error(e);
+      message.error(e?.errorFields[0]?.errors[0] ?? 'Failed to save second drawer');
+    }
+  };
 
   const handleCloseDrawer = () => {
     //   dispatch(assignTempPositionFromValue([]));
@@ -125,7 +172,7 @@ function WorkPlanDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
             labelCol={{ span: 10 }}
             wrapperCol={{ span: 14 }}
             labelAlign="left"
-            // form={form}
+            form={workPlanNameForm}
             // initialValues={{ ...bankInformationData }}
           >
             <Form.Item
@@ -150,7 +197,26 @@ function WorkPlanDrawer({ isOpened, loading, closeDrawer }: CustomDrawerType) {
             </Form.Item>
 
             <div className="work-plan-table mt-8">
-              <WorkPlanTable isSaved={false} isInViewDetails={false} />
+              <WorkPlanTable
+                isSaved={false}
+                isInViewDetails={false}
+                saturdayForm={saturdayForm}
+                sundayForm={sundayForm}
+                mondayForm={mondayForm}
+                tuesdayForm={tuesdayForm}
+                wendesdayForm={wendesdayForm}
+                thursdayForm={thursdayForm}
+                fridayForm={fridayForm}
+              />
+
+              {/* <CustomWorkPlanTable
+                saturdayForm={saturdayForm}
+                sundayForm={sundayForm}
+                mondayForm={mondayForm}
+                wendesdayForm={wendesdayForm}
+                thursdayForm={thursdayForm}
+                fridayForm={fridayForm}
+              /> */}
             </div>
           </Form>
         </div>
